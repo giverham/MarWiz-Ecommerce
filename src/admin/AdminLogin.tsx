@@ -1,13 +1,15 @@
-import { useState } from "react";
-import { Lock, Mail, ArrowRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAdminAuth } from "./AdminAuth";
 
 export function AdminLogin() {
   const { signIn } = useAdminAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +18,14 @@ export function AdminLogin() {
     const { error } = await signIn(email, password);
     if (error) setError(error);
     setLoading(false);
+  };
+
+  const togglePasswordVisibility = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowPassword((prev) => !prev);
+    setTimeout(() => {
+      passwordInputRef.current?.focus();
+    }, 0);
   };
 
   return (
@@ -31,12 +41,15 @@ export function AdminLogin() {
 
         <form onSubmit={handleSubmit} className="space-y-6 border border-ink-800 bg-ink-900 p-8">
           <div>
-            <label className="label-luxury">Email</label>
+            <label htmlFor="email" className="label-luxury">Email</label>
             <div className="relative">
               <Mail size={16} className="absolute left-0 top-1/2 -translate-y-1/2 text-ink-500" />
               <input
                 required
+                id="email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-luxury pl-7"
@@ -45,17 +58,35 @@ export function AdminLogin() {
             </div>
           </div>
           <div>
-            <label className="label-luxury">Password</label>
+            <label htmlFor="password" className="label-luxury">Password</label>
             <div className="relative">
               <Lock size={16} className="absolute left-0 top-1/2 -translate-y-1/2 text-ink-500" />
               <input
                 required
-                type="password"
+                id="password"
+                name="password"
+                ref={passwordInputRef}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input-luxury pl-7"
+                className="input-luxury pl-7 pr-8"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                onMouseDown={togglePasswordVisibility}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowPassword((prev) => !prev);
+                  }
+                }}
+                className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-ink-500 hover:text-gold-400 focus:outline-none transition-colors duration-300"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
