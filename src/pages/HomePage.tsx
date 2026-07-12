@@ -128,75 +128,79 @@ function HeroSection() {
   const { settings } = useStore();
   const { navigate } = useRouter();
 
+  // Premium, editorial fallback representing dapper African luxury fashion, tailored senator wear, and premium accessories.
+  const fallbackImage = "https://images.pexels.com/photos/15725227/pexels-photo-15725227.jpeg?auto=compress&cs=tinysrgb&w=1920";
+
   return (
-    <section className="relative flex h-[75vh] md:h-[80vh] w-full items-center justify-center overflow-hidden bg-ink-950">
-      {/* Cinematic Background Engine */}
+    <section className="relative flex min-h-[90vh] lg:min-h-screen w-full items-center justify-center overflow-hidden bg-ink-950">
+      {/* Cinematic Full-Screen Media Background */}
       <div className="absolute inset-0 z-0">
         {settings?.hero_video_url ? (
           <video
             src={settings.hero_video_url}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover scale-102"
             autoPlay
             muted
             loop
             playsInline
           />
-        ) : settings?.hero_image_url ? (
+        ) : (
           <img
-            src={settings.hero_image_url}
-            alt="Hero Background"
-            className="h-full w-full object-cover animate-fade-in"
+            src={settings?.hero_image_url || fallbackImage}
+            alt="MarWiz African Luxury Fashion Background"
+            className="h-full w-full object-cover scale-102 animate-fade-in duration-1000"
           />
-        ) : null}
+        )}
         
-        {/* Subtle Dark Overlay (40-50%) for text readability */}
-        <div className="absolute inset-0 bg-ink-950/45" />
+        {/* Subtle dark overlay for premium legibility (40-50%) */}
+        <div className="absolute inset-0 bg-ink-950/45 z-10" />
 
-        {/* Soft Vignette Overlay for Cinematic Depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(12,10,9,0.55)_85%)]" />
+        {/* Artistic Studio Vignette (Golden core to deep charcoal borders) */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,169,110,0.12),rgba(12,10,9,0.85))] z-10 pointer-events-none" />
 
-        {/* Premium Smooth Edge Blending Gradients */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-900 via-ink-900/60 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink-950/70 to-transparent pointer-events-none" />
+        {/* Seamless Edge-Blending Gradients (Removes any boxed look) */}
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink-900 via-ink-900/60 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink-950/70 to-transparent z-10 pointer-events-none" />
       </div>
 
-      {/* Centered Content Block */}
-      <div className="relative z-10 w-full text-center px-4 animate-fade-up">
-        <div className="container-luxury flex flex-col items-center">
-          <div className="max-w-3xl flex flex-col items-center">
-            {/* Elegant Reduced Headline (Approx. 20% Smaller) */}
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-light uppercase tracking-[0.25em] leading-tight text-ink-50 text-balance">
-              {settings?.hero_title || "Dare To Wear Different"}
-            </h1>
-            
-            {/* Subtitle directly below */}
-            <p className="mt-4 max-w-xl text-sm sm:text-base font-light leading-relaxed text-ink-200">
-              {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
-            </p>
-            
-            {/* Centered CTA Buttons Pair (24px - 32px spacing below subtitle) */}
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 w-full max-w-md">
-              <button
-                onClick={() => navigate(settings?.hero_cta_link || "/shop")}
-                className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2 text-[11px]"
-              >
-                {settings?.hero_cta_text || "Explore Collection"}
-                <ArrowRight size={14} />
-              </button>
-              <button
-                onClick={() => navigate("/collections")}
-                className="btn-outline justify-center py-3 px-8 whitespace-nowrap text-[11px]"
-              >
-                View Collections
-              </button>
-            </div>
-          </div>
+      {/* Art-Directed Centered Typography Canvas */}
+      <div className="relative z-20 w-full max-w-4xl px-6 text-center flex flex-col items-center justify-center animate-fade-up">
+        
+        {/* Brand Name Header */}
+        <span className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.45em] text-gold-400 mb-4 md:mb-5">
+          {settings?.brand_name || "MARWIZ WEARS & WATCHES"}
+        </span>
+
+        {/* Breathtaking Slogan (Strictly kept to 2 lines max) */}
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-[5.25rem] font-light leading-[1.1] tracking-wide text-ink-50 max-w-3xl mx-auto uppercase mb-5">
+          Dare To <span className="font-serif italic font-normal text-gold-300">Wear</span> Different
+        </h1>
+
+        {/* Elegant Subtitle (Much smaller, balanced spacing) */}
+        <p className="max-w-xl text-xs sm:text-sm md:text-base font-light tracking-[0.05em] leading-relaxed text-ink-200 mb-10">
+          {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
+        </p>
+
+        {/* Balanced Button Pair directly underneath */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 w-full max-w-md">
+          <button
+            onClick={() => navigate(settings?.hero_cta_link || "/shop")}
+            className="w-full sm:w-auto min-w-[200px] bg-gold-400 px-8 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-900 transition-all duration-300 hover:bg-gold-300 hover:shadow-2xl hover:shadow-gold-400/35 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            {settings?.hero_cta_text || "Explore Collection"}
+          </button>
+          <button
+            onClick={() => navigate("/collections")}
+            className="w-full sm:w-auto min-w-[200px] border border-ink-600 bg-ink-950/20 backdrop-blur-sm px-8 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-50 transition-all duration-300 hover:border-gold-400 hover:text-gold-400 hover:bg-ink-900/60 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            View Collections
+          </button>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
-        <div className="h-8 w-px bg-gold-400/40 animate-pulse"></div>
+      {/* Elegant Scroll Tracker Line */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+        <div className="h-10 w-px bg-gold-400/35 animate-pulse" />
       </div>
     </section>
   );
