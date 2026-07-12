@@ -130,59 +130,48 @@ function HeroSection() {
 
   // Premium, editorial fallback representing dapper African luxury fashion, tailored senator wear, and premium accessories.
   const fallbackImage = "https://images.pexels.com/photos/15725227/pexels-photo-15725227.jpeg?auto=compress&cs=tinysrgb&w=1920";
+  const defaultVideo = "https://assets.mixkit.co/videos/preview/mixkit-man-in-suit-and-tie-adjusting-his-cuffs-42045-large.mp4";
 
   return (
-    <section className="relative flex min-h-[90vh] lg:min-h-screen w-full items-center justify-center overflow-hidden bg-ink-950">
-      {/* Cinematic Full-Screen Media Background */}
+    <section className="relative flex h-[75vh] md:h-[80vh] min-h-[600px] w-full items-center justify-center overflow-hidden bg-ink-950">
+      {/* Cinematic Full-Screen Integrated Media Background */}
       <div className="absolute inset-0 z-0">
-        {settings?.hero_video_url ? (
-          <video
-            src={settings.hero_video_url}
-            className="h-full w-full object-cover scale-102"
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-        ) : (
-          <img
-            src={settings?.hero_image_url || fallbackImage}
-            alt="MarWiz African Luxury Fashion Background"
-            className="h-full w-full object-cover scale-102 animate-fade-in duration-1000"
-          />
-        )}
+        <video
+          src={settings?.hero_video_url || defaultVideo}
+          poster={settings?.hero_image_url || fallbackImage}
+          className="h-full w-full object-cover scale-102 transition-opacity duration-1000"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
         
-        {/* Subtle dark overlay for premium legibility (40-50%) */}
-        <div className="absolute inset-0 bg-ink-950/45 z-10" />
+        {/* Deep cinematic overlay to blend background content directly */}
+        <div className="absolute inset-0 bg-ink-950/45 backdrop-blur-[0.5px] z-10" />
 
-        {/* Artistic Studio Vignette (Golden core to deep charcoal borders) */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,169,110,0.12),rgba(12,10,9,0.85))] z-10 pointer-events-none" />
+        {/* Sophisticated studio lighting radial vignette (Golden core to deep charcoal borders) */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,17,15,0.1)_0%,rgba(12,10,9,0.85)_80%)] z-10 pointer-events-none" />
 
-        {/* Seamless Edge-Blending Gradients (Removes any boxed look) */}
+        {/* High-fidelity top and bottom edge-fading feather gradients (Ensures seamless page integration) */}
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink-900 via-ink-900/60 to-transparent z-10 pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink-950/70 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-ink-950 via-ink-950/40 to-transparent z-10 pointer-events-none" />
       </div>
 
       {/* Art-Directed Centered Typography Canvas */}
       <div className="relative z-20 w-full max-w-4xl px-6 text-center flex flex-col items-center justify-center animate-fade-up">
         
-        {/* Brand Name Header */}
-        <span className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.45em] text-gold-400 mb-4 md:mb-5">
-          {settings?.brand_name || "MARWIZ WEARS & WATCHES"}
-        </span>
-
-        {/* Breathtaking Slogan (Strictly kept to 2 lines max) */}
-        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-[5.25rem] font-light leading-[1.1] tracking-wide text-ink-50 max-w-3xl mx-auto uppercase mb-5">
-          Dare To <span className="font-serif italic font-normal text-gold-300">Wear</span> Different
+        {/* Breathtaking Slogan (Strictly on a single, responsive, non-wrapping line) */}
+        <h1 className="font-serif text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-[0.18em] sm:tracking-[0.25em] md:tracking-[0.3em] text-ink-50 uppercase whitespace-nowrap leading-none text-center">
+          DARE TO WEAR DIFFERENT
         </h1>
 
         {/* Elegant Subtitle (Much smaller, balanced spacing) */}
-        <p className="max-w-xl text-xs sm:text-sm md:text-base font-light tracking-[0.05em] leading-relaxed text-ink-200 mb-10">
-          {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
+        <p className="mt-6 max-w-xl text-xs sm:text-sm md:text-base font-light tracking-[0.05em] leading-relaxed text-ink-200">
+          Timeless luxury. Crafted for those who refuse the ordinary.
         </p>
 
         {/* Balanced Button Pair directly underneath */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 w-full max-w-md">
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 w-full max-w-md">
           <button
             onClick={() => navigate(settings?.hero_cta_link || "/shop")}
             className="w-full sm:w-auto min-w-[200px] bg-gold-400 px-8 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-900 transition-all duration-300 hover:bg-gold-300 hover:shadow-2xl hover:shadow-gold-400/35 hover:-translate-y-0.5 active:translate-y-0"
