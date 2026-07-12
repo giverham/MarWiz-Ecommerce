@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAdminAuth } from "./AdminAuth";
+import { supabase } from "../lib/supabase";
 
 export function AdminLogin() {
   const { signIn } = useAdminAuth();
@@ -9,7 +10,21 @@ export function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hasAdmins, setHasAdmins] = useState<boolean | null>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function checkAdmins() {
+      try {
+        const { data } = await supabase.rpc("has_admin_users");
+        setHasAdmins(!!data);
+      } catch {
+        // Fallback to normal login page in case of any network/RPC error
+        setHasAdmins(true);
+      }
+    }
+    checkAdmins();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +32,35 @@ export function AdminLogin() {
     setError(null);
     const { error } = await signIn(email, password);
     if (error) setError(error);
+    setLoading(false);
+  };
+
+  const handleSetupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    // Create the first admin user
+    const { data, error: signUpErr } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpErr) {
+      setError(signUpErr.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data?.user) {
+      // Log in immediately
+      const { error: signInErr } = await signIn(email, password);
+      if (signInErr) {
+        setError(signInErr);
+      } else {
+        setHasAdmins(true);
+      }
+    }
     setLoading(false);
   };
 
@@ -32,14 +76,17 @@ export function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-ink-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-gold-400/30">
-            <Lock size={24} className="text-gold-400" />
+          <div className="mb-6">
+            <span className="font-display text-3xl font-medium tracking-[0.15em] text-ink-50 uppercase">
+              MAR<span className="text-gold-400">WIZ</span>
+            </span>
           </div>
-          <h1 className="font-display text-3xl text-ink-50">Admin Panel</h1>
-          <p className="mt-2 text-sm text-ink-500">MarWiz Wears & Watches</p>
+          <h1 className="font-display text-sm uppercase tracking-[0.25em] text-gold-400">
+            {hasAdmins === false ? "Setup Administrator" : "Admin Login"}
+          </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 border border-ink-800 bg-ink-900 p-8">
+        <form onSubmit={hasAdmins === false ? handleSetupSubmit : handleSubmit} className="space-y-6 border border-ink-800 bg-ink-900 p-8">
           <div>
             <label htmlFor="email" className="label-luxury">Email</label>
             <div className="relative">
@@ -53,7 +100,7 @@ export function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-luxury pl-7"
-                placeholder="admin@marwiz.com"
+                placeholder="Enter your email"
               />
             </div>
           </div>
@@ -67,7 +114,7 @@ export function AdminLogin() {
                 name="password"
                 ref={passwordInputRef}
                 type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
+                autoComplete={hasAdmins === false ? "new-password" : "current-password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-luxury pl-7 pr-8"
@@ -97,14 +144,10 @@ export function AdminLogin() {
           )}
 
           <button type="submit" disabled={loading} className="btn-primary w-full">
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? (hasAdmins === false ? "Setting up..." : "Signing in...") : (hasAdmins === false ? "Create Account" : "Sign In")}
             {!loading && <ArrowRight size={16} />}
           </button>
         </form>
-
-        <p className="mt-6 text-center text-xs text-ink-600">
-          Authorized personnel only. Create an admin account via Supabase Auth.
-        </p>
       </div>
     </div>
   );
