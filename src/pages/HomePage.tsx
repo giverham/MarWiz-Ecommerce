@@ -129,8 +129,8 @@ function HeroSection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="relative flex h-[80vh] md:h-[85vh] w-full items-center overflow-hidden">
-      <div className="absolute inset-0 bg-ink-950">
+    <section className="relative flex h-[80vh] w-full items-center overflow-hidden bg-ink-950">
+      <div className="absolute inset-0">
         {settings?.hero_video_url ? (
           <video
             src={settings.hero_video_url}
@@ -152,29 +152,39 @@ function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/30" />
       </div>
 
-      <div className="relative z-10 w-full pt-12 pb-16 md:pt-16 md:pb-20 animate-fade-up">
+      <div className="relative z-10 w-full animate-fade-up">
         <div className="container-luxury">
-          <div className="max-w-3xl">
+          <div className="max-w-5xl">
+            {/* Headline */}
             <h1 className="font-display text-4xl font-medium leading-[1.15] text-ink-50 text-balance sm:text-5xl lg:text-[3.50rem]">
               {settings?.hero_title || "Dare To Wear Different"}
             </h1>
-            <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-ink-200 sm:text-lg">
-              {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-6 sm:mt-7 max-w-md sm:max-w-lg">
-              <button
-                onClick={() => navigate(settings?.hero_cta_link || "/shop")}
-                className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2"
-              >
-                {settings?.hero_cta_text || "Explore Collection"}
-                <ArrowRight size={16} />
-              </button>
-              <button
-                onClick={() => navigate("/collections")}
-                className="btn-outline justify-center py-3 px-8 whitespace-nowrap"
-              >
-                View Collections
-              </button>
+            
+            {/* Split layout below the headline with zero large empty spaces */}
+            <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-12">
+              {/* Left Column: Description */}
+              <div className="max-w-xl">
+                <p className="text-base font-light leading-relaxed text-ink-200 sm:text-lg">
+                  {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
+                </p>
+              </div>
+              
+              {/* Right Column: Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 shrink-0">
+                <button
+                  onClick={() => navigate(settings?.hero_cta_link || "/shop")}
+                  className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2"
+                >
+                  {settings?.hero_cta_text || "Explore Collection"}
+                  <ArrowRight size={16} />
+                </button>
+                <button
+                  onClick={() => navigate("/collections")}
+                  className="btn-outline justify-center py-3 px-8 whitespace-nowrap"
+                >
+                  View Collections
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -195,7 +205,7 @@ function CollectionsSection({ collections }: { collections: Collection[] }) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-14">
+    <section className="pb-12 md:pb-14 pt-4 md:pt-5">
       <div className="container-luxury">
         <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3">Explore</p>
