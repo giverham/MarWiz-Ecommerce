@@ -129,8 +129,9 @@ function HeroSection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="relative flex h-[80vh] w-full items-center overflow-hidden bg-ink-950">
-      <div className="absolute inset-0">
+    <section className="relative flex h-[75vh] md:h-[80vh] w-full items-center justify-center overflow-hidden bg-ink-950">
+      {/* Cinematic Background Engine */}
+      <div className="absolute inset-0 z-0">
         {settings?.hero_video_url ? (
           <video
             src={settings.hero_video_url}
@@ -143,55 +144,58 @@ function HeroSection() {
         ) : settings?.hero_image_url ? (
           <img
             src={settings.hero_image_url}
-            alt="Hero"
+            alt="Hero Background"
             className="h-full w-full object-cover animate-fade-in"
           />
         ) : null}
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-ink-950/85 via-ink-950/50 to-ink-950/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/30" />
+        
+        {/* Subtle Dark Overlay (40-50%) for text readability */}
+        <div className="absolute inset-0 bg-ink-950/45" />
+
+        {/* Soft Vignette Overlay for Cinematic Depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(12,10,9,0.55)_85%)]" />
+
+        {/* Premium Smooth Edge Blending Gradients */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink-900 via-ink-900/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink-950/70 to-transparent pointer-events-none" />
       </div>
 
-      <div className="relative z-10 w-full animate-fade-up">
-        <div className="container-luxury">
-          <div className="max-w-5xl">
-            {/* Headline */}
-            <h1 className="font-display text-4xl font-medium leading-[1.15] text-ink-50 text-balance sm:text-5xl lg:text-[3.50rem]">
+      {/* Centered Content Block */}
+      <div className="relative z-10 w-full text-center px-4 animate-fade-up">
+        <div className="container-luxury flex flex-col items-center">
+          <div className="max-w-3xl flex flex-col items-center">
+            {/* Elegant Reduced Headline (Approx. 20% Smaller) */}
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] font-light uppercase tracking-[0.25em] leading-tight text-ink-50 text-balance">
               {settings?.hero_title || "Dare To Wear Different"}
             </h1>
             
-            {/* Split layout below the headline with zero large empty spaces */}
-            <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-12">
-              {/* Left Column: Description */}
-              <div className="max-w-xl">
-                <p className="text-base font-light leading-relaxed text-ink-200 sm:text-lg">
-                  {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
-                </p>
-              </div>
-              
-              {/* Right Column: Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 shrink-0">
-                <button
-                  onClick={() => navigate(settings?.hero_cta_link || "/shop")}
-                  className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2"
-                >
-                  {settings?.hero_cta_text || "Explore Collection"}
-                  <ArrowRight size={16} />
-                </button>
-                <button
-                  onClick={() => navigate("/collections")}
-                  className="btn-outline justify-center py-3 px-8 whitespace-nowrap"
-                >
-                  View Collections
-                </button>
-              </div>
+            {/* Subtitle directly below */}
+            <p className="mt-4 max-w-xl text-sm sm:text-base font-light leading-relaxed text-ink-200">
+              {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
+            </p>
+            
+            {/* Centered CTA Buttons Pair (24px - 32px spacing below subtitle) */}
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 w-full max-w-md">
+              <button
+                onClick={() => navigate(settings?.hero_cta_link || "/shop")}
+                className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2 text-[11px]"
+              >
+                {settings?.hero_cta_text || "Explore Collection"}
+                <ArrowRight size={14} />
+              </button>
+              <button
+                onClick={() => navigate("/collections")}
+                className="btn-outline justify-center py-3 px-8 whitespace-nowrap text-[11px]"
+              >
+                View Collections
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10">
         <div className="h-8 w-px bg-gold-400/40 animate-pulse"></div>
       </div>
     </section>
@@ -205,7 +209,7 @@ function CollectionsSection({ collections }: { collections: Collection[] }) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="pb-12 md:pb-14 pt-4 md:pt-5">
+    <section className="pb-12 md:pb-14 pt-4 md:pt-6">
       <div className="container-luxury">
         <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3">Explore</p>

@@ -127,6 +127,31 @@ We have fully refactored, upgraded, and completed the Admin CMS dashboard sectio
 - **Production Bundle**: `npm run build` compiled flawlessly into static assets in just **4.65s** with **zero errors and zero warnings**.
 - **GitHub Sync**: All updates are committed and synchronized with your remote repository at `https://github.com/giverham/MarWiz-Ecommerce.git`.
 
+### D. Centered Art-Directed Hero Block
+- **Symmetry**: Completely balanced and horizontally centered the hero layout, text, and button components for an exceptionally premium, art-directed editorial presentation.
+- **Slogan Scaling**: Reduced the slogan text size by approximately 20% (`text-3xl sm:text-4xl lg:text-[2.75rem]`) to align with luxury brand visual standards.
+- **Advanced Blending**: Applied a combination of dark transparency overlays, radial vignettes (`bg-[radial-gradient]`), and soft bottom-edge gradients (`from-ink-900`) to perfectly blend the background cinematic video into the rest of the webpage, removing any "pasted-on image" boundary effects.
+- **Section Rhythm**: Pulled the "Curated Collections" section upward, reducing empty vertical spaces to maintain high visitor engagement.
+
+---
+
+## 8. Dual Theme (Light & Dark) & Back-to-Top floating button
+We have added a gorgeous, premium Light and Dark theme toggler, and an elegant circular floating scroll button:
+
+### A. Dynamic Global Theme Switcher
+- **CSS Variables Mapping**: Re-mapped all Tailwind `colors.ink` color tokens (`ink-50` to `ink-950`) to responsive CSS variables (`--color-ink-X`) defined inside `src/index.css`.
+- **Aesthetic**:
+  - **Light Mode**: Premium soft luxury ivory-white background (`#fbfbfa`) with charcoal-black typography (`#14110f`) and soft semi-transparent glass navigation headers.
+  - **Dark Mode**: Rich luxury dark stone-black background (`#0c0a09`) with clean stone-white typography (`#f5f5f4`) and sleek black glass headers.
+- **Transition**: Configured a gorgeous `0.4s` cross-fade transition on background colors, borders, and typography to make the switch feel buttery smooth and premium.
+- **Pill Toggle**: Placed an elegant theme-switching pill button near the footer, which is loaded from and persisted to the browser's `localStorage` for returning visitors.
+
+### B. Floating Back-to-Top Button
+- **Scroll Activated**: Stays hidden initially and slides gracefully into view from the bottom right once the user scrolls past 400px.
+- **Visual Style**: A circular gold-gilded black icon button matching the brand's luxury design, complete with a gold border, drop-shadow, and a pulsing upward arrow.
+- **Transitions**: Smoothly scales and fades on scroll state transitions, and features tactile hover animations (lifts slightly on hover, transitions to black text on gold backdrop).
+- **Navigation**: Triggers standard window-level smooth scrolling back to the top of the viewport.
+
 ---
 
 > [!TIP]

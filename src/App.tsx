@@ -15,6 +15,7 @@ import { CheckoutPage } from "./pages/CheckoutPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { WishlistPage } from "./pages/WishlistPage";
 import { StaticPage } from "./pages/StaticPage";
+import { BackToTop } from "./components/layout/BackToTop";
 
 function AppContent() {
   const { path } = useRouter();
@@ -100,6 +101,7 @@ function AppContent() {
       <Footer />
       <CartDrawer />
       <SearchBar />
+      <BackToTop />
     </div>
   );
 }

@@ -1,21 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
         ink: {
-          50: "#f5f5f4",
-          100: "#e7e5e4",
-          200: "#d6d3d1",
-          300: "#a8a29e",
-          400: "#78716c",
-          500: "#57534e",
-          600: "#44403c",
-          700: "#292524",
-          800: "#1c1917",
-          900: "#0c0a09",
-          950: "#050403",
+          50: "var(--color-ink-50)",
+          100: "var(--color-ink-100)",
+          200: "var(--color-ink-200)",
+          300: "var(--color-ink-300)",
+          400: "var(--color-ink-400)",
+          500: "var(--color-ink-500)",
+          600: "var(--color-ink-600)",
+          700: "var(--color-ink-700)",
+          800: "var(--color-ink-800)",
+          900: "var(--color-ink-900)",
+          950: "var(--color-ink-950)",
         },
         gold: {
           50: "#fbf7ef",
