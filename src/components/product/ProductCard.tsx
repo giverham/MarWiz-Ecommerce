@@ -15,10 +15,10 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const wished = isWishlisted(product.id);
 
   return (
-    <div className="group relative">
+    <div className="group relative transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-transparent hover:border-ink-800/40 bg-ink-900/10 hover:bg-ink-900 p-2">
       {/* Image */}
       <div
-        className="zoom-container relative aspect-[3/4] cursor-pointer overflow-hidden bg-ink-800"
+        className="zoom-container relative aspect-[2/3] cursor-pointer overflow-hidden bg-ink-800"
         onClick={() => navigate(`/product/${product.slug}`)}
       >
         <img
@@ -97,7 +97,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="mt-3 md:mt-4">
+      <div className="mt-3 px-1">
         <button
           onClick={() => navigate(`/product/${product.slug}`)}
           className="block text-left"

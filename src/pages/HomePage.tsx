@@ -124,7 +124,6 @@ export function HomePage() {
   );
 }
 
-// ============ HERO ============
 function HeroSection() {
   const { settings } = useStore();
   const { navigate } = useRouter();
@@ -142,21 +141,29 @@ function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/30" />
       </div>
 
-      <div className="relative z-10 w-full py-20">
+      <div className="relative z-10 w-full py-24 lg:py-32">
         <div className="container-luxury">
-          <div className="max-w-2xl animate-fade-up">
-            <h1 className="font-display text-4xl font-medium leading-[1.1] text-ink-50 text-balance sm:text-5xl lg:text-[3.5rem]">
-              {settings?.hero_title}
-            </h1>
-            <p className="mt-5 max-w-lg text-base font-light leading-relaxed text-ink-200 sm:text-lg">
-              {settings?.hero_subtitle}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button onClick={() => navigate(settings?.hero_cta_link || "/shop")} className="btn-primary">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-16 animate-fade-up">
+            <div className="max-w-2xl">
+              <h1 className="font-display text-4xl font-medium leading-[1.1] text-ink-50 text-balance sm:text-5xl lg:text-[3.5rem]">
+                {settings?.hero_title}
+              </h1>
+              <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-ink-200 sm:text-lg">
+                {settings?.hero_subtitle}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-4 shrink-0 justify-start items-stretch w-full sm:w-auto lg:w-64">
+              <button
+                onClick={() => navigate(settings?.hero_cta_link || "/shop")}
+                className="btn-primary w-full justify-center whitespace-nowrap"
+              >
                 {settings?.hero_cta_text || "Explore Collection"}
                 <ArrowRight size={16} />
               </button>
-              <button onClick={() => navigate("/collections")} className="btn-outline">
+              <button
+                onClick={() => navigate("/collections")}
+                className="btn-outline w-full justify-center whitespace-nowrap"
+              >
                 View Collections
               </button>
             </div>
@@ -179,9 +186,9 @@ function CollectionsSection({ collections }: { collections: Collection[] }) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-10 text-center">
+        <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3">Explore</p>
           <h2 className="section-title">Curated Collections</h2>
         </div>
@@ -231,9 +238,9 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
   if (products.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-8 flex items-end justify-between">
+        <div className="mb-5 flex items-end justify-between">
           <div>
             <p className="section-label mb-3">{label}</p>
             <h2 className="section-title">{title}</h2>
@@ -273,9 +280,9 @@ function LimitedEditionsSection({
   if (products.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-10 text-center">
+        <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3 flex items-center justify-center gap-2">
             <Sparkles size={14} /> Exclusive
           </p>
@@ -286,9 +293,9 @@ function LimitedEditionsSection({
         </div>
         <div className="grid gap-4 md:gap-6 md:grid-cols-3">
           {products.map((product) => (
-            <div key={product.id} className="group relative overflow-hidden bg-ink-800 border border-gold-400/20">
+            <div key={product.id} className="group relative overflow-hidden bg-ink-800 border border-gold-400/20 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] hover:border-gold-400/40 p-2">
               <div
-                className="zoom-container aspect-[3/4] cursor-pointer"
+                className="zoom-container aspect-[2/3] cursor-pointer"
                 onClick={() => navigate(`/product/${product.slug}`)}
               >
                 <img
@@ -330,12 +337,12 @@ function BrandStorySection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
         <div className="grid items-center gap-8 lg:gap-12 lg:grid-cols-2">
           <div className="relative aspect-[4/5] overflow-hidden">
             <img
-              src="https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              src="https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Brand Story"
               className="h-full w-full object-cover"
               loading="lazy"
@@ -376,9 +383,9 @@ function WhyChooseSection() {
   ];
 
   return (
-    <section className="border-y border-ink-800 bg-ink-900 py-16 md:py-20">
+    <section className="border-y border-ink-800 bg-ink-900 py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-10 text-center">
+        <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3">Why MarWiz</p>
           <h2 className="section-title">The MarWiz Standard</h2>
         </div>
@@ -407,12 +414,12 @@ function EditorialSection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           <div className="group relative aspect-[16/10] overflow-hidden bg-ink-800">
             <img
-              src="https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              src="https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Editorial"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
@@ -434,7 +441,7 @@ function EditorialSection() {
           </div>
           <div className="group relative aspect-[16/10] overflow-hidden bg-ink-800">
             <img
-              src="https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              src="https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=800"
               alt="Editorial"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
@@ -465,9 +472,9 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="border-y border-ink-800 bg-ink-900 py-16 md:py-20">
+    <section className="border-y border-ink-800 bg-ink-900 py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-10 text-center">
+        <div className="mb-6 md:mb-8 text-center">
           <p className="section-label mb-3">Client Voices</p>
           <h2 className="section-title">What They Say</h2>
         </div>
@@ -504,18 +511,18 @@ function InstagramSection() {
   const { settings } = useStore();
 
   const images = [
-    "https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=600",
-    "https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=400",
   ];
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
-        <div className="mb-8 text-center">
+        <div className="mb-5 text-center">
           <p className="section-label mb-3">@{settings?.instagram_handle || "marwiz"}</p>
           <h2 className="section-title">Follow Our Journey</h2>
         </div>
@@ -551,14 +558,15 @@ function WhatsAppCTASection() {
   const waLink = `https://wa.me/${waNumber}`;
 
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-12 md:py-14">
       <div className="container-luxury">
-        <div className="relative overflow-hidden border border-gold-400/20 bg-ink-900 px-6 py-12 text-center md:px-16 md:py-16">
+        <div className="relative overflow-hidden border border-gold-400/20 bg-gradient-to-br from-ink-900 via-ink-950 to-ink-900 px-6 py-10 text-center md:px-12 md:py-12 shadow-[0_15px_30px_rgba(0,0,0,0.5)]">
           <div className="absolute inset-0 opacity-5">
             <img
-              src="https://images.pexels.com/photos/9968322/pexels-photo-9968322.jpeg?auto=compress&cs=tinysrgb&w=1920"
+              src="https://images.pexels.com/photos/9968322/pexels-photo-9968322.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt=""
               className="h-full w-full object-cover"
+              loading="lazy"
             />
           </div>
           <div className="relative z-10">
@@ -585,7 +593,7 @@ function NewsletterSection() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="border-t border-ink-800 bg-ink-950 py-16 md:py-20">
+    <section className="border-t border-ink-800 bg-ink-950 py-12 md:py-14">
       <div className="container-luxury">
         <div className="mx-auto max-w-xl text-center">
           <p className="section-label mb-3">Stay Connected</p>
@@ -603,7 +611,7 @@ function NewsletterSection() {
                 e.preventDefault();
                 setSubmitted(true);
               }}
-              className="mt-8 flex flex-col gap-3 sm:flex-row"
+              className="mt-6 flex flex-col gap-3 sm:flex-row"
             >
               <input
                 type="email"
