@@ -129,40 +129,49 @@ function HeroSection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="relative flex min-h-[100svh] w-full items-center overflow-hidden">
-      <div className="absolute inset-0">
-        <img
-          src={settings?.hero_image_url || ""}
-          alt="Hero"
-          className="h-full w-full object-cover"
-        />
+    <section className="relative flex h-[80vh] md:h-[85vh] w-full items-center overflow-hidden">
+      <div className="absolute inset-0 bg-ink-950">
+        {settings?.hero_video_url ? (
+          <video
+            src={settings.hero_video_url}
+            className="h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : settings?.hero_image_url ? (
+          <img
+            src={settings.hero_image_url}
+            alt="Hero"
+            className="h-full w-full object-cover animate-fade-in"
+          />
+        ) : null}
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-ink-950/85 via-ink-950/50 to-ink-950/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/30" />
       </div>
 
-      <div className="relative z-10 w-full py-24 lg:py-32">
+      <div className="relative z-10 w-full pt-12 pb-16 md:pt-16 md:pb-20 animate-fade-up">
         <div className="container-luxury">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10 lg:gap-16 animate-fade-up">
-            <div className="max-w-2xl">
-              <h1 className="font-display text-4xl font-medium leading-[1.1] text-ink-50 text-balance sm:text-5xl lg:text-[3.5rem]">
-                {settings?.hero_title}
-              </h1>
-              <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-ink-200 sm:text-lg">
-                {settings?.hero_subtitle}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row lg:flex-col gap-4 shrink-0 justify-start items-stretch w-full sm:w-auto lg:w-64">
+          <div className="max-w-3xl">
+            <h1 className="font-display text-4xl font-medium leading-[1.15] text-ink-50 text-balance sm:text-5xl lg:text-[3.50rem]">
+              {settings?.hero_title || "Dare To Wear Different"}
+            </h1>
+            <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-ink-200 sm:text-lg">
+              {settings?.hero_subtitle || "Timeless luxury crafted for those who refuse the ordinary."}
+            </p>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-6 sm:mt-7 max-w-md sm:max-w-lg">
               <button
                 onClick={() => navigate(settings?.hero_cta_link || "/shop")}
-                className="btn-primary w-full justify-center whitespace-nowrap"
+                className="btn-primary justify-center py-3 px-8 whitespace-nowrap flex items-center gap-2"
               >
                 {settings?.hero_cta_text || "Explore Collection"}
                 <ArrowRight size={16} />
               </button>
               <button
                 onClick={() => navigate("/collections")}
-                className="btn-outline w-full justify-center whitespace-nowrap"
+                className="btn-outline justify-center py-3 px-8 whitespace-nowrap"
               >
                 View Collections
               </button>

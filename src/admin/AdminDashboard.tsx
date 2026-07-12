@@ -2269,14 +2269,24 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
       <SettingsGroup title="Hero Section" icon={LayoutDashboard}>
         <FormField label="Hero Title"><input value={settings.hero_title || ""} onChange={(e) => update("hero_title", e.target.value)} className="input-luxury" /></FormField>
         <FormField label="Hero Subtitle"><textarea value={settings.hero_subtitle || ""} onChange={(e) => update("hero_subtitle", e.target.value)} className="input-luxury resize-none" rows={2} /></FormField>
-        <div className="grid gap-6 md:grid-cols-1">
-          <FormField label="Hero Image Visual">
+        <div className="grid gap-6 md:grid-cols-2">
+          <FormField label="Hero Image Visual Fallback">
             <ImageUpload
               bucket="banners"
               value={settings.hero_image_url || ""}
               onChange={(url) => update("hero_image_url", url)}
               onRemove={() => update("hero_image_url", "")}
               label="Upload Hero Visual Banner"
+            />
+          </FormField>
+          <FormField label="Hero Video Background (Direct Upload)">
+            <ImageUpload
+              bucket="banners"
+              accept="video/*"
+              value={settings.hero_video_url || ""}
+              onChange={(url) => update("hero_video_url", url)}
+              onRemove={() => update("hero_video_url", "")}
+              label="Upload Background Video (MP4/WebM)"
             />
           </FormField>
         </div>

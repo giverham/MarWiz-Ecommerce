@@ -70,12 +70,25 @@ export function ImageUpload({
     }
   };
 
+  const isVideo = accept.includes("video") || (value ? (
+    value.endsWith(".mp4") ||
+    value.endsWith(".webm") ||
+    value.endsWith(".mov") ||
+    value.endsWith(".ogg") ||
+    value.includes("/video/") ||
+    value.includes("video")
+  ) : false);
+
   return (
     <div className="space-y-2">
       {label && <label className="label-luxury">{label}</label>}
       {value ? (
         <div className="relative group border border-ink-800 bg-ink-900 overflow-hidden aspect-video max-h-48 flex items-center justify-center">
-          <img src={value} alt="" className="h-full w-full object-cover" />
+          {isVideo ? (
+            <video src={value} className="h-full w-full object-cover animate-fade-in" muted loop autoPlay playsInline />
+          ) : (
+            <img src={value} alt="" className="h-full w-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-ink-950/80 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300">
             <label className="btn-primary text-xs cursor-pointer py-1.5 px-3 flex items-center gap-1">
               Replace
@@ -119,7 +132,7 @@ export function ImageUpload({
               <span className="text-gold-400 hover:underline">Click to upload</span> or drag and drop
             </div>
             <p className="text-xs text-ink-500">
-              {uploading ? "Uploading, please wait..." : "JPG, PNG, WEBP, AVIF, SVG"}
+              {uploading ? "Uploading, please wait..." : (accept.includes("video") ? "MP4, WEBM, MOV, OGG" : "JPG, PNG, WEBP, AVIF, SVG")}
             </p>
           </div>
         </div>
