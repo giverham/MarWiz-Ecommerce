@@ -148,3 +148,12 @@ export interface CartItem {
   quantity: number;
   variant: { color?: string; size?: string };
 }
+
+export interface Enquiry {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  status: string;
+  created_at: string;
+}

@@ -84,6 +84,33 @@ function ContactContent({
   content: Record<string, unknown>;
   settings: ReturnType<typeof useStore>["settings"];
 }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("enquiries").insert({
+        name,
+        email,
+        message,
+      });
+      if (error) throw error;
+      alert("Thank you for reaching out. We will respond shortly.");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (err) {
+      console.error(err);
+      alert("Error sending message. Please try again later.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="grid gap-12 md:grid-cols-2">
       <div>
@@ -110,26 +137,43 @@ function ContactContent({
         </div>
       </div>
       <div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert("Thank you for reaching out. We will respond shortly.");
-          }}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="label-luxury">Name</label>
-            <input required type="text" className="input-luxury" placeholder="Your name" />
+            <input
+              required
+              type="text"
+              className="input-luxury"
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div>
             <label className="label-luxury">Email</label>
-            <input required type="email" className="input-luxury" placeholder="Your email" />
+            <input
+              required
+              type="email"
+              className="input-luxury"
+              placeholder="Your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div>
             <label className="label-luxury">Message</label>
-            <textarea required rows={5} className="input-luxury resize-none" placeholder="Your message" />
+            <textarea
+              required
+              rows={5}
+              className="input-luxury resize-none"
+              placeholder="Your message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
-          <button type="submit" className="btn-primary w-full">Send Message</button>
+          <button type="submit" disabled={submitting} className="btn-primary w-full disabled:opacity-50">
+            {submitting ? "Sending..." : "Send Message"}
+          </button>
         </form>
       </div>
     </div>

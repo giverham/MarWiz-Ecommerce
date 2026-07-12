@@ -8,7 +8,7 @@ import {
 import { useAdminAuth } from "./AdminAuth";
 import { supabase } from "../lib/supabase";
 import { formatNaira, slugify } from "../lib/utils";
-import type { Product, Order, Category, Collection, Testimonial, Page, NavItem, SiteSettings, MediaItem } from "../types";
+import type { Product, Order, Category, Collection, Testimonial, Page, NavItem, SiteSettings, MediaItem, Enquiry } from "../types";
 
 type AdminSection =
   | "dashboard"
@@ -16,6 +16,7 @@ type AdminSection =
   | "categories"
   | "collections"
   | "orders"
+  | "enquiries"
   | "testimonials"
   | "pages"
   | "nav"
@@ -35,6 +36,7 @@ export function AdminDashboard() {
     { id: "categories", label: "Categories", icon: Tag },
     { id: "collections", label: "Collections", icon: Layers },
     { id: "orders", label: "Orders", icon: ShoppingBag },
+    { id: "enquiries", label: "Enquiries", icon: MessageSquare },
     { id: "testimonials", label: "Testimonials", icon: Star },
     { id: "pages", label: "Pages", icon: FileText },
     { id: "nav", label: "Navigation", icon: Menu },
@@ -114,6 +116,7 @@ export function AdminDashboard() {
           {section === "categories" && <CategoriesManager />}
           {section === "collections" && <CollectionsManager />}
           {section === "orders" && <OrdersManager />}
+          {section === "enquiries" && <EnquiriesManager />}
           {section === "testimonials" && <TestimonialsManager />}
           {section === "pages" && <PagesManager />}
           {section === "nav" && <NavManager />}
@@ -1374,6 +1377,229 @@ function InfoBlock({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-xs uppercase tracking-wider text-ink-500 mb-1">{label}</p>
       <p className="text-sm text-ink-200">{value}</p>
+    </div>
+  );
+}
+
+// ============ ENQUIRIES MANAGER ============
+function EnquiriesManager() {
+  const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "unread" | "read" | "archived">("all");
+  const [selected, setSelected] = useState<Enquiry | null>(null);
+
+  const fetchEnquiries = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("enquiries")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      setEnquiries(data as Enquiry[]);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading enquiries.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEnquiries();
+  }, [fetchEnquiries]);
+
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      const { error } = await supabase
+        .from("enquiries")
+        .update({ status })
+        .eq("id", id);
+      if (error) throw error;
+      setEnquiries((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status } : item))
+      );
+      if (selected?.id === id) {
+        setSelected((prev) => prev ? { ...prev, status } : null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating status.");
+    }
+  };
+
+  const deleteEnquiry = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this enquiry?")) return;
+    try {
+      const { error } = await supabase.from("enquiries").delete().eq("id", id);
+      if (error) throw error;
+      setEnquiries((prev) => prev.filter((item) => item.id !== id));
+      if (selected?.id === id) {
+        setSelected(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting enquiry.");
+    }
+  };
+
+  const filtered = enquiries.filter((item) => {
+    if (filter === "all") return true;
+    return item.status === filter;
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="font-display text-2xl text-ink-50">Customer Enquiries</h2>
+          <p className="text-sm text-ink-400">View and manage messages sent from the contact form</p>
+        </div>
+        <div className="flex gap-1.5 border border-ink-800 p-1 bg-ink-900 self-start sm:self-auto">
+          {(["all", "unread", "read", "archived"] as const).map((opt) => (
+            <button
+              key={opt}
+              onClick={() => setFilter(opt)}
+              className={`px-3 py-1.5 text-xs font-medium uppercase tracking-wider transition ${
+                filter === opt
+                  ? "bg-gold-400 text-ink-950"
+                  : "text-ink-400 hover:text-ink-100"
+              }`}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <p className="text-ink-400">Loading enquiries...</p>
+      ) : filtered.length === 0 ? (
+        <div className="border border-ink-800 bg-ink-900/50 p-12 text-center">
+          <p className="text-ink-400">No enquiries found.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {filtered.map((item) => (
+            <div
+              key={item.id}
+              className={`border p-5 transition cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                item.status === "unread"
+                  ? "border-gold-400/50 bg-ink-900"
+                  : "border-ink-800 bg-ink-900/50 hover:bg-ink-900"
+              }`}
+              onClick={() => {
+                setSelected(item);
+                if (item.status === "unread") {
+                  updateStatus(item.id, "read");
+                }
+              }}
+            >
+              <div className="space-y-1 min-w-0 flex-1">
+                <div className="flex items-center gap-3">
+                  <span className="font-medium text-ink-100 text-sm">{item.name}</span>
+                  <span className="text-xs text-ink-400">{item.email}</span>
+                  {item.status === "unread" && (
+                    <span className="px-2 py-0.5 bg-gold-400/10 text-gold-400 text-[10px] uppercase font-bold tracking-wider">
+                      New
+                    </span>
+                  )}
+                  {item.status === "archived" && (
+                    <span className="px-2 py-0.5 bg-ink-800 text-ink-400 text-[10px] uppercase font-bold tracking-wider">
+                      Archived
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-ink-300 truncate max-w-xl">{item.message}</p>
+                <p className="text-xs text-ink-500">
+                  {new Date(item.created_at).toLocaleString()}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 self-end md:self-auto" onClick={(e) => e.stopPropagation()}>
+                {item.status !== "archived" ? (
+                  <button
+                    onClick={() => updateStatus(item.id, "archived")}
+                    className="p-2 text-ink-400 hover:text-ink-200 hover:bg-ink-800 border border-ink-800"
+                    title="Archive"
+                  >
+                    Archive
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => updateStatus(item.id, "unread")}
+                    className="p-2 text-ink-400 hover:text-ink-200 hover:bg-ink-800 border border-ink-800"
+                    title="Mark Unread"
+                  >
+                    Mark Unread
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteEnquiry(item.id)}
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20"
+                  title="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="border border-ink-800 bg-ink-900 w-full max-w-2xl p-6 md:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute top-4 right-4 text-ink-400 hover:text-ink-100"
+            >
+              <X size={20} />
+            </button>
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] text-gold-400 font-semibold">
+                Enquiry Details
+              </span>
+              <h3 className="font-display text-2xl text-ink-50 mt-1">{selected.name}</h3>
+              <p className="text-sm text-ink-400">{selected.email}</p>
+            </div>
+            <div className="border-t border-b border-ink-800 py-6">
+              <p className="text-sm uppercase tracking-wider text-ink-500 mb-2">Message</p>
+              <p className="text-base font-light leading-relaxed text-ink-200 whitespace-pre-line">
+                {selected.message}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <span className="text-xs text-ink-500">
+                Received: {new Date(selected.created_at).toLocaleString()}
+              </span>
+              <div className="flex gap-2">
+                {selected.status === "archived" ? (
+                  <button
+                    onClick={() => updateStatus(selected.id, "unread")}
+                    className="btn-secondary py-2 px-4"
+                  >
+                    Mark Unread
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => updateStatus(selected.id, "archived")}
+                    className="btn-secondary py-2 px-4"
+                  >
+                    Archive
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteEnquiry(selected.id)}
+                  className="btn-danger py-2 px-4 flex items-center gap-1.5"
+                >
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
