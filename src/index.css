@@ -5,23 +5,6 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #fbfbfa;
-  --color-text: #14110f;
-  --color-glass: rgba(251, 251, 250, 0.75);
-  --color-ink-50: #14110f;
-  --color-ink-100: #25201d;
-  --color-ink-200: #463f3a;
-  --color-ink-300: #7a736e;
-  --color-ink-400: #a39e99;
-  --color-ink-500: #cbc7c2;
-  --color-ink-600: #e3e0dc;
-  --color-ink-700: #f0edea;
-  --color-ink-800: #f7f5f2;
-  --color-ink-900: #fbfbfa;
-  --color-ink-950: #ffffff;
-}
-
-.dark {
   --color-bg: #0c0a09;
   --color-text: #f5f5f4;
   --color-glass: rgba(12, 10, 9, 0.75);

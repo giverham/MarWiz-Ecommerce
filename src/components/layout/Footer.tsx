@@ -1,9 +1,9 @@
-import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, Sun, Moon } from "lucide-react";
+import { Instagram, Facebook, Twitter, Mail, Phone, MapPin } from "lucide-react";
 import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 
 export function Footer() {
-  const { settings, theme, toggleTheme } = useStore();
+  const { settings } = useStore();
   const { navigate } = useRouter();
 
   const footerLinks = [
@@ -127,25 +127,6 @@ export function Footer() {
       <div className="border-t border-ink-800">
         <div className="container-luxury py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-ink-500">{settings?.footer_copyright}</p>
-          
-          {/* Luxury Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-2 border border-ink-700/60 bg-ink-900/50 hover:border-gold-400 px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-ink-300 hover:text-gold-400 transition-all duration-300 rounded-full"
-            aria-label="Toggle Theme"
-          >
-            {theme === "dark" ? (
-              <>
-                <Sun size={12} className="text-gold-400" />
-                <span>Light Mode</span>
-              </>
-            ) : (
-              <>
-                <Moon size={12} className="text-gold-500" />
-                <span>Dark Mode</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
     </footer>

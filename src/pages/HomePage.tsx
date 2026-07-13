@@ -59,6 +59,7 @@ export function HomePage() {
             products={featuredWatches}
             onQuickView={setQuickViewProduct}
             viewAllLink="/category/watches"
+            watchesCatId={watchesCat?.id}
           />
         );
       case "featured-fashion":
@@ -70,6 +71,7 @@ export function HomePage() {
             products={featuredFashion}
             onQuickView={setQuickViewProduct}
             viewAllLink="/category/fashion"
+            watchesCatId={watchesCat?.id}
           />
         );
       case "best-sellers":
@@ -81,6 +83,7 @@ export function HomePage() {
             products={bestSellers}
             onQuickView={setQuickViewProduct}
             viewAllLink="/shop"
+            watchesCatId={watchesCat?.id}
           />
         );
       case "new-arrivals":
@@ -92,10 +95,11 @@ export function HomePage() {
             products={newArrivals}
             onQuickView={setQuickViewProduct}
             viewAllLink="/shop"
+            watchesCatId={watchesCat?.id}
           />
         );
       case "limited-editions":
-        return <LimitedEditionsSection key="limited-editions" products={limitedEditions} onQuickView={setQuickViewProduct} />;
+        return <LimitedEditionsSection key="limited-editions" products={limitedEditions} onQuickView={setQuickViewProduct} watchesCatId={watchesCat?.id} />;
       case "brand-story":
         return <BrandStorySection key="brand-story" />;
       case "why-choose":
@@ -116,7 +120,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="w-full overflow-x-hidden flex flex-col gap-16 md:gap-24 pb-16 md:pb-24 max-w-[100vw]">
+    <div className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw]">
       {sections.filter((s) => s !== "announcement").map((section) => renderSection(section))}
       <QuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
     </div>
@@ -204,7 +208,7 @@ function CollectionsSection({ collections }: { collections: Collection[] }) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="w-full">
+    <section className="w-full py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3">Explore</p>
@@ -247,14 +251,15 @@ interface ProductSectionProps {
   products: Product[];
   onQuickView: (p: Product) => void;
   viewAllLink: string;
+  watchesCatId?: string;
 }
 
-function ProductSection({ label, title, products, onQuickView, viewAllLink }: ProductSectionProps) {
+function ProductSection({ label, title, products, onQuickView, viewAllLink, watchesCatId }: ProductSectionProps) {
   const { navigate } = useRouter();
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full overflow-hidden">
+    <section className="w-full overflow-hidden py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
           <div className="flex flex-col items-center sm:items-start text-center sm:text-left w-full sm:w-auto">
@@ -273,7 +278,11 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 items-stretch auto-rows-fr">
           {products.map((product) => (
             <div key={product.id} className="h-full w-full flex flex-col">
-              <ProductCard product={product} onQuickView={onQuickView} />
+              <ProductCard 
+                product={product} 
+                onQuickView={onQuickView} 
+                imageAspect={product.category_id === watchesCatId ? "square" : "portrait"} 
+              />
             </div>
           ))}
         </div>
@@ -288,12 +297,12 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
   );
 }
 
-function LimitedEditionsSection({ products, onQuickView }: { products: Product[]; onQuickView: (p: Product) => void; }) {
+function LimitedEditionsSection({ products, onQuickView, watchesCatId }: { products: Product[]; onQuickView: (p: Product) => void; watchesCatId?: string; }) {
   const { navigate } = useRouter();
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full">
+    <section className="w-full py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3 flex items-center justify-center gap-2">
@@ -306,10 +315,12 @@ function LimitedEditionsSection({ products, onQuickView }: { products: Product[]
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch auto-rows-fr">
-          {products.map((product) => (
+          {products.map((product) => {
+            const aspectClass = product.category_id === watchesCatId ? "aspect-square" : "aspect-[4/5]";
+            return (
             <div key={product.id} className="group overflow-hidden bg-ink-900 border border-ink-800 transition-all duration-500 hover:-translate-y-1 hover:border-gold-400/40 p-4 flex flex-col h-full w-full">
               <div
-                className="relative aspect-[4/5] cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full"
+                className={`relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full`}
                 onClick={() => navigate(`/product/${product.slug}`)}
               >
                 <img
@@ -338,7 +349,8 @@ function LimitedEditionsSection({ products, onQuickView }: { products: Product[]
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -350,14 +362,14 @@ function BrandStorySection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="w-full bg-ink-900/40 py-16 md:py-24 border-y border-ink-800/50">
+    <section className="w-full bg-ink-900/40 py-16 lg:py-24 border-y border-ink-800/50">
       <div className="container-luxury">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="relative aspect-[4/5] overflow-hidden w-full bg-ink-800">
             <img
               src="https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Brand Story"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-ink-950/20 z-10 pointer-events-none" />
@@ -396,7 +408,7 @@ function WhyChooseSection() {
   ];
 
   return (
-    <section className="w-full bg-ink-900 py-16 md:py-24">
+    <section className="w-full bg-ink-900 py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Why MarWiz</p>
@@ -426,14 +438,14 @@ function EditorialSection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="w-full">
+    <section className="w-full py-16 lg:py-24">
       <div className="container-luxury">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch auto-rows-fr">
           <div className="group relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] overflow-hidden bg-ink-800 w-full flex flex-col h-full border border-transparent hover:border-gold-400/20 transition-all">
             <img
               src="https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Editorial"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="absolute inset-0 h-full w-full object-cover object-[center_30%] transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent z-10 pointer-events-none" />
@@ -455,7 +467,7 @@ function EditorialSection() {
             <img
               src="https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Editorial"
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="absolute inset-0 h-full w-full object-cover object-[center_20%] transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent z-10 pointer-events-none" />
@@ -483,7 +495,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="w-full bg-ink-900/30 py-16 md:py-24 border-y border-ink-800/50">
+    <section className="w-full bg-ink-900/30 py-16 lg:py-24 border-y border-ink-800/50">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Client Voices</p>
@@ -529,7 +541,7 @@ function InstagramSection() {
   ];
 
   return (
-    <section className="w-full">
+    <section className="w-full py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mb-10 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3">@{settings?.instagram_handle || "marwiz"}</p>
@@ -567,14 +579,14 @@ function WhatsAppCTASection() {
   const waLink = `https://wa.me/${waNumber}`;
 
   return (
-    <section className="w-full">
+    <section className="w-full py-16 lg:py-24">
       <div className="container-luxury">
         <div className="relative overflow-hidden border border-gold-400/20 bg-ink-900 w-full flex flex-col">
           <div className="absolute inset-0 opacity-10">
             <img
               src="https://images.pexels.com/photos/9968322/pexels-photo-9968322.jpeg?auto=compress&cs=tinysrgb&w=1600"
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-[center_35%]"
               loading="lazy"
             />
           </div>
@@ -603,7 +615,7 @@ function NewsletterSection() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="w-full border-t border-ink-800 bg-ink-950 py-16 md:py-24">
+    <section className="w-full border-t border-ink-800 bg-ink-950 py-16 lg:py-24">
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>

@@ -7,18 +7,21 @@ import { formatNaira } from "../../lib/utils";
 interface ProductCardProps {
   product: Product;
   onQuickView?: (product: Product) => void;
+  imageAspect?: "square" | "portrait";
 }
 
-export function ProductCard({ product, onQuickView }: ProductCardProps) {
+export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: ProductCardProps) {
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { navigate } = useRouter();
   const wished = isWishlisted(product.id);
+  
+  const aspectClass = imageAspect === "square" ? "aspect-square" : "aspect-[4/5]";
 
   return (
-    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl border border-ink-800 bg-ink-900 rounded-xl overflow-hidden h-full flex flex-col">
+    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl border border-ink-800 bg-ink-900 rounded-none overflow-hidden h-full flex flex-col">
       {/* Image */}
       <div
-        className="zoom-container relative aspect-[4/5] cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full"
+        className={`zoom-container relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full`}
         onClick={() => navigate(`/product/${product.slug}`)}
       >
         <img
@@ -97,7 +100,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col flex-1 bg-ink-900">
+      <div className="p-5 flex flex-col flex-1 bg-ink-900">
         <button
           onClick={() => navigate(`/product/${product.slug}`)}
           className="block text-left"
@@ -106,7 +109,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
             {product.name}
           </h3>
         </button>
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-auto pt-3 flex items-center gap-2">
           <span className="text-sm text-gold-400 font-medium">{formatNaira(product.price)}</span>
           {product.compare_at_price && product.compare_at_price > product.price && (
             <span className="text-xs text-ink-500 line-through">

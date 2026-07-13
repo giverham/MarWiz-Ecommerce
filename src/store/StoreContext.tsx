@@ -8,8 +8,6 @@ interface StoreContextValue {
   settings: SiteSettings | null;
   navItems: NavItem[];
   loading: boolean;
-  theme: "dark" | "light";
-  toggleTheme: () => void;
   addToCart: (product: Product, quantity?: number, variant?: { color?: string; size?: string }) => void;
   removeFromCart: (productId: string, variantKey: string) => void;
   updateQuantity: (productId: string, variantKey: string, quantity: number) => void;
@@ -38,30 +36,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    try {
-      const saved = localStorage.getItem("marwiz-theme");
-      if (saved === "light" || saved === "dark") return saved;
-    } catch {
-      // ignore
-    }
-    return "dark"; // Default to premium dark theme
-  });
-
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.remove("dark");
-      root.classList.add("light");
-    } else {
-      root.classList.remove("light");
-      root.classList.add("dark");
-    }
-    localStorage.setItem("marwiz-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    document.documentElement.classList.add("dark");
   }, []);
 
   useEffect(() => {
@@ -165,8 +141,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         settings,
         navItems,
         loading,
-        theme,
-        toggleTheme,
         addToCart,
         removeFromCart,
         updateQuantity,
