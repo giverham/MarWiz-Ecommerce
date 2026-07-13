@@ -15,41 +15,41 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const wished = isWishlisted(product.id);
 
   return (
-    <div className="group relative transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-transparent hover:border-ink-800/40 bg-ink-900/10 hover:bg-ink-900 p-2">
+    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl border border-ink-800 bg-ink-900 rounded-xl overflow-hidden h-full flex flex-col">
       {/* Image */}
       <div
-        className="zoom-container relative aspect-[2/3] cursor-pointer overflow-hidden bg-ink-800"
+        className="zoom-container relative aspect-[4/5] cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full"
         onClick={() => navigate(`/product/${product.slug}`)}
       >
         <img
           src={product.images[0]}
           alt={product.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
         {product.images[1] && (
           <img
             src={product.images[1]}
             alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-105"
             loading="lazy"
           />
         )}
 
         {/* Badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-20">
           {product.is_limited_edition && (
-            <span className="bg-gold-400 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900">
+            <span className="bg-gold-400 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900 rounded-sm">
               Limited
             </span>
           )}
           {product.is_new_arrival && (
-            <span className="bg-ink-50 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900">
+            <span className="bg-ink-50 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900 rounded-sm">
               New
             </span>
           )}
           {product.compare_at_price && product.compare_at_price > product.price && (
-            <span className="bg-red-900 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-red-100">
+            <span className="bg-red-900 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-red-100 rounded-sm">
               Sale
             </span>
           )}
@@ -61,17 +61,17 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
             e.stopPropagation();
             toggleWishlist(product.id);
           }}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-sm transition-all ${
+          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-sm transition-all z-20 ${
             wished
-              ? "bg-gold-400 text-ink-900"
-              : "glass-light text-ink-100 hover:text-gold-400"
+              ? "bg-gold-400 text-ink-900 shadow-md"
+              : "bg-ink-950/40 text-ink-100 hover:bg-gold-400 hover:text-ink-900"
           }`}
         >
           <Heart size={16} fill={wished ? "currentColor" : "none"} />
         </button>
 
         {/* Quick actions */}
-        <div className="absolute bottom-0 left-0 right-0 flex translate-y-full transition-transform duration-500 group-hover:translate-y-0">
+        <div className="absolute bottom-0 left-0 right-0 flex translate-y-full transition-transform duration-500 group-hover:translate-y-0 z-20">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -97,17 +97,17 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
       </div>
 
       {/* Info */}
-      <div className="mt-3 px-1">
+      <div className="p-4 flex flex-col flex-1 bg-ink-900">
         <button
           onClick={() => navigate(`/product/${product.slug}`)}
           className="block text-left"
         >
-          <h3 className="text-sm font-medium text-ink-100 transition-colors group-hover:text-gold-400">
+          <h3 className="text-sm font-medium text-ink-50 transition-colors group-hover:text-gold-400 m-0">
             {product.name}
           </h3>
         </button>
-        <div className="mt-1.5 flex items-center gap-2">
-          <span className="text-sm text-gold-400">{formatNaira(product.price)}</span>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-sm text-gold-400 font-medium">{formatNaira(product.price)}</span>
           {product.compare_at_price && product.compare_at_price > product.price && (
             <span className="text-xs text-ink-500 line-through">
               {formatNaira(product.compare_at_price)}
@@ -115,9 +115,9 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
           )}
         </div>
         {product.stock <= 5 && product.stock > 0 && (
-          <p className="mt-1 text-xs text-red-400">Only {product.stock} left</p>
+          <p className="mt-2 text-[11px] text-red-400 m-0 uppercase tracking-widest font-medium">Only {product.stock} left</p>
         )}
-        {product.stock === 0 && <p className="mt-1 text-xs text-ink-500">Sold out</p>}
+        {product.stock === 0 && <p className="mt-2 text-[11px] text-ink-500 m-0 uppercase tracking-widest font-medium">Sold out</p>}
       </div>
     </div>
   );
