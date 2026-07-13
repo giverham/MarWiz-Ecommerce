@@ -9,7 +9,6 @@ import type { Product, Collection, Testimonial } from "../types";
 import { formatNaira } from "../lib/utils";
 
 export function HomePage() {
-  const { settings } = useStore();
   const { products } = useProducts();
   const collections = useCollections();
   const categories = useCategories();
@@ -21,14 +20,11 @@ export function HomePage() {
     "collections",
     "featured-watches",
     "featured-fashion",
-    "best-sellers",
     "new-arrivals",
     "limited-editions",
     "brand-story",
     "why-choose",
-    "editorial",
     "testimonials",
-    "instagram",
     "whatsapp-cta",
     "newsletter",
   ];
@@ -40,7 +36,6 @@ export function HomePage() {
 
   const featuredWatches = watches.filter((p) => p.is_featured).slice(0, 4);
   const featuredFashion = fashion.filter((p) => p.is_featured).slice(0, 4);
-  const bestSellers = products.filter((p) => p.is_best_seller).slice(0, 4);
   const newArrivals = products.filter((p) => p.is_new_arrival).slice(0, 4);
   const limitedEditions = products.filter((p) => p.is_limited_edition).slice(0, 3); // 3 items for a 3-col grid
 
@@ -74,18 +69,7 @@ export function HomePage() {
             watchesCatId={watchesCat?.id}
           />
         );
-      case "best-sellers":
-        return (
-          <ProductSection
-            key="best-sellers"
-            label="Most Coveted"
-            title="Best Sellers"
-            products={bestSellers}
-            onQuickView={setQuickViewProduct}
-            viewAllLink="/shop"
-            watchesCatId={watchesCat?.id}
-          />
-        );
+
       case "new-arrivals":
         return (
           <ProductSection
@@ -104,12 +88,10 @@ export function HomePage() {
         return <BrandStorySection key="brand-story" />;
       case "why-choose":
         return <WhyChooseSection key="why-choose" />;
-      case "editorial":
-        return <EditorialSection key="editorial" />;
+
       case "testimonials":
         return <TestimonialsSection key="testimonials" testimonials={testimonials} />;
-      case "instagram":
-        return <InstagramSection key="instagram" />;
+
       case "whatsapp-cta":
         return <WhatsAppCTASection key="whatsapp-cta" />;
       case "newsletter":
@@ -208,7 +190,7 @@ function CollectionsSection({ collections }: { collections: Collection[] }) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="w-full py-16 lg:py-24">
+    <section className="w-full py-8 lg:py-12">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3">Explore</p>
@@ -259,7 +241,7 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink, watc
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full overflow-hidden py-16 lg:py-24">
+    <section className="w-full overflow-hidden py-8 lg:py-12">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
           <div className="flex flex-col items-center sm:items-start text-center sm:text-left w-full sm:w-auto">
@@ -302,7 +284,7 @@ function LimitedEditionsSection({ products, onQuickView, watchesCatId }: { produ
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-16 lg:py-24">
+    <section className="w-full py-8 lg:py-12">
       <div className="container-luxury">
         <div className="mb-8 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3 flex items-center justify-center gap-2">
@@ -362,7 +344,7 @@ function BrandStorySection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="w-full bg-ink-900/40 py-16 lg:py-24 border-y border-ink-800/50">
+    <section className="w-full bg-ink-900/40 py-8 lg:py-12 border-y border-ink-800/50">
       <div className="container-luxury">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="relative aspect-[4/5] overflow-hidden w-full bg-ink-800">
@@ -408,7 +390,7 @@ function WhyChooseSection() {
   ];
 
   return (
-    <section className="w-full bg-ink-900 py-16 lg:py-24">
+    <section className="w-full bg-ink-900 py-8 lg:py-12">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Why MarWiz</p>
@@ -434,68 +416,13 @@ function WhyChooseSection() {
   );
 }
 
-function EditorialSection() {
-  const { navigate } = useRouter();
 
-  return (
-    <section className="w-full py-16 lg:py-24">
-      <div className="container-luxury">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch auto-rows-fr">
-          <div className="group relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] overflow-hidden bg-ink-800 w-full flex flex-col h-full border border-transparent hover:border-gold-400/20 transition-all">
-            <img
-              src="https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Editorial"
-              className="absolute inset-0 h-full w-full object-cover object-[center_30%] transition-transform duration-1000 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent z-10 pointer-events-none" />
-            <div className="relative z-20 mt-auto p-8 md:p-12 flex flex-col items-center text-center lg:items-start lg:text-left w-full">
-              <p className="section-label mb-4">Editorial</p>
-              <h3 className="font-display text-3xl md:text-4xl text-ink-50 mb-4 m-0">The Art of Tailoring</h3>
-              <p className="w-full max-w-md text-sm md:text-base font-light text-ink-300 mb-8 m-0">
-                Discover the meticulous process behind every MarWiz garment.
-              </p>
-              <button
-                onClick={() => navigate("/page/about")}
-                className="inline-flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold-400 transition-colors hover:text-gold-300"
-              >
-                Read More <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-          <div className="group relative aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] overflow-hidden bg-ink-800 w-full flex flex-col h-full border border-transparent hover:border-gold-400/20 transition-all">
-            <img
-              src="https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Editorial"
-              className="absolute inset-0 h-full w-full object-cover object-[center_20%] transition-transform duration-1000 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent z-10 pointer-events-none" />
-            <div className="relative z-20 mt-auto p-8 md:p-12 flex flex-col items-center text-center lg:items-start lg:text-left w-full">
-              <p className="section-label mb-4">Editorial</p>
-              <h3 className="font-display text-3xl md:text-4xl text-ink-50 mb-4 m-0">Timekeeping Reimagined</h3>
-              <p className="w-full max-w-md text-sm md:text-base font-light text-ink-300 mb-8 m-0">
-                Precision engineering meets timeless design in every MarWiz timepiece.
-              </p>
-              <button
-                onClick={() => navigate("/category/watches")}
-                className="inline-flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-[0.2em] text-gold-400 transition-colors hover:text-gold-300"
-              >
-                Discover <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="w-full bg-ink-900/30 py-16 lg:py-24 border-y border-ink-800/50">
+    <section className="w-full bg-ink-900/30 py-8 lg:py-12 border-y border-ink-800/50">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Client Voices</p>
@@ -529,49 +456,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   );
 }
 
-function InstagramSection() {
-  const { settings } = useStore();
-  const images = [
-    "https://images.pexels.com/photos/9978722/pexels-photo-9978722.jpeg?auto=compress&cs=tinysrgb&w=800",
-    "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=800",
-    "https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800",
-    "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=800",
-    "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=800",
-    "https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=800",
-  ];
 
-  return (
-    <section className="w-full py-16 lg:py-24">
-      <div className="container-luxury">
-        <div className="mb-10 md:mb-12 flex flex-col items-center text-center">
-          <p className="section-label mb-3">@{settings?.instagram_handle || "marwiz"}</p>
-          <h2 className="section-title m-0">Follow Our Journey</h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 w-full auto-rows-fr">
-          {images.map((img, i) => (
-            <a
-              key={i}
-              href={settings?.instagram_url || "#"}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative aspect-square overflow-hidden bg-ink-800 w-full block"
-            >
-              <img
-                src={img}
-                alt="Instagram"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-ink-950/0 transition-colors duration-300 group-hover:bg-ink-950/40 flex items-center justify-center z-10">
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium">View</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function WhatsAppCTASection() {
   const { settings } = useStore();
@@ -579,7 +464,7 @@ function WhatsAppCTASection() {
   const waLink = `https://wa.me/${waNumber}`;
 
   return (
-    <section className="w-full py-16 lg:py-24">
+    <section className="w-full py-8 lg:py-12">
       <div className="container-luxury">
         <div className="relative overflow-hidden border border-gold-400/20 bg-ink-900 w-full flex flex-col">
           <div className="absolute inset-0 opacity-10">
@@ -615,7 +500,7 @@ function NewsletterSection() {
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="w-full border-t border-ink-800 bg-ink-950 py-16 lg:py-24">
+    <section className="w-full border-t border-ink-800 bg-ink-950 py-8 lg:py-12">
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>
