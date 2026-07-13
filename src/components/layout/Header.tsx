@@ -44,15 +44,28 @@ export function Header() {
               <Menu size={22} />
             </button>
 
-            {/* Logo — brand name only, no tagline */}
+            {/* Logo and Brand */}
             <button
               onClick={() => navigate("/")}
-              className="flex items-center"
+              className="flex items-center gap-3 md:gap-4"
             >
-              <span className="font-display text-xl font-medium tracking-wide text-ink-50 md:text-2xl">
-                {brandParts[0]}
-                <span className="text-gold-400"> {brandParts.slice(1).join(" ")}</span>
-              </span>
+              {settings?.logo_url && (
+                <img 
+                  src={settings.logo_url} 
+                  alt={brandName} 
+                  className="h-8 md:h-10 lg:h-11 w-auto object-contain shrink-0"
+                />
+              )}
+              <div className="flex flex-col items-start justify-center">
+                <span className="font-display text-2xl md:text-3xl font-medium tracking-wide text-ink-50 leading-none">
+                  {brandParts[0]}
+                </span>
+                {brandParts.length > 1 && (
+                  <span className="text-[9px] md:text-[11px] font-medium tracking-[0.35em] uppercase text-gold-400 mt-1.5 leading-none">
+                    {brandParts.slice(1).join(" ")}
+                  </span>
+                )}
+              </div>
             </button>
 
             {/* Desktop nav */}
