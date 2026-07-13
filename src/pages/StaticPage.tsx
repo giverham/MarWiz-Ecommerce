@@ -18,7 +18,7 @@ export function StaticPage({ slug }: StaticPageProps) {
       .from("pages")
       .select("*")
       .eq("slug", slug)
-      .eq("is_active", true)
+      .neq("is_active", false)
       .maybeSingle()
       .then(({ data }) => {
         if (data) setPage(data as Page);
@@ -50,28 +50,32 @@ export function StaticPage({ slug }: StaticPageProps) {
   return (
     <div className="min-h-screen pt-32 pb-20">
       <div className="container-luxury">
-        <div className="mx-auto max-w-3xl">
-          <h1 className="font-display text-section text-ink-50 mb-8">
-            {(content.heading as string) || page.title}
-          </h1>
+        {slug === "about" ? (
+          <AboutContent content={content} />
+        ) : (
+          <div className="mx-auto max-w-3xl">
+            <h1 className="font-display text-section text-ink-50 mb-8">
+              {(content.heading as string) || page.title}
+            </h1>
 
-          {slug === "contact" ? (
-            <ContactContent content={content} settings={settings} />
-          ) : slug === "faqs" ? (
-            <FAQContent content={content} />
-          ) : (
-            <div>
-              {content.image ? (
-                <div className="mb-8 aspect-[16/9] overflow-hidden">
-                  <img src={content.image as string} alt="" className="h-full w-full object-cover" />
-                </div>
-              ) : null}
-              <p className="text-base font-light leading-relaxed text-ink-300 whitespace-pre-line">
-                {content.body as string}
-              </p>
-            </div>
-          )}
-        </div>
+            {slug === "contact" ? (
+              <ContactContent content={content} settings={settings} />
+            ) : slug === "faqs" ? (
+              <FAQContent content={content} />
+            ) : (
+              <div>
+                {content.image ? (
+                  <div className="mb-8 aspect-[16/9] overflow-hidden">
+                    <img src={content.image as string} alt="" className="h-full w-full object-cover" />
+                  </div>
+                ) : null}
+                <p className="text-base font-light leading-relaxed text-ink-300 whitespace-pre-line">
+                  {content.body as string}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -205,6 +209,171 @@ function FAQContent({ content }: { content: Record<string, unknown> }) {
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+function AboutContent({ content }: { content: Record<string, any> }) {
+  const about = content.about_marwiz || {
+    title: content.title || "The House of MarWiz",
+    subtitle: content.subtitle || "Nigerian Luxury & Heritage",
+    description: content.description || "",
+    image: content.main_image || "",
+    button: content.cta_btn_text || "Shop Collection"
+  };
+
+  const statistics = content.statistics || [
+    { title: "Years of Craft", number: content.stat_years?.replace("+", "") || "12", suffix: "+", enabled: true },
+    { title: "Global Clients", number: content.stat_customers?.replace("+", "") || "5,000", suffix: "+", enabled: true },
+    { title: "Luxury Designs", number: content.stat_products?.replace("+", "") || "150", suffix: "+", enabled: true },
+    { title: "Orders Delivered", number: content.stat_orders?.replace("+", "") || "10,000", suffix: "+", enabled: true },
+  ];
+
+  const mission = content.mission || {
+    title: content.mission_title || "Our Mission",
+    description: content.mission_desc || "",
+    enabled: true
+  };
+
+  const vision = content.vision || {
+    title: content.vision_title || "Our Vision",
+    description: content.vision_desc || "",
+    enabled: true
+  };
+
+  const pillars = content.pillars || (content.values || []).map((v: any) => ({ ...v, enabled: true }));
+
+  const btc = content.behind_the_craft || {
+    image: content.brand_story_image || "",
+    title: "Behind The Craft",
+    subtitle: "The Narrative",
+    description: content.company_story || "",
+    button: "Learn More",
+    enabled: !!content.company_story
+  };
+
+  return (
+    <div className="space-y-16 md:space-y-20 pt-8">
+      {/* 1. About MarWiz */}
+      <section className="grid gap-12 lg:grid-cols-2 items-center">
+        <div className="space-y-6">
+          {about.subtitle && (
+            <p className="text-xs uppercase tracking-[0.25em] text-gold-400 font-display">
+              {about.subtitle}
+            </p>
+          )}
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-ink-50 leading-tight">
+            {about.title}
+          </h2>
+          <p className="text-lg font-light leading-relaxed text-ink-300 whitespace-pre-line">
+            {about.description}
+          </p>
+          {about.button && (
+            <div className="pt-4">
+              <a href="/shop" className="btn-primary inline-block">
+                {about.button}
+              </a>
+            </div>
+          )}
+        </div>
+        <div className="aspect-[3/4] sm:aspect-[4/5] overflow-hidden border border-ink-800 bg-ink-900 shadow-2xl mx-auto w-full max-w-sm">
+          <img
+            src={about.image}
+            alt={about.title}
+            className="w-full h-full object-cover transform hover:scale-102 transition-transform duration-700"
+          />
+        </div>
+      </section>
+
+      {/* 2. Key Stats Row */}
+      {statistics.filter((s: any) => s.enabled).length > 0 && (
+        <section className="border-y border-ink-800 py-12 bg-ink-950/40">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {statistics.filter((s: any) => s.enabled).map((stat: any, idx: number) => (
+              <div key={idx} className="space-y-2">
+                <p className="font-display text-3xl sm:text-4xl lg:text-5xl text-gold-400 tracking-tight">
+                  {stat.number}{stat.suffix}
+                </p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-ink-400 font-medium">{stat.title}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 3. Mission & Vision Section */}
+      {(mission.enabled || vision.enabled) && (
+        <section className="grid gap-8 md:grid-cols-2">
+          {mission.enabled && (
+            <div className="border border-ink-800 bg-ink-900/60 p-8 sm:p-10 space-y-4 hover:border-gold-400/30 transition-colors duration-300">
+              <h4 className="font-display text-xl text-gold-400 uppercase tracking-wider">
+                {mission.title}
+              </h4>
+              <p className="text-sm font-light leading-relaxed text-ink-300 whitespace-pre-line">
+                {mission.description}
+              </p>
+            </div>
+          )}
+          {vision.enabled && (
+            <div className="border border-ink-800 bg-ink-900/60 p-8 sm:p-10 space-y-4 hover:border-gold-400/30 transition-colors duration-300">
+              <h4 className="font-display text-xl text-gold-400 uppercase tracking-wider">
+                {vision.title}
+              </h4>
+              <p className="text-sm font-light leading-relaxed text-ink-300 whitespace-pre-line">
+                {vision.description}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* 4. Core Pillars Section */}
+      {pillars.filter((p: any) => p.enabled).length > 0 && (
+        <section className="space-y-12">
+          <div className="text-center space-y-3">
+            <p className="text-xs uppercase tracking-[0.2em] text-gold-400">Our Pillars</p>
+            <h3 className="font-display text-2xl sm:text-3xl text-ink-50">Foundation of MarWiz</h3>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {pillars.filter((p: any) => p.enabled).map((val: any, idx: number) => (
+              <div key={idx} className="border border-ink-800 bg-ink-900 p-6 sm:p-8 space-y-4 relative overflow-hidden group hover:border-ink-700 transition-colors duration-300">
+                <span className="absolute -bottom-8 -right-4 font-display text-7xl text-ink-800/10 select-none group-hover:text-gold-400/5 transition-colors duration-300">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <h4 className="font-display text-lg text-gold-400">{val.title}</h4>
+                <p className="text-xs font-light leading-relaxed text-ink-400 relative z-10">{val.description || val.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 5. Behind The Craft */}
+      {btc.enabled && (
+        <section className="grid gap-12 lg:grid-cols-12 items-center">
+          <div className="lg:col-span-7 aspect-[16/10] overflow-hidden border border-ink-800 lg:order-last">
+            <img
+              src={btc.image}
+              alt={btc.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="lg:col-span-5 space-y-6">
+            {btc.subtitle && <p className="text-xs uppercase tracking-[0.2em] text-ink-400 font-medium">{btc.subtitle}</p>}
+            <h3 className="font-display text-2xl sm:text-3xl text-ink-50">{btc.title}</h3>
+            <p className="text-sm font-light leading-relaxed text-ink-300 whitespace-pre-line">
+              {btc.description}
+            </p>
+            {btc.button && (
+              <div className="pt-2">
+                <a href="/shop" className="btn-outline inline-block">
+                  {btc.button}
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

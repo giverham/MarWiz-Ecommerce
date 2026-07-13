@@ -22,7 +22,7 @@ export function WishlistPage() {
       .from("products")
       .select("*")
       .in("id", wishlist)
-      .eq("is_active", true)
+      .neq("is_active", false)
       .then(({ data }) => {
         if (data) setProducts(data as Product[]);
       });

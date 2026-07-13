@@ -12,8 +12,8 @@ import { HomePage } from "./pages/HomePage";
 import { ShopPage } from "./pages/ShopPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
-import { CollectionsPage } from "./pages/CollectionsPage";
 import { WishlistPage } from "./pages/WishlistPage";
+import { CollectionsPage } from "./pages/CollectionsPage";
 import { StaticPage } from "./pages/StaticPage";
 import { BackToTop } from "./components/layout/BackToTop";
 
@@ -59,6 +59,8 @@ function AppContent() {
 
     if (path === "/shop") return <ShopPage />;
     if (path === "/collections") return <CollectionsPage />;
+    if (path === "/contact") return <StaticPage slug="contact" />;
+    if (path === "/about") return <StaticPage slug="about" />;
     if (path === "/wishlist") return <WishlistPage />;
     if (path === "/checkout") return <CheckoutPage />;
 
@@ -67,9 +69,17 @@ function AppContent() {
       return <ShopPage categorySlug={slug} />;
     }
 
-    if (path.startsWith("/collection/")) {
-      const slug = path.split("/collection/")[1];
-      return <ShopPage title={slug.charAt(0).toUpperCase() + slug.slice(1)} />;
+    if (path.startsWith("/collections/")) {
+      const slug = path.split("/collections/")[1];
+      const title = slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " ");
+      return <ShopPage collectionSlug={slug} title={title} />;
+    }
+
+    // Showcase pages (fallback for alternate navigation)
+    if (path.startsWith("/showcase/")) {
+      const slug = path.split("/showcase/")[1];
+      const title = slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      return <ShopPage collectionSlug={slug} title={title} />;
     }
 
     if (path.startsWith("/product/")) {

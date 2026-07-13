@@ -44,10 +44,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     (async () => {
       const [settingsRes, navRes] = await Promise.all([
         supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
-        supabase.from("nav_items").select("*").eq("is_active", true).order("sort_order"),
+        supabase.from("nav_items").select("*").neq("is_active", false).order("sort_order"),
       ]);
+      
       if (settingsRes.data) setSettings(settingsRes.data as SiteSettings);
-      if (navRes.data) setNavItems(navRes.data as NavItem[]);
+      
+      const customNav = (navRes.data as NavItem[]) || [];
+      
+      // Make nav_items the sole source of truth
+      setNavItems(customNav.sort((a, b) => a.sort_order - b.sort_order));
+      
       setLoading(false);
     })();
 
@@ -68,6 +74,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem("marwiz-wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  // Dynamic CSS Variables and Favicon
+  useEffect(() => {
+    if (settings) {
+      const root = document.documentElement;
+      if (settings.primary_color) root.style.setProperty('--color-ink-950', settings.primary_color);
+      if (settings.secondary_color) root.style.setProperty('--color-gold-400', settings.secondary_color);
+      if (settings.accent_color) root.style.setProperty('--color-ink-900', settings.accent_color);
+
+      if (settings.favicon_url) {
+        let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        link.href = settings.favicon_url;
+      }
+    }
+  }, [settings]);
 
   const addToCart = useCallback(
     (product: Product, quantity = 1, variant: { color?: string; size?: string } = {}) => {

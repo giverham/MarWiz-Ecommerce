@@ -17,7 +17,7 @@ export function SearchBar() {
       supabase
         .from("products")
         .select("*")
-        .eq("is_active", true)
+        .neq("is_active", false)
         .order("sort_order")
         .then(({ data }) => {
           if (data) setAllProducts(data as Product[]);

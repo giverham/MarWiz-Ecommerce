@@ -6,10 +6,16 @@ import {
   Edit, Save, AlertCircle, Upload,
 } from "lucide-react";
 import { useAdminAuth } from "./AdminAuth";
+import { useStore } from "../store/StoreContext";
 import { supabase } from "../lib/supabase";
 import { formatNaira, slugify } from "../lib/utils";
-import { ImageUpload, ProductGalleryUpload } from "./ImageUpload";
-import type { Product, Order, Category, Collection, Testimonial, Page, NavItem, SiteSettings, MediaItem, Enquiry } from "../types";
+import { ImageUpload } from "./ImageUpload";
+import { MediaPicker } from "./MediaPicker";
+import type { Order, Category, Testimonial, Page, NavItem, SiteSettings, MediaItem, Enquiry } from "../types";
+import { ProductsManager } from "./ProductsManager";
+import { CollectionsManager } from "./CollectionsManager";
+import { AboutPageManager } from "./AboutPageManager";
+import { MarWizStandardsManager } from "./MarWizStandardsManager";
 
 type AdminSection =
   | "dashboard"
@@ -21,13 +27,14 @@ type AdminSection =
   | "testimonials"
   | "pages"
   | "nav"
-  | "media"
   | "settings"
   | "appearance"
-  | "seo";
+  | "seo"
+  | "standards";
 
 export function AdminDashboard() {
   const { signOut } = useAdminAuth();
+  const { settings } = useStore();
   const [section, setSection] = useState<AdminSection>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -53,10 +60,10 @@ export function AdminDashboard() {
     { id: "testimonials", label: "Testimonials", icon: Star },
     { id: "pages", label: "Pages", icon: FileText },
     { id: "nav", label: "Navigation", icon: Menu },
-    { id: "media", label: "Media Library", icon: ImageIcon },
     { id: "settings", label: "Site Settings", icon: Settings },
     { id: "appearance", label: "Appearance", icon: Palette },
     { id: "seo", label: "SEO", icon: Globe },
+    { id: "standards", label: "Standards", icon: Star },
   ];
 
   return (
@@ -68,9 +75,13 @@ export function AdminDashboard() {
         }`}
       >
         <div className="flex h-20 items-center justify-between px-6 border-b border-ink-800">
-          <span className="font-display text-xl text-ink-50">
-            MarWiz<span className="text-gold-400"> Admin</span>
-          </span>
+          <div className="p-6 mb-8 text-center flex items-center justify-center">
+            {settings?.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="h-10 object-contain" />
+            ) : (
+              <h1 className="text-2xl font-serif uppercase tracking-[0.2em] text-ink-50">MARWIZ</h1>
+            )}
+          </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-ink-400">
             <X size={20} />
           </button>
@@ -131,12 +142,12 @@ export function AdminDashboard() {
           {section === "orders" && <OrdersManager showToast={showToast} />}
           {section === "enquiries" && <EnquiriesManager />}
           {section === "testimonials" && <TestimonialsManager showToast={showToast} />}
-          {section === "pages" && <PagesManager showToast={showToast} />}
+          {section === "pages" && <AboutPageManager showToast={showToast} />}
           {section === "nav" && <NavManager showToast={showToast} />}
-          {section === "media" && <MediaManager showToast={showToast} />}
           {section === "settings" && <SettingsManager showToast={showToast} />}
           {section === "appearance" && <AppearanceManager showToast={showToast} />}
           {section === "seo" && <SEOManager showToast={showToast} />}
+          {section === "standards" && <MarWizStandardsManager showToast={showToast} />}
         </div>
       </main>
       {toast && (
@@ -222,280 +233,6 @@ function StatCard({ label, value, icon: Icon }: { label: string; value: string; 
   );
 }
 
-// ============ PRODUCTS MANAGER ============
-function ProductsManager({ showToast }: { showToast: (msg: string) => void }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [editing, setEditing] = useState<Product | null>(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const load = useCallback(async () => {
-    const [{ data: prods }, { data: cats }, { data: colls }] = await Promise.all([
-      supabase.from("products").select("*").order("sort_order"),
-      supabase.from("categories").select("*").order("sort_order"),
-      supabase.from("collections").select("*").order("sort_order"),
-    ]);
-    if (prods) setProducts(prods as Product[]);
-    if (cats) setCategories(cats as Category[]);
-    if (colls) setCollections(colls as Collection[]);
-    if (colls) setCollections(colls as Collection[]);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this product?")) return;
-    await supabase.from("products").delete().eq("id", id);
-    showToast("Product deleted successfully.");
-    load();
-  };
-
-  if (showForm || editing) {
-    return (
-      <ProductForm
-        product={editing}
-        categories={categories}
-        collections={collections}
-        onClose={() => { setShowForm(false); setEditing(null); }}
-        onSaved={() => { setShowForm(false); setEditing(null); load(); }}
-        showToast={showToast}
-      />
-    );
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-ink-400">{products.length} products</p>
-        <button onClick={() => setShowForm(true)} className="btn-primary">
-          <Plus size={16} /> Add Product
-        </button>
-      </div>
-      <div className="overflow-x-auto border border-ink-800">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-ink-800 bg-ink-900">
-              <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-ink-500">Product</th>
-              <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-ink-500">Price</th>
-              <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-ink-500">Stock</th>
-              <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-ink-500">Flags</th>
-              <th className="px-4 py-3 text-right text-xs uppercase tracking-wider text-ink-500">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.id} className="border-b border-ink-800 hover:bg-ink-900">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-10 shrink-0 overflow-hidden bg-ink-800">
-                      <img src={p.images[0]} alt="" className="h-full w-full object-cover" />
-                    </div>
-                    <span className="text-sm text-ink-100">{p.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-gold-400">{formatNaira(p.price)}</td>
-                <td className="px-4 py-3 text-sm text-ink-300">{p.stock}</td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-1 flex-wrap">
-                    {p.is_featured && <span className="bg-gold-400/20 text-gold-400 px-2 py-0.5 text-[10px] uppercase">Featured</span>}
-                    {p.is_best_seller && <span className="bg-blue-900/30 text-blue-300 px-2 py-0.5 text-[10px] uppercase">Best</span>}
-                    {p.is_new_arrival && <span className="bg-green-900/30 text-green-300 px-2 py-0.5 text-[10px] uppercase">New</span>}
-                    {p.is_limited_edition && <span className="bg-red-900/30 text-red-300 px-2 py-0.5 text-[10px] uppercase">Limited</span>}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <button onClick={() => setEditing(p)} className="text-ink-400 hover:text-gold-400 mr-3">
-                    <Edit size={16} />
-                  </button>
-                  <button onClick={() => handleDelete(p.id)} className="text-ink-400 hover:text-red-400">
-                    <Trash2 size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-function ProductForm({
-  product, categories, collections, onClose, onSaved, showToast,
-}: {
-  product: Product | null;
-  categories: Category[];
-  collections: Collection[];
-  onClose: () => void;
-  onSaved: () => void;
-  showToast: (msg: string) => void;
-}) {
-  const [form, setForm] = useState({
-    name: product?.name || "",
-    slug: product?.slug || "",
-    description: product?.description || "",
-    price: product?.price?.toString() || "",
-    compare_at_price: product?.compare_at_price?.toString() || "",
-    category_id: product?.category_id || "",
-    collection_id: product?.collection_id || "",
-    images: product?.images || [] as string[],
-    colors: (product?.variants?.colors || []).join(", "),
-    sizes: (product?.variants?.sizes || []).join(", "),
-    specs: JSON.stringify(product?.specs || {}, null, 2),
-    stock: product?.stock?.toString() || "0",
-    is_featured: product?.is_featured || false,
-    is_best_seller: product?.is_best_seller || false,
-    is_new_arrival: product?.is_new_arrival || false,
-    is_limited_edition: product?.is_limited_edition || false,
-    is_active: product?.is_active ?? true,
-    sort_order: product?.sort_order?.toString() || "0",
-  });
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    setSaving(true);
-    const data = {
-      name: form.name,
-      slug: form.slug || slugify(form.name),
-      description: form.description,
-      price: parseFloat(form.price) || 0,
-      compare_at_price: form.compare_at_price ? parseFloat(form.compare_at_price) : null,
-      category_id: form.category_id || null,
-      collection_id: form.collection_id || null,
-      images: form.images,
-      variants: {
-        colors: form.colors.split(",").map((s) => s.trim()).filter(Boolean),
-        sizes: form.sizes.split(",").map((s) => s.trim()).filter(Boolean),
-      },
-      specs: (() => { try { return JSON.parse(form.specs); } catch { return {}; } })(),
-      stock: parseInt(form.stock) || 0,
-      is_featured: form.is_featured,
-      is_best_seller: form.is_best_seller,
-      is_new_arrival: form.is_new_arrival,
-      is_limited_edition: form.is_limited_edition,
-      is_active: form.is_active,
-      sort_order: parseInt(form.sort_order) || 0,
-    };
-
-    try {
-      if (product) {
-        const { error } = await supabase.from("products").update(data).eq("id", product.id);
-        if (error) throw error;
-        showToast("✓ Saved Successfully");
-      } else {
-        const { error } = await supabase.from("products").insert(data);
-        if (error) throw error;
-        showToast("✓ Product Created Successfully");
-      }
-      onSaved();
-    } catch (err: any) {
-      alert("Error saving product: " + err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className="max-w-3xl space-y-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg text-ink-100">{product ? "Edit Product" : "Add Product"}</h2>
-        <button onClick={onClose} className="text-ink-400 hover:text-ink-100">
-          <X size={20} />
-        </button>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField label="Name">
-          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-luxury" />
-        </FormField>
-        <FormField label="Slug (leave blank to auto-generate)">
-          <input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="input-luxury" />
-        </FormField>
-      </div>
-
-      <FormField label="Description">
-        <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-luxury resize-none" rows={3} />
-      </FormField>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField label="Price (₦)">
-          <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="input-luxury" />
-        </FormField>
-        <FormField label="Compare at Price (₦)">
-          <input type="number" value={form.compare_at_price} onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })} className="input-luxury" />
-        </FormField>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField label="Category">
-          <select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="input-luxury">
-            <option value="">None</option>
-            {categories.map((c) => <option key={c.id} value={c.id} className="bg-ink-900">{c.name}</option>)}
-          </select>
-        </FormField>
-        <FormField label="Collection">
-          <select value={form.collection_id} onChange={(e) => setForm({ ...form, collection_id: e.target.value })} className="input-luxury">
-            <option value="">None</option>
-            {collections.map((c) => <option key={c.id} value={c.id} className="bg-ink-900">{c.name}</option>)}
-          </select>
-        </FormField>
-      </div>
-
-      <ProductGalleryUpload
-        bucket="products"
-        images={form.images}
-        onChange={(urls) => setForm({ ...form, images: urls })}
-      />
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField label="Colors (comma-separated)">
-          <input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} className="input-luxury" />
-        </FormField>
-        <FormField label="Sizes (comma-separated)">
-          <input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} className="input-luxury" />
-        </FormField>
-      </div>
-
-      <FormField label="Specifications (JSON)">
-        <textarea value={form.specs} onChange={(e) => setForm({ ...form, specs: e.target.value })} className="input-luxury resize-none font-mono text-xs" rows={5} />
-      </FormField>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FormField label="Stock">
-          <input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="input-luxury" />
-        </FormField>
-        <FormField label="Sort Order">
-          <input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} className="input-luxury" />
-        </FormField>
-      </div>
-
-      <div className="flex flex-wrap gap-4">
-        {[
-          { key: "is_featured", label: "Featured" },
-          { key: "is_best_seller", label: "Best Seller" },
-          { key: "is_new_arrival", label: "New Arrival" },
-          { key: "is_limited_edition", label: "Limited Edition" },
-          { key: "is_active", label: "Active" },
-        ].map((flag) => (
-          <label key={flag.key} className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form[flag.key as keyof typeof form] as boolean}
-              onChange={(e) => setForm({ ...form, [flag.key]: e.target.checked })}
-              className="accent-gold-400"
-            />
-            <span className="text-sm text-ink-300">{flag.label}</span>
-          </label>
-        ))}
-      </div>
-
-      <button onClick={handleSave} disabled={saving} className="btn-primary">
-        <Save size={16} /> {saving ? "Saving..." : "Save Product"}
-      </button>
-    </div>
-  );
-}
 
 // ============ CATEGORIES MANAGER ============
 function CategoriesManager({ showToast }: { showToast: (msg: string) => void }) {
@@ -656,107 +393,7 @@ function CategoriesManager({ showToast }: { showToast: (msg: string) => void }) 
   );
 }
 
-// ============ COLLECTIONS MANAGER ============
-function CollectionsManager({ showToast }: { showToast: (msg: string) => void }) {
-  const [items, setItems] = useState<Collection[]>([]);
-  const [editing, setEditing] = useState<Collection | null>(null);
-  const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", sort_order: "0" });
 
-  const load = useCallback(async () => {
-    const { data } = await supabase.from("collections").select("*").order("sort_order");
-    if (data) setItems(data as Collection[]);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const startEdit = (col: Collection) => {
-    setEditing(col);
-    setForm({ name: col.name, slug: col.slug, description: col.description || "", image_url: col.image_url || "", sort_order: col.sort_order.toString() });
-  };
-
-  const handleSave = async () => {
-    const data = {
-      name: form.name,
-      slug: form.slug || slugify(form.name),
-      description: form.description,
-      image_url: form.image_url,
-      sort_order: parseInt(form.sort_order) || 0,
-      is_active: true,
-    };
-    try {
-      if (editing) {
-        const { error } = await supabase.from("collections").update(data).eq("id", editing.id);
-        if (error) throw error;
-        showToast("✓ Saved Successfully");
-      } else {
-        const { error } = await supabase.from("collections").insert(data);
-        if (error) throw error;
-        showToast("✓ Collection Created Successfully");
-      }
-      setEditing(null);
-      setForm({ name: "", slug: "", description: "", image_url: "", sort_order: "0" });
-      load();
-    } catch (err: any) {
-      alert("Error saving collection: " + err.message);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this collection?")) return;
-    try {
-      const { error } = await supabase.from("collections").delete().eq("id", id);
-      if (error) throw error;
-      showToast("Collection deleted successfully.");
-      load();
-    } catch (err: any) {
-      alert("Error deleting collection: " + err.message);
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="border border-ink-800 bg-ink-900 p-6 space-y-4">
-        <h3 className="text-sm uppercase tracking-wider text-gold-400">{editing ? "Edit Collection" : "Add Collection"}</h3>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Name"><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-luxury" /></FormField>
-          <FormField label="Slug"><input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="input-luxury" /></FormField>
-        </div>
-        <FormField label="Description"><input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-luxury" /></FormField>
-        
-        <ImageUpload
-          bucket="collections"
-          value={form.image_url}
-          onChange={(url) => setForm({ ...form, image_url: url })}
-          label="Collection Image"
-        />
-
-        <FormField label="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} className="input-luxury" /></FormField>
-        <div className="flex gap-3">
-          <button onClick={handleSave} className="btn-primary"><Save size={16} /> Save</button>
-          {editing && <button onClick={() => { setEditing(null); setForm({ name: "", slug: "", description: "", image_url: "", sort_order: "0" }); }} className="btn-outline">Cancel</button>}
-        </div>
-      </div>
-
-      <div className="grid gap-3">
-        {items.map((col) => (
-          <div key={col.id} className="flex items-center justify-between border border-ink-800 bg-ink-900 p-4">
-            <div className="flex items-center gap-3">
-              {col.image_url && <div className="h-10 w-10 overflow-hidden"><img src={col.image_url} alt="" className="h-full w-full object-cover" /></div>}
-              <div>
-                <p className="text-sm text-ink-100">{col.name}</p>
-                <p className="text-xs text-ink-500">/{col.slug}</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => startEdit(col)} className="text-ink-400 hover:text-gold-400"><Edit size={16} /></button>
-              <button onClick={() => handleDelete(col.id)} className="text-ink-400 hover:text-red-400"><Trash2 size={16} /></button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ============ ORDERS MANAGER ============
 function OrdersManager({ showToast }: { showToast: (msg: string) => void }) {
@@ -781,6 +418,19 @@ function OrdersManager({ showToast }: { showToast: (msg: string) => void }) {
       if (selected?.id === id) setSelected({ ...selected, status });
     } catch (err: any) {
       alert("Error updating status: " + err.message);
+    }
+  };
+
+  const deleteOrder = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this order?")) return;
+    try {
+      const { error } = await supabase.from("orders").delete().eq("id", id);
+      if (error) throw error;
+      showToast("✓ Order Deleted");
+      load();
+      if (selected?.id === id) setSelected(null);
+    } catch (err: any) {
+      alert("Error deleting order: " + err.message);
     }
   };
 
@@ -1013,6 +663,12 @@ function OrdersManager({ showToast }: { showToast: (msg: string) => void }) {
               className="px-4 py-2 border border-gold-400 text-gold-400 hover:bg-gold-400 hover:text-ink-950 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               Print Invoice
+            </button>
+            <button
+              onClick={() => deleteOrder(selected.id)}
+              className="px-4 py-2 border border-red-500/50 text-red-400 hover:bg-red-500/10 text-xs font-semibold uppercase tracking-wider transition-colors"
+            >
+              Delete
             </button>
             <button onClick={() => setSelected(null)} className="text-ink-400 hover:text-ink-100 p-1"><X size={20} /></button>
           </div>
@@ -1285,7 +941,92 @@ function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
   const [editing, setEditing] = useState<Page | null>(null);
 
   // Custom states for each editor type
-  const [aboutForm, setAboutForm] = useState({ heading: "", body: "", image: "" });
+  const [aboutForm, setAboutForm] = useState({
+    heading: "",
+    title: "",
+    subtitle: "",
+    description: "",
+    company_story: "",
+    main_image: "",
+    brand_story_image: "",
+    gallery_images: [] as string[],
+    stat_years: "",
+    stat_customers: "",
+    stat_products: "",
+    stat_orders: "",
+    mission_title: "",
+    mission_desc: "",
+    vision_title: "",
+    vision_desc: "",
+    values: [] as { title: string; desc: string }[],
+    team: [] as { name: string; position: string; photo: string; bio: string }[],
+    cta_title: "",
+    cta_desc: "",
+    cta_btn_text: "",
+    cta_btn_link: "",
+    cta_bg_image: "",
+  });
+  const [aboutActiveTab, setAboutActiveTab] = useState("general");
+
+  const addAboutValue = () => {
+    setAboutForm(prev => ({
+      ...prev,
+      values: [...(prev.values || []), { title: "New Value", desc: "Description of the value" }]
+    }));
+  };
+
+  const updateAboutValue = (index: number, field: "title" | "desc", value: string) => {
+    setAboutForm(prev => {
+      const copy = [...(prev.values || [])];
+      copy[index] = { ...copy[index], [field]: value };
+      return { ...prev, values: copy };
+    });
+  };
+
+  const removeAboutValue = (index: number) => {
+    setAboutForm(prev => ({
+      ...prev,
+      values: (prev.values || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const addAboutTeamMember = () => {
+    setAboutForm(prev => ({
+      ...prev,
+      team: [...(prev.team || []), { name: "New Member", position: "Role", photo: "", bio: "" }]
+    }));
+  };
+
+  const updateAboutTeamMember = (index: number, field: "name" | "position" | "photo" | "bio", value: string) => {
+    setAboutForm(prev => {
+      const copy = [...(prev.team || [])];
+      copy[index] = { ...copy[index], [field]: value };
+      return { ...prev, team: copy };
+    });
+  };
+
+  const removeAboutTeamMember = (index: number) => {
+    setAboutForm(prev => ({
+      ...prev,
+      team: (prev.team || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const addAboutGalleryImage = (url: string) => {
+    if (!url) return;
+    setAboutForm(prev => ({
+      ...prev,
+      gallery_images: [...(prev.gallery_images || []), url]
+    }));
+  };
+
+  const removeAboutGalleryImage = (index: number) => {
+    setAboutForm(prev => ({
+      ...prev,
+      gallery_images: (prev.gallery_images || []).filter((_, i) => i !== index)
+    }));
+  };
+
   const [contactForm, setContactForm] = useState({ heading: "", body: "", email: "", phone: "", whatsapp: "", address: "", hours: "", google_map: "", hero_image: "", background_image: "" });
   const [faqsForm, setFaqsForm] = useState<{ heading: string; items: { q: string; a: string }[] }>({ heading: "", items: [] });
   const [policyForm, setPolicyForm] = useState({ heading: "", body: "" });
@@ -1303,8 +1044,28 @@ function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
     if (p.slug === "about") {
       setAboutForm({
         heading: c.heading || "",
-        body: c.body || "",
-        image: c.image || "",
+        title: c.title || "",
+        subtitle: c.subtitle || "",
+        description: c.description || "",
+        company_story: c.company_story || "",
+        main_image: c.main_image || "",
+        brand_story_image: c.brand_story_image || "",
+        gallery_images: c.gallery_images || [],
+        stat_years: c.stat_years || "",
+        stat_customers: c.stat_customers || "",
+        stat_products: c.stat_products || "",
+        stat_orders: c.stat_orders || "",
+        mission_title: c.mission_title || "",
+        mission_desc: c.mission_desc || "",
+        vision_title: c.vision_title || "",
+        vision_desc: c.vision_desc || "",
+        values: c.values || [],
+        team: c.team || [],
+        cta_title: c.cta_title || "",
+        cta_desc: c.cta_desc || "",
+        cta_btn_text: c.cta_btn_text || "",
+        cta_btn_link: c.cta_btn_link || "",
+        cta_bg_image: c.cta_bg_image || "",
       });
     } else if (p.slug === "contact") {
       setContactForm({
@@ -1412,28 +1173,256 @@ function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
 
         <div className="border border-ink-800 bg-ink-900 p-6 space-y-6">
           {editing.slug === "about" && (
-            <div className="space-y-5">
-              <FormField label="About Heading">
-                <input
-                  value={aboutForm.heading}
-                  onChange={(e) => setAboutForm({ ...aboutForm, heading: e.target.value })}
-                  className="input-luxury"
-                />
-              </FormField>
-              <FormField label="About Body">
-                <textarea
-                  value={aboutForm.body}
-                  onChange={(e) => setAboutForm({ ...aboutForm, body: e.target.value })}
-                  className="input-luxury resize-none"
-                  rows={6}
-                />
-              </FormField>
-              <ImageUpload
-                bucket="pages"
-                value={aboutForm.image}
-                onChange={(url) => setAboutForm({ ...aboutForm, image: url })}
-                label="Brand Presentation Image"
-              />
+            <div className="space-y-6">
+              {/* Tab Navigation */}
+              <div className="flex flex-wrap gap-2 border-b border-ink-800 pb-4">
+                {[
+                  { id: "general", label: "General Content" },
+                  { id: "media", label: "Media & Gallery" },
+                  { id: "stats", label: "Key Stats" },
+                  { id: "mission", label: "Mission & Vision" },
+                  { id: "values", label: "Core Values" },
+                  { id: "team", label: "Team Profiles" },
+                  { id: "cta", label: "CTA Banner" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setAboutActiveTab(tab.id)}
+                    className={`px-4 py-2 text-xs font-display uppercase tracking-wider transition-all duration-200 border ${
+                      aboutActiveTab === tab.id
+                        ? "border-gold-400 bg-gold-400/10 text-gold-400 font-medium"
+                        : "border-ink-800 bg-ink-950 text-ink-400 hover:text-ink-100 hover:border-ink-700"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* General Tab */}
+              {aboutActiveTab === "general" && (
+                <div className="space-y-5">
+                  <FormField label="About Page Hero Heading"><input value={aboutForm.heading || ""} onChange={(e) => setAboutForm({ ...aboutForm, heading: e.target.value })} className="input-luxury" /></FormField>
+                  <FormField label="Section Title"><input value={aboutForm.title || ""} onChange={(e) => setAboutForm({ ...aboutForm, title: e.target.value })} className="input-luxury" /></FormField>
+                  <FormField label="Section Subtitle (Intro)"><input value={aboutForm.subtitle || ""} onChange={(e) => setAboutForm({ ...aboutForm, subtitle: e.target.value })} className="input-luxury" /></FormField>
+                  <FormField label="Core Description"><textarea value={aboutForm.description || ""} onChange={(e) => setAboutForm({ ...aboutForm, description: e.target.value })} className="input-luxury resize-none" rows={4} /></FormField>
+                  <FormField label="Detailed Company Story"><textarea value={aboutForm.company_story || ""} onChange={(e) => setAboutForm({ ...aboutForm, company_story: e.target.value })} className="input-luxury resize-none" rows={5} /></FormField>
+                </div>
+              )}
+
+              {/* Media & Gallery Tab */}
+              {aboutActiveTab === "media" && (
+                <div className="space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <FormField label="Main Presentation Image">
+                      <MediaPicker
+                        bucket="pages"
+                        value={aboutForm.main_image || ""}
+                        onChange={(url) => setAboutForm({ ...aboutForm, main_image: url })}
+                        label="Select Main Image"
+                      />
+                    </FormField>
+                    <FormField label="Brand Story Section Image">
+                      <MediaPicker
+                        bucket="pages"
+                        value={aboutForm.brand_story_image || ""}
+                        onChange={(url) => setAboutForm({ ...aboutForm, brand_story_image: url })}
+                        label="Select Brand Story Image"
+                      />
+                    </FormField>
+                  </div>
+                  
+                  <div className="border border-ink-800 bg-ink-950 p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-display text-gold-400 uppercase tracking-wider">Additional Gallery Images</h3>
+                      <div className="flex items-center gap-2">
+                        <MediaPicker
+                          bucket="gallery"
+                          value=""
+                          onChange={(url) => addAboutGalleryImage(url)}
+                          label="Add to Gallery"
+                        />
+                      </div>
+                    </div>
+                    {aboutForm.gallery_images && aboutForm.gallery_images.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {aboutForm.gallery_images.map((img, idx) => (
+                          <div key={idx} className="relative group border border-ink-800 aspect-square overflow-hidden bg-ink-900">
+                            <img src={img} alt={`Gallery ${idx}`} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                            <button
+                              type="button"
+                              onClick={() => removeAboutGalleryImage(idx)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-ink-500 italic">No additional gallery images loaded. Use the picker above to add.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Key Stats Tab */}
+              {aboutActiveTab === "stats" && (
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <FormField label="Years in Business Label/Val"><input value={aboutForm.stat_years || ""} onChange={(e) => setAboutForm({ ...aboutForm, stat_years: e.target.value })} className="input-luxury" placeholder="e.g. 12+" /></FormField>
+                  <FormField label="Happy Customers Label/Val"><input value={aboutForm.stat_customers || ""} onChange={(e) => setAboutForm({ ...aboutForm, stat_customers: e.target.value })} className="input-luxury" placeholder="e.g. 5,000+" /></FormField>
+                  <FormField label="Active Products Label/Val"><input value={aboutForm.stat_products || ""} onChange={(e) => setAboutForm({ ...aboutForm, stat_products: e.target.value })} className="input-luxury" placeholder="e.g. 150+" /></FormField>
+                  <FormField label="Orders Delivered Label/Val"><input value={aboutForm.stat_orders || ""} onChange={(e) => setAboutForm({ ...aboutForm, stat_orders: e.target.value })} className="input-luxury" placeholder="e.g. 10,000+" /></FormField>
+                </div>
+              )}
+
+              {/* Mission & Vision Tab */}
+              {aboutActiveTab === "mission" && (
+                <div className="space-y-5">
+                  <div className="border border-ink-800 bg-ink-950 p-5 space-y-4">
+                    <FormField label="Mission Section Title"><input value={aboutForm.mission_title || ""} onChange={(e) => setAboutForm({ ...aboutForm, mission_title: e.target.value })} className="input-luxury" /></FormField>
+                    <FormField label="Mission Statement Description"><textarea value={aboutForm.mission_desc || ""} onChange={(e) => setAboutForm({ ...aboutForm, mission_desc: e.target.value })} className="input-luxury resize-none" rows={3} /></FormField>
+                  </div>
+                  <div className="border border-ink-800 bg-ink-950 p-5 space-y-4">
+                    <FormField label="Vision Section Title"><input value={aboutForm.vision_title || ""} onChange={(e) => setAboutForm({ ...aboutForm, vision_title: e.target.value })} className="input-luxury" /></FormField>
+                    <FormField label="Vision Statement Description"><textarea value={aboutForm.vision_desc || ""} onChange={(e) => setAboutForm({ ...aboutForm, vision_desc: e.target.value })} className="input-luxury resize-none" rows={3} /></FormField>
+                  </div>
+                </div>
+              )}
+
+              {/* Core Values Tab */}
+              {aboutActiveTab === "values" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-display text-gold-400 uppercase tracking-wider">Manage Brand Core Values</h3>
+                    <button type="button" onClick={addAboutValue} className="btn-outline text-xs flex items-center gap-1.5 py-1.5 px-3">
+                      <Plus size={14} /> Add Value Card
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {(aboutForm.values || []).map((val, idx) => (
+                      <div key={idx} className="border border-ink-800 bg-ink-950 p-4 space-y-3 relative group">
+                        <button
+                          type="button"
+                          onClick={() => removeAboutValue(idx)}
+                          className="absolute top-4 right-4 text-ink-500 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          <div className="sm:col-span-1">
+                            <FormField label="Value Title">
+                              <input
+                                value={val.title}
+                                onChange={(e) => updateAboutValue(idx, "title", e.target.value)}
+                                className="input-luxury"
+                              />
+                            </FormField>
+                          </div>
+                          <div className="sm:col-span-2">
+                            <FormField label="Value Short Description">
+                              <input
+                                value={val.desc}
+                                onChange={(e) => updateAboutValue(idx, "desc", e.target.value)}
+                                className="input-luxury"
+                              />
+                            </FormField>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {(aboutForm.values || []).length === 0 && (
+                      <p className="text-xs text-ink-500 italic text-center py-6">No brand core values defined yet. Click Add Value Card to get started.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Team Profiles Tab */}
+              {aboutActiveTab === "team" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-display text-gold-400 uppercase tracking-wider">Manage Team Profiles</h3>
+                    <button type="button" onClick={addAboutTeamMember} className="btn-outline text-xs flex items-center gap-1.5 py-1.5 px-3">
+                      <Plus size={14} /> Add Team Profile
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {(aboutForm.team || []).map((member, idx) => (
+                      <div key={idx} className="border border-ink-800 bg-ink-950 p-5 space-y-4 relative group">
+                        <button
+                          type="button"
+                          onClick={() => removeAboutTeamMember(idx)}
+                          className="absolute top-5 right-5 text-ink-500 hover:text-red-400 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                        <div className="grid gap-5 md:grid-cols-4">
+                          <div className="md:col-span-1">
+                            <FormField label="Photo Image">
+                              <MediaPicker
+                                bucket="testimonials"
+                                value={member.photo}
+                                onChange={(url) => updateAboutTeamMember(idx, "photo", url)}
+                                label="Select Photo"
+                              />
+                            </FormField>
+                          </div>
+                          <div className="md:col-span-3 space-y-3">
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <FormField label="Full Name">
+                                <input
+                                  value={member.name}
+                                  onChange={(e) => updateAboutTeamMember(idx, "name", e.target.value)}
+                                  className="input-luxury"
+                                />
+                              </FormField>
+                              <FormField label="Position / Role">
+                                <input
+                                  value={member.position}
+                                  onChange={(e) => updateAboutTeamMember(idx, "position", e.target.value)}
+                                  className="input-luxury"
+                                />
+                              </FormField>
+                            </div>
+                            <FormField label="Short Biography / Bio">
+                              <textarea
+                                value={member.bio}
+                                onChange={(e) => updateAboutTeamMember(idx, "bio", e.target.value)}
+                                className="input-luxury resize-none"
+                                rows={2}
+                              />
+                            </FormField>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {(aboutForm.team || []).length === 0 && (
+                      <p className="text-xs text-ink-500 italic text-center py-6">No team members defined yet. Click Add Team Profile to get started.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA Section Tab */}
+              {aboutActiveTab === "cta" && (
+                <div className="space-y-5">
+                  <FormField label="CTA Banner Title"><input value={aboutForm.cta_title || ""} onChange={(e) => setAboutForm({ ...aboutForm, cta_title: e.target.value })} className="input-luxury" /></FormField>
+                  <FormField label="CTA Description text"><textarea value={aboutForm.cta_desc || ""} onChange={(e) => setAboutForm({ ...aboutForm, cta_desc: e.target.value })} className="input-luxury resize-none" rows={2} /></FormField>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField label="CTA Button Label"><input value={aboutForm.cta_btn_text || ""} onChange={(e) => setAboutForm({ ...aboutForm, cta_btn_text: e.target.value })} className="input-luxury" /></FormField>
+                    <FormField label="CTA Redirect Link"><input value={aboutForm.cta_btn_link || ""} onChange={(e) => setAboutForm({ ...aboutForm, cta_btn_link: e.target.value })} className="input-luxury" /></FormField>
+                  </div>
+                  <FormField label="CTA Background Media Banner">
+                    <MediaPicker
+                      bucket="banners"
+                      value={aboutForm.cta_bg_image || ""}
+                      onChange={(url) => setAboutForm({ ...aboutForm, cta_bg_image: url })}
+                      label="Select CTA Background"
+                    />
+                  </FormField>
+                </div>
+              )}
             </div>
           )}
 
@@ -1641,7 +1630,6 @@ function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
   );
 }
 
-// ============ NAV MANAGER ============
 // ============ NAV MANAGER ============
 function NavManager({ showToast }: { showToast: (msg: string) => void }) {
   const [items, setItems] = useState<NavItem[]>([]);
@@ -2192,7 +2180,6 @@ function MediaManager({ showToast }: { showToast: (msg: string) => void }) {
 }
 
 // ============ SETTINGS MANAGER ============
-// ============ SETTINGS MANAGER ============
 function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [saving, setSaving] = useState(false);
@@ -2217,6 +2204,7 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
         announcement_active: settings.announcement_active,
         hero_title: settings.hero_title,
         hero_subtitle: settings.hero_subtitle,
+        hero_background_media: settings.hero_background_media,
         hero_image_url: settings.hero_image_url,
         hero_video_url: settings.hero_video_url,
         hero_cta_text: settings.hero_cta_text,
@@ -2240,6 +2228,10 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
         tiktok_url: settings.tiktok_url,
         instagram_handle: settings.instagram_handle,
         maintenance_mode: settings.maintenance_mode,
+        brand_story_image_url: settings.brand_story_image_url,
+        whatsapp_cta_image_url: settings.whatsapp_cta_image_url,
+        default_placeholder_url: settings.default_placeholder_url,
+        default_product_url: settings.default_product_url,
         updated_at: new Date().toISOString(),
       }).eq("id", 1);
       
@@ -2267,33 +2259,42 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
 
       {/* Hero */}
       <SettingsGroup title="Hero Section" icon={LayoutDashboard}>
-        <FormField label="Hero Title"><input value={settings.hero_title || ""} onChange={(e) => update("hero_title", e.target.value)} className="input-luxury" /></FormField>
-        <FormField label="Hero Subtitle"><textarea value={settings.hero_subtitle || ""} onChange={(e) => update("hero_subtitle", e.target.value)} className="input-luxury resize-none" rows={2} /></FormField>
-        <div className="grid gap-6 md:grid-cols-2">
-          <FormField label="Hero Image Visual Fallback">
-            <ImageUpload
-              bucket="banners"
-              value={settings.hero_image_url || ""}
-              onChange={(url) => update("hero_image_url", url)}
-              onRemove={() => update("hero_image_url", "")}
-              label="Upload Hero Visual Banner"
-            />
-          </FormField>
-          <FormField label="Hero Video Background (Direct Upload)">
-            <ImageUpload
-              bucket="banners"
-              accept="video/*"
-              value={settings.hero_video_url || ""}
-              onChange={(url) => update("hero_video_url", url)}
-              onRemove={() => update("hero_video_url", "")}
-              label="Upload Background Video (MP4/WebM)"
-            />
-          </FormField>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="CTA Text"><input value={settings.hero_cta_text || ""} onChange={(e) => update("hero_cta_text", e.target.value)} className="input-luxury" /></FormField>
-          <FormField label="CTA Link"><input value={settings.hero_cta_link || ""} onChange={(e) => update("hero_cta_link", e.target.value)} className="input-luxury" /></FormField>
-        </div>
+            {/* Hero Section settings */}
+            <div className="space-y-6 pt-6 border-t border-ink-800">
+              <h4 className="text-lg font-serif text-ink-50">Hero Section</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField label="Hero Headline">
+                  <input value={settings.hero_title || ""} onChange={(e) => setSettings({ ...settings, hero_title: e.target.value })} className="input-luxury" />
+                </FormField>
+                <FormField label="Hero Subtitle">
+                  <input value={settings.hero_subtitle || ""} onChange={(e) => setSettings({ ...settings, hero_subtitle: e.target.value })} className="input-luxury" />
+                </FormField>
+                <FormField label="Hero Background Media (Video or Image)">
+                  <div className="space-y-2">
+                    {settings.hero_background_media ? (
+                      <div className="relative aspect-video rounded-sm overflow-hidden bg-ink-950/50 group border border-ink-800">
+                        {settings.hero_background_media.endsWith('.mp4') ? (
+                          <video src={settings.hero_background_media} className="w-full h-full object-cover" />
+                        ) : (
+                          <img src={settings.hero_background_media} className="w-full h-full object-cover" />
+                        )}
+                        <button type="button" onClick={() => setSettings({ ...settings, hero_background_media: null })} className="absolute top-2 right-2 p-1.5 bg-ink-950/80 text-ink-400 hover:text-red-400 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <ImageUpload bucket="banners" value="" onChange={(url) => setSettings({ ...settings, hero_background_media: url })} label="Upload Video or Image" accept="image/*,video/*" />
+                    )}
+                  </div>
+                </FormField>
+                <FormField label="Hero CTA Text">
+                  <input value={settings.hero_cta_text || ""} onChange={(e) => setSettings({ ...settings, hero_cta_text: e.target.value })} className="input-luxury" />
+                </FormField>
+                <FormField label="Hero CTA Link">
+                  <input value={settings.hero_cta_link || ""} onChange={(e) => setSettings({ ...settings, hero_cta_link: e.target.value })} className="input-luxury" />
+                </FormField>
+              </div>
+            </div>
       </SettingsGroup>
 
       {/* Brand */}
@@ -2304,21 +2305,19 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           <FormField label="Brand Logo">
-            <ImageUpload
+            <MediaPicker
               bucket="logos"
               value={settings.logo_url || ""}
               onChange={(url) => update("logo_url", url)}
-              onRemove={() => update("logo_url", "")}
-              label="Upload Luxury Logo"
+              label="Select Luxury Logo"
             />
           </FormField>
           <FormField label="Favicon Asset">
-            <ImageUpload
+            <MediaPicker
               bucket="logos"
               value={settings.favicon_url || ""}
               onChange={(url) => update("favicon_url", url)}
-              onRemove={() => update("favicon_url", "")}
-              label="Upload Favicon Icon"
+              label="Select Favicon Icon"
             />
           </FormField>
         </div>
@@ -2350,6 +2349,46 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
         <FormField label="Facebook URL"><input value={settings.facebook_url || ""} onChange={(e) => update("facebook_url", e.target.value)} className="input-luxury" /></FormField>
         <FormField label="Twitter URL"><input value={settings.twitter_url || ""} onChange={(e) => update("twitter_url", e.target.value)} className="input-luxury" /></FormField>
         <FormField label="TikTok URL"><input value={settings.tiktok_url || ""} onChange={(e) => update("tiktok_url", e.target.value)} className="input-luxury" /></FormField>
+      </SettingsGroup>
+
+      {/* Storefront Fallbacks & Rich Media */}
+      <SettingsGroup title="Storefront Fallbacks & Rich Media" icon={ImageIcon}>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FormField label="Brand Story Image">
+            <MediaPicker
+              bucket="banners"
+              value={settings.brand_story_image_url || ""}
+              onChange={(url) => update("brand_story_image_url", url)}
+              label="Select Brand Story Image"
+            />
+          </FormField>
+          <FormField label="WhatsApp CTA Image">
+            <MediaPicker
+              bucket="banners"
+              value={settings.whatsapp_cta_image_url || ""}
+              onChange={(url) => update("whatsapp_cta_image_url", url)}
+              label="Select WhatsApp CTA Image"
+            />
+          </FormField>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <FormField label="Default Image Placeholder">
+            <MediaPicker
+              bucket="products"
+              value={settings.default_placeholder_url || ""}
+              onChange={(url) => update("default_placeholder_url", url)}
+              label="Select Site Placeholder"
+            />
+          </FormField>
+          <FormField label="Default Product Detail Fallback">
+            <MediaPicker
+              bucket="products"
+              value={settings.default_product_url || ""}
+              onChange={(url) => update("default_product_url", url)}
+              label="Select Product Fallback"
+            />
+          </FormField>
+        </div>
       </SettingsGroup>
 
       {/* Footer */}
@@ -2408,20 +2447,14 @@ function AppearanceManager({ showToast }: { showToast: (msg: string) => void }) 
   if (!settings) return <p className="text-ink-400">Loading...</p>;
 
   const allSections = [
-    { id: "hero", label: "Hero Section" },
-    { id: "collections", label: "Collections" },
-    { id: "featured-watches", label: "Featured Watches" },
-    { id: "featured-fashion", label: "Featured Fashion" },
-    { id: "best-sellers", label: "Best Sellers" },
-    { id: "new-arrivals", label: "New Arrivals" },
-    { id: "limited-editions", label: "Limited Editions" },
-    { id: "brand-story", label: "Brand Story" },
-    { id: "why-choose", label: "Why Choose MarWiz" },
-    { id: "editorial", label: "Editorial Showcase" },
-    { id: "testimonials", label: "Testimonials" },
-    { id: "instagram", label: "Instagram Gallery" },
-    { id: "whatsapp-cta", label: "WhatsApp CTA" },
-    { id: "newsletter", label: "Newsletter" },
+    { id: "hero", name: "Hero Banner" },
+    { id: "trending", name: "Trending Products" },
+    { id: "showcase", name: "Homepage Showcase" },
+    { id: "about", name: "About MarWiz" },
+    { id: "why-choose", name: "Why Choose MarWiz" },
+    { id: "testimonials", name: "Testimonials" },
+    { id: "whatsapp-cta", name: "WhatsApp CTA" },
+    { id: "newsletter", name: "Newsletter" }
   ];
 
   const toggleSection = (id: string) => {
@@ -2471,14 +2504,20 @@ function AppearanceManager({ showToast }: { showToast: (msg: string) => void }) 
       <SettingsGroup title="Homepage Layout Builder" icon={Layers}>
         <p className="text-xs text-ink-500 mb-4">Enable, disable, and reorder homepage sections. Sections appear in the order listed below.</p>
         <div className="space-y-2">
-          {allSections.map((section) => {
+          {[...allSections].sort((a, b) => {
+            const indexA = (settings.homepage_sections || []).indexOf(a.id);
+            const indexB = (settings.homepage_sections || []).indexOf(b.id);
+            const posA = indexA === -1 ? 999 : indexA;
+            const posB = indexB === -1 ? 999 : indexB;
+            return posA - posB;
+          }).map((section) => {
             const enabled = (settings.homepage_sections || []).includes(section.id);
             const order = (settings.homepage_sections || []).indexOf(section.id);
             return (
               <div key={section.id} className="flex items-center justify-between border border-ink-800 bg-ink-900 p-3">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" checked={enabled} onChange={() => toggleSection(section.id)} className="accent-gold-400" />
-                  <span className="text-sm text-ink-200">{section.label}</span>
+                  <span className="text-sm text-ink-200">{section.name}</span>
                   {enabled && <span className="text-xs text-ink-500">Position {order + 1}</span>}
                 </div>
                 {enabled && (
@@ -2590,7 +2629,7 @@ function InfoBlock({ label, value }: { label: string; value: string }) {
 function EnquiriesManager() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "unread" | "read" | "archived">("all");
+  const [filter, setFilter] = useState<"all" | "unread" | "accepted" | "declined">("all");
   const [selected, setSelected] = useState<Enquiry | null>(null);
 
   const fetchEnquiries = useCallback(async () => {
@@ -2661,7 +2700,7 @@ function EnquiriesManager() {
           <p className="text-sm text-ink-400">View and manage messages sent from the contact form</p>
         </div>
         <div className="flex gap-1.5 border border-ink-800 p-1 bg-ink-900 self-start sm:self-auto">
-          {(["all", "unread", "read", "archived"] as const).map((opt) => (
+          {(["all", "unread", "accepted", "declined"] as const).map((opt) => (
             <button
               key={opt}
               onClick={() => setFilter(opt)}
@@ -2696,7 +2735,7 @@ function EnquiriesManager() {
               onClick={() => {
                 setSelected(item);
                 if (item.status === "unread") {
-                  updateStatus(item.id, "read");
+                  updateStatus(item.id, "accepted");
                 }
               }}
             >
@@ -2709,9 +2748,14 @@ function EnquiriesManager() {
                       New
                     </span>
                   )}
-                  {item.status === "archived" && (
-                    <span className="px-2 py-0.5 bg-ink-800 text-ink-400 text-[10px] uppercase font-bold tracking-wider">
-                      Archived
+                  {item.status === "accepted" && (
+                    <span className="px-2 py-0.5 bg-green-500/10 text-green-400 text-[10px] uppercase font-bold tracking-wider">
+                      Accepted
+                    </span>
+                  )}
+                  {item.status === "declined" && (
+                    <span className="px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] uppercase font-bold tracking-wider">
+                      Declined
                     </span>
                   )}
                 </div>
@@ -2721,21 +2765,22 @@ function EnquiriesManager() {
                 </p>
               </div>
               <div className="flex items-center gap-2 self-end md:self-auto" onClick={(e) => e.stopPropagation()}>
-                {item.status !== "archived" ? (
+                {item.status !== "accepted" && (
                   <button
-                    onClick={() => updateStatus(item.id, "archived")}
-                    className="p-2 text-ink-400 hover:text-ink-200 hover:bg-ink-800 border border-ink-800"
-                    title="Archive"
+                    onClick={() => updateStatus(item.id, "accepted")}
+                    className="p-2 text-green-400 hover:text-green-300 hover:bg-green-500/10 border border-green-500/20 text-xs font-semibold uppercase"
+                    title="Accept"
                   >
-                    Archive
+                    Accept
                   </button>
-                ) : (
+                )}
+                {item.status !== "declined" && (
                   <button
-                    onClick={() => updateStatus(item.id, "unread")}
-                    className="p-2 text-ink-400 hover:text-ink-200 hover:bg-ink-800 border border-ink-800"
-                    title="Mark Unread"
+                    onClick={() => updateStatus(item.id, "declined")}
+                    className="p-2 text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10 border border-yellow-500/20 text-xs font-semibold uppercase"
+                    title="Decline"
                   >
-                    Mark Unread
+                    Decline
                   </button>
                 )}
                 <button

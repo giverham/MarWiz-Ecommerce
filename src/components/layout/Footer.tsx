@@ -22,13 +22,17 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <h3 className="font-display text-2xl text-ink-50">
-              {settings?.brand_name?.split(" ")[0] || "MarWiz"}
-              <span className="text-gold-400">
-                {" "}
-                {settings?.brand_name?.split(" ").slice(1).join(" ")}
-              </span>
-            </h3>
+            {settings?.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="h-10 object-contain mb-4" />
+            ) : (
+              <h3 className="font-display text-2xl text-ink-50">
+                {settings?.brand_name?.split(" ")[0] || "MarWiz"}
+                <span className="text-gold-400">
+                  {" "}
+                  {settings?.brand_name?.split(" ").slice(1).join(" ")}
+                </span>
+              </h3>
+            )}
             <p className="mt-4 text-sm font-light leading-relaxed text-ink-400">
               {settings?.footer_about}
             </p>
@@ -53,11 +57,6 @@ export function Footer() {
               <li>
                 <button onClick={() => navigate("/category/fashion")} className="text-sm text-ink-300 transition-colors hover:text-gold-400">
                   Luxury Fashion
-                </button>
-              </li>
-              <li>
-                <button onClick={() => navigate("/collections")} className="text-sm text-ink-300 transition-colors hover:text-gold-400">
-                  Collections
                 </button>
               </li>
             </ul>

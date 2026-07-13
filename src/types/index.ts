@@ -4,9 +4,12 @@ export interface Category {
   slug: string;
   description: string | null;
   image_url: string | null;
+  parent_id: string | null;
   sort_order: number;
   is_active: boolean;
+  subcategories?: Category[];
 }
+
 
 export interface Collection {
   id: string;
@@ -14,8 +17,19 @@ export interface Collection {
   slug: string;
   description: string | null;
   image_url: string | null;
+  banner_image_url: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  button_text: string | null;
+  button_link: string | null;
   sort_order: number;
   is_active: boolean;
+  is_featured: boolean;
+  show_in_homepage: boolean;
+  limit_products: number | null;
+  background_style: string | null;
+  subtitle: string | null;
+  created_at: string;
 }
 
 export interface Product {
@@ -25,19 +39,17 @@ export interface Product {
   description: string | null;
   price: number;
   compare_at_price: number | null;
-  category_id: string | null;
-  collection_id: string | null;
+  category_id?: string | null;
   images: string[];
   variants: { colors?: string[]; sizes?: string[] };
   specs: Record<string, string>;
   stock: number;
-  is_featured: boolean;
-  is_best_seller: boolean;
-  is_new_arrival: boolean;
-  is_limited_edition: boolean;
+  availability: string;
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  category?: Category;
+  collections?: Collection[];
 }
 
 export interface OrderItem {
@@ -109,6 +121,7 @@ export interface SiteSettings {
   announcement_active: boolean;
   hero_title: string | null;
   hero_subtitle: string | null;
+  hero_background_media: string | null;
   hero_image_url: string | null;
   hero_video_url: string | null;
   hero_cta_text: string | null;
@@ -130,6 +143,7 @@ export interface SiteSettings {
   facebook_url: string | null;
   twitter_url: string | null;
   tiktok_url: string | null;
+  why_marwiz?: any[];
   meta_title: string | null;
   meta_description: string | null;
   meta_keywords: string | null;
@@ -141,6 +155,10 @@ export interface SiteSettings {
   maintenance_mode: boolean;
   homepage_sections: string[];
   instagram_handle: string | null;
+  brand_story_image_url: string | null;
+  whatsapp_cta_image_url: string | null;
+  default_placeholder_url: string | null;
+  default_product_url: string | null;
 }
 
 export interface CartItem {

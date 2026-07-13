@@ -11,6 +11,7 @@ export function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasAdmins, setHasAdmins] = useState<boolean | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -24,6 +25,14 @@ export function AdminLogin() {
       }
     }
     checkAdmins();
+
+    async function fetchLogo() {
+      try {
+        const { data } = await supabase.from("site_settings").select("logo_url").eq("id", 1).maybeSingle();
+        if (data?.logo_url) setLogoUrl(data.logo_url);
+      } catch {}
+    }
+    fetchLogo();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,10 +85,14 @@ export function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-ink-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="mb-6">
-            <span className="font-display text-3xl font-medium tracking-[0.15em] text-ink-50 uppercase">
-              MAR<span className="text-gold-400">WIZ</span>
-            </span>
+          <div className="mb-6 flex justify-center">
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="h-12 object-contain" />
+            ) : (
+              <span className="font-display text-3xl font-medium tracking-[0.15em] text-ink-50 uppercase">
+                MAR<span className="text-gold-400">WIZ</span>
+              </span>
+            )}
           </div>
           <h1 className="font-display text-sm uppercase tracking-[0.25em] text-gold-400">
             {hasAdmins === false ? "Setup Administrator" : "Admin Login"}

@@ -30,7 +30,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
       .from("products")
       .select("*")
       .eq("slug", slug)
-      .eq("is_active", true)
+      .neq("is_active", false)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
@@ -40,16 +40,19 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
           setSelectedColor(p.variants?.colors?.[0]);
           setSelectedSize(p.variants?.sizes?.[0]);
           setQuantity(1);
-          supabase
-            .from("products")
-            .select("*")
-            .eq("is_active", true)
-            .neq("id", p.id)
-            .eq("category_id", p.category_id || "")
-            .limit(4)
-            .then(({ data: rel }) => {
-              if (rel) setRelated(rel as Product[]);
-            });
+          
+          // Fetch related products (using same categories, fallback to generic fetch if no categories)
+          const fetchRelated = async () => {
+             let query = supabase.from("products").select("*").neq("is_active", false).neq("id", p.id).limit(4);
+             
+             if (p.category_id) {
+               query = query.eq("category_id", p.category_id);
+             }
+
+             const { data: rel } = await query;
+             if (rel) setRelated(rel as Product[]);
+          };
+          fetchRelated();
         }
         setLoading(false);
       });
@@ -161,16 +164,6 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
           {/* Details */}
           <div className="lg:pt-4">
             <div className="flex items-center gap-2 mb-3">
-              {product.is_limited_edition && (
-                <span className="bg-gold-400 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900">
-                  Limited Edition
-                </span>
-              )}
-              {product.is_new_arrival && (
-                <span className="bg-ink-50 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900">
-                  New Arrival
-                </span>
-              )}
             </div>
 
             <h1 className="font-display text-4xl text-ink-50">{product.name}</h1>
@@ -199,16 +192,20 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
             {/* Availability */}
             <div className="mt-5 flex items-center gap-2">
-              {product.stock > 0 ? (
+              {product.availability === 'in_stock' && (
                 <>
                   <Check size={16} className="text-green-500" />
                   <span className="text-sm text-green-500">In Stock</span>
-                  {product.stock <= 5 && (
+                  {product.stock <= 5 && product.stock > 0 && (
                     <span className="text-sm text-red-400">— Only {product.stock} left</span>
                   )}
                 </>
-              ) : (
+              )}
+              {product.availability === 'sold_out' && (
                 <span className="text-sm text-ink-500">Sold Out</span>
+              )}
+              {product.availability === 'coming_soon' && (
+                <span className="text-sm text-gold-400">Coming Soon</span>
               )}
             </div>
 
@@ -279,11 +276,11 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
             <div className="mt-8 flex gap-3">
               <button
                 onClick={() => addToCart(product, quantity, { color: selectedColor, size: selectedSize })}
-                disabled={product.stock === 0}
+                disabled={product.availability === 'sold_out'}
                 className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingBag size={16} />
-                Add to Bag
+                {product.availability === 'sold_out' ? 'Sold Out' : 'Add to Bag'}
               </button>
               <button
                 onClick={() => toggleWishlist(product.id)}

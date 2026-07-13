@@ -32,6 +32,7 @@ export default {
       },
       fontFamily: {
         serif: ["Cormorant Garamond", "Georgia", "serif"],
+        playfair: ["Playfair Display", "Georgia", "serif"],
         sans: ["Jost", "system-ui", "sans-serif"],
         display: ["Cormorant Garamond", "Georgia", "serif"],
       },
@@ -49,6 +50,7 @@ export default {
         "shimmer": "shimmer 2s linear infinite",
         "marquee": "marquee 60s linear infinite",
         "spin-slow": "spin 3s linear infinite",
+        "pulse-slow": "pulseSlow 4s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -82,6 +84,10 @@ export default {
         marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        pulseSlow: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
         },
       },
     },

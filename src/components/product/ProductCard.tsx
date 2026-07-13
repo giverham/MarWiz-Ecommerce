@@ -18,7 +18,7 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
   const aspectClass = imageAspect === "square" ? "aspect-square" : "aspect-[4/5]";
 
   return (
-    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl border border-ink-800 bg-ink-900 rounded-none overflow-hidden h-full flex flex-col">
+    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl rounded-none overflow-hidden h-full flex flex-col bg-transparent">
       {/* Image */}
       <div
         className={`zoom-container relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full`}
@@ -41,16 +41,7 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
 
         {/* Badges */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-20">
-          {product.is_limited_edition && (
-            <span className="bg-gold-400 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900 rounded-sm">
-              Limited
-            </span>
-          )}
-          {product.is_new_arrival && (
-            <span className="bg-ink-50 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-ink-900 rounded-sm">
-              New
-            </span>
-          )}
+
           {product.compare_at_price && product.compare_at_price > product.price && (
             <span className="bg-red-900 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.15em] text-red-100 rounded-sm">
               Sale
@@ -76,14 +67,15 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
         {/* Quick actions */}
         <div className="absolute bottom-0 left-0 right-0 flex translate-y-full transition-transform duration-500 group-hover:translate-y-0 z-20">
           <button
+            disabled={product.availability === 'sold_out'}
             onClick={(e) => {
               e.stopPropagation();
               addToCart(product);
             }}
-            className="flex h-12 flex-1 items-center justify-center gap-2 bg-ink-950/90 text-xs font-medium uppercase tracking-[0.15em] text-ink-50 transition-colors hover:bg-gold-400 hover:text-ink-900"
+            className="disabled:opacity-50 disabled:cursor-not-allowed flex h-12 flex-1 items-center justify-center gap-2 bg-ink-950/90 text-xs font-medium uppercase tracking-[0.15em] text-ink-50 transition-colors hover:bg-gold-400 hover:text-ink-900"
           >
             <ShoppingBag size={14} />
-            Add to Bag
+            {product.availability === 'sold_out' ? 'Sold Out' : 'Add to Bag'}
           </button>
           {onQuickView && (
             <button
@@ -100,7 +92,7 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
       </div>
 
       {/* Info */}
-      <div className="p-5 flex flex-col flex-1 bg-ink-900">
+      <div className="pt-4 flex flex-col flex-1 bg-transparent">
         <button
           onClick={() => navigate(`/product/${product.slug}`)}
           className="block text-left"
@@ -117,10 +109,15 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
             </span>
           )}
         </div>
-        {product.stock <= 5 && product.stock > 0 && (
+        {product.availability === 'sold_out' && (
+          <p className="mt-2 text-[11px] text-ink-500 m-0 uppercase tracking-widest font-medium">Sold out</p>
+        )}
+        {product.availability === 'coming_soon' && (
+          <p className="mt-2 text-[11px] text-gold-400 m-0 uppercase tracking-widest font-medium">Coming Soon</p>
+        )}
+        {product.availability === 'in_stock' && product.stock <= 5 && product.stock > 0 && (
           <p className="mt-2 text-[11px] text-red-400 m-0 uppercase tracking-widest font-medium">Only {product.stock} left</p>
         )}
-        {product.stock === 0 && <p className="mt-2 text-[11px] text-ink-500 m-0 uppercase tracking-widest font-medium">Sold out</p>}
       </div>
     </div>
   );

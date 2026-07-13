@@ -6,39 +6,64 @@ import { QuickView } from "../components/product/QuickView";
 import type { Product, Category } from "../types";
 import { formatNaira } from "../lib/utils";
 
+
 interface ShopPageProps {
   categorySlug?: string;
+  collectionSlug?: string;
   title?: string;
 }
 
-export function ShopPage({ categorySlug, title }: ShopPageProps) {
+export function ShopPage({ categorySlug, collectionSlug, title }: ShopPageProps) {
   const { products, loading } = useProducts();
   const categories = useCategories();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [sortBy, setSortBy] = useState("featured");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categorySlug || null);
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(collectionSlug || null);
   const [showFilters, setShowFilters] = useState(false);
   const [showOnly, setShowOnly] = useState<string>("all");
 
   useEffect(() => {
-    if (categorySlug) setSelectedCategory(categorySlug);
+    if (categorySlug) {
+      setSelectedCategory(categorySlug);
+      setActiveSubcategory(null);
+    }
   }, [categorySlug]);
+
+
+
+  useEffect(() => {
+    if (collectionSlug) setSelectedCollection(collectionSlug);
+  }, [collectionSlug]);
 
   const filtered = useMemo(() => {
     let result = [...products];
 
     if (selectedCategory) {
-      const cat = categories.find((c) => c.slug === selectedCategory);
-      if (cat) result = result.filter((p) => p.category_id === cat.id);
+      const parentCat = categories.find((c) => c.slug === selectedCategory);
+      if (parentCat) {
+        if (activeSubcategory) {
+          // Filter strictly by the selected subcategory
+          result = result.filter((p) => p.category?.slug === activeSubcategory);
+        } else {
+          // Filter by parent or any of its subcategories
+          const validIds = new Set([parentCat.id, ...(parentCat.subcategories?.map(s => s.id) || [])]);
+          result = result.filter((p) => validIds.has(p.category_id as string));
+        }
+      }
+    } else if (activeSubcategory) {
+       result = result.filter((p) => p.category?.slug === activeSubcategory);
+    }
+
+    if (selectedCollection) {
+      result = result.filter((p) => p.collections?.some((s: any) => s.slug?.toLowerCase() === selectedCollection.toLowerCase()));
     }
 
     result = result.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
-    if (showOnly === "featured") result = result.filter((p) => p.is_featured);
-    if (showOnly === "best-seller") result = result.filter((p) => p.is_best_seller);
-    if (showOnly === "new") result = result.filter((p) => p.is_new_arrival);
-    if (showOnly === "limited") result = result.filter((p) => p.is_limited_edition);
+
     if (showOnly === "available") result = result.filter((p) => p.stock > 0);
 
     if (sortBy === "price-asc") result.sort((a, b) => a.price - b.price);
@@ -46,9 +71,13 @@ export function ShopPage({ categorySlug, title }: ShopPageProps) {
     if (sortBy === "newest") result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return result;
-  }, [products, selectedCategory, categories, priceRange, showOnly, sortBy]);
+  }, [products, selectedCategory, activeSubcategory, selectedCollection, categories, priceRange, showOnly, sortBy]);
 
-  const pageTitle = title || (selectedCategory ? categories.find((c) => c.slug === selectedCategory)?.name : "Shop All");
+  const currentCategory = selectedCategory ? categories.find((c) => c.slug === selectedCategory) : null;
+  
+  // Clean up title logic. If we are on a parent category, the title is just the parent category name.
+  const pageTitle = title || (currentCategory ? currentCategory.name : "Shop All");
+  const subcategories = currentCategory?.subcategories || [];
 
   return (
     <div className="min-h-screen pt-32 pb-20">
@@ -61,6 +90,35 @@ export function ShopPage({ categorySlug, title }: ShopPageProps) {
             {filtered.length} {filtered.length === 1 ? "product" : "products"}
           </p>
         </div>
+
+        {/* Subcategories Filter Chips */}
+        {subcategories.length > 0 && (
+          <div className="mb-10 flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+            <button
+              onClick={() => setActiveSubcategory(null)}
+              className={`px-6 py-2.5 text-xs uppercase tracking-[0.15em] transition-all border ${
+                activeSubcategory === null
+                  ? "bg-gold-400 border-gold-400 text-ink-900 font-semibold"
+                  : "bg-ink-900 border-ink-800 text-ink-300 hover:border-gold-400/50 hover:text-gold-400"
+              }`}
+            >
+              All {currentCategory?.name}
+            </button>
+            {subcategories.map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setActiveSubcategory(sub.slug)}
+                className={`px-6 py-2.5 text-xs uppercase tracking-[0.15em] transition-all border ${
+                  activeSubcategory === sub.slug
+                    ? "bg-gold-400 border-gold-400 text-ink-900 font-semibold"
+                    : "bg-ink-900 border-ink-800 text-ink-300 hover:border-gold-400/50 hover:text-gold-400"
+                }`}
+              >
+                {sub.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Toolbar */}
         <div className="mb-8 flex items-center justify-between border-b border-ink-800 pb-4">
@@ -222,10 +280,6 @@ function FilterPanel({
         <div className="space-y-2">
           {[
             { value: "all", label: "All Products" },
-            { value: "featured", label: "Featured" },
-            { value: "best-seller", label: "Best Sellers" },
-            { value: "new", label: "New Arrivals" },
-            { value: "limited", label: "Limited Editions" },
             { value: "available", label: "In Stock" },
           ].map((opt) => (
             <button
