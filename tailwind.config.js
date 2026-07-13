@@ -48,7 +48,7 @@ export default {
         "slide-in-left": "slideInLeft 0.4s ease-out forwards",
         "scale-in": "scaleIn 0.5s ease-out forwards",
         "shimmer": "shimmer 2s linear infinite",
-        "marquee": "marquee 30s linear infinite",
+        "marquee": "marquee 60s linear infinite",
         "spin-slow": "spin 3s linear infinite",
       },
       keyframes: {
