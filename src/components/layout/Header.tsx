@@ -5,7 +5,7 @@ import { useRouter } from "../../lib/router";
 import { AnnouncementBar } from "./AnnouncementBar";
 
 export function Header() {
-  const { navItems, cartCount, setCartOpen, setSearchOpen, settings, wishlist } = useStore();
+  const { cartCount, setCartOpen, setSearchOpen, settings, wishlist } = useStore();
   const { navigate, path } = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

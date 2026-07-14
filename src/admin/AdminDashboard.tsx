@@ -8,10 +8,10 @@ import {
 import { useAdminAuth } from "./AdminAuth";
 import { useStore } from "../store/StoreContext";
 import { supabase } from "../lib/supabase";
-import { formatNaira, slugify } from "../lib/utils";
+import { formatNaira } from "../lib/utils";
 import { ImageUpload } from "./ImageUpload";
 import { MediaPicker } from "./MediaPicker";
-import type { Order, Category, Testimonial, Page, NavItem, SiteSettings, MediaItem, Enquiry } from "../types";
+import type { Order, Testimonial, Page, NavItem, SiteSettings, MediaItem, Enquiry } from "../types";
 import { ProductsManager } from "./ProductsManager";
 import { CollectionsManager } from "./CollectionsManager";
 import { AboutPageManager } from "./AboutPageManager";
@@ -780,7 +780,7 @@ function TestimonialsManager({ showToast }: { showToast: (msg: string) => void }
 }
 
 // ============ PAGES MANAGER ============
-function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
+export function PagesManager({ showToast }: { showToast: (msg: string) => void }) {
   const [items, setItems] = useState<Page[]>([]);
   const [editing, setEditing] = useState<Page | null>(null);
 
@@ -1735,7 +1735,7 @@ function NavManager({ showToast }: { showToast: (msg: string) => void }) {
 }
 
 // ============ MEDIA MANAGER ============
-function MediaManager({ showToast }: { showToast: (msg: string) => void }) {
+export function MediaManager({ showToast }: { showToast: (msg: string) => void }) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [folder, setFolder] = useState("gallery");
   const [search, setSearch] = useState("");

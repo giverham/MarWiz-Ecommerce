@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import { formatNaira, slugify } from "../lib/utils";
 import { ProductGalleryUpload } from "./ImageUpload";
 import { Edit, Trash2, Plus, X } from "lucide-react";
-import type { Product, Category, HomepageSection } from "../types";
+import type { Product, Category, Collection } from "../types";
 
 function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (

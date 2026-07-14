@@ -212,6 +212,7 @@ interface ProductSectionProps {
 
 function ProductSection({ label, title, products, onQuickView, viewAllLink }: ProductSectionProps) {
   const { navigate } = useRouter();
+  const { settings } = useStore();
 
   return (
     <section className="w-full overflow-hidden py-4 lg:py-6">
@@ -267,6 +268,7 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
 
 function WhyChooseSection() {
   const [features, setFeatures] = useState<any[]>([]);
+  const { settings } = useStore();
 
   useEffect(() => {
     async function loadStandards() {
@@ -372,7 +374,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
 
 
 
-function WhatsAppCTASection() {
+export function WhatsAppCTASection() {
   const { settings } = useStore();
   const waNumber = settings?.whatsapp_number || "";
   const waLink = `https://wa.me/${waNumber}`;
@@ -412,6 +414,7 @@ function WhatsAppCTASection() {
 function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const { settings } = useStore();
 
   return (
     <section className="w-full border-t border-ink-800 bg-ink-950 py-4 lg:py-6">
@@ -455,7 +458,7 @@ function NewsletterSection() {
   );
 }
 
-function BrandStorySection() {
+export function BrandStorySection() {
   const { settings } = useStore();
   const { navigate } = useRouter();
 

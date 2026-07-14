@@ -252,16 +252,7 @@ function AboutContent({ content }: { content: Record<string, any> }) {
     enabled: true
   };
 
-  const pillars = content.pillars || (content.values || []).map((v: any) => ({ ...v, enabled: true }));
 
-  const btc = content.behind_the_craft || {
-    image: content.brand_story_image || "",
-    title: "Behind The Craft",
-    subtitle: "The Narrative",
-    description: content.company_story || "",
-    button: "Learn More",
-    enabled: !!content.company_story
-  };
 
   return (
     <div className="space-y-16 md:space-y-20 pt-8">
