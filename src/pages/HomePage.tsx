@@ -80,7 +80,7 @@ function HeroSection() {
   const isVideo = heroMedia ? (heroMedia.endsWith('.mp4') || heroMedia.endsWith('.webm') || heroMedia.endsWith('.mov')) : false;
 
   return (
-    <section className="relative w-full h-screen min-h-[700px] overflow-hidden bg-ink-950 flex flex-col items-center justify-center pt-[20px] lg:pt-[30px] pb-[120px] lg:pb-[160px] text-center">
+    <section className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-ink-950 flex flex-col items-center justify-center pt-8 pb-10 lg:pb-12 text-center">
       {/* Background Media */}
       <div className="absolute inset-0 z-0 w-full h-full">
         {heroMedia && (
@@ -141,7 +141,7 @@ function HeroSection() {
 
         {/* Slogan */}
         {settings?.hero_title && (
-          <div className="flex justify-center w-full mx-auto" style={{ marginTop: "12vh" }}>
+          <div className="flex justify-center w-full mx-auto" style={{ marginTop: "18vh" }}>
             <p 
               className="font-playfair italic font-medium text-ink-900 text-center m-0 rounded-full animate-pulse-luxury"
               style={{
@@ -158,7 +158,7 @@ function HeroSection() {
         )}
 
         {/* Bottom Cluster */}
-        <div className="flex flex-col items-center w-full" style={{ marginTop: "auto", marginBottom: "8vh" }}>
+        <div className="flex flex-col items-center w-full" style={{ marginTop: "auto", paddingTop: "4vh", marginBottom: "4vh" }}>
 
 
           {/* Description / Supporting Text */}

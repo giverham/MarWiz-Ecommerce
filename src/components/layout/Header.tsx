@@ -121,7 +121,7 @@ export function Header() {
             className="absolute inset-0 bg-ink-950/80 backdrop-blur-md transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-72 max-w-[70vw] bg-ink-950 border-r border-ink-800 p-8 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
+          <div className="absolute left-0 top-0 h-full w-72 max-w-[280px] bg-black/60 backdrop-blur-md border-r border-white/10 p-8 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between mb-12 shrink-0">
               {settings?.logo_url ? (
                 <img 
@@ -153,8 +153,8 @@ export function Header() {
                       navigate(item.href);
                       setMobileOpen(false);
                     }}
-                    className={`py-4 text-left text-sm md:text-base font-medium uppercase tracking-[0.15em] transition-all flex items-center gap-4 group ${
-                      isActive ? "text-gold-400 pl-4" : "text-ink-200 hover:text-gold-400 hover:pl-4"
+                    className={`py-4 text-left text-xs md:text-sm font-light uppercase tracking-[0.2em] transition-all flex items-center gap-4 group ${
+                      isActive ? "text-gold-400 pl-4" : "text-white/80 hover:text-gold-400 hover:pl-4"
                     }`}
                   >
                     <span className={`h-px bg-gold-400 transition-all ${isActive ? "w-6" : "w-0 group-hover:w-6"}`} />
