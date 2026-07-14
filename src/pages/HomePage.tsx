@@ -426,7 +426,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch auto-rows-fr">
           {testimonials.map((t) => (
             <div key={t.id} className="border border-ink-800 bg-ink-950/50 pt-4 pb-4 px-5 flex flex-col h-full w-full items-start text-left">
-              <p className="text-sm md:text-base font-light leading-relaxed text-ink-200 flex-1 mb-5 w-full m-0">"{t.content}"</p>
+              <p className="text-sm md:text-base font-light leading-relaxed text-ink-200 flex-1 mb-3 w-full m-0">"{t.content}"</p>
               <div className="flex items-center gap-3 shrink-0 justify-start w-full">
                 {t.image_url && (
                   <div className="h-10 w-10 overflow-hidden rounded-full shrink-0 border border-ink-800">
@@ -434,12 +434,14 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
                   </div>
                 )}
                 <div className="flex flex-col items-start">
-                  <div className="mb-1 flex gap-0.5 shrink-0">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} size={11} className="text-gold-400" fill="currentColor" />
-                    ))}
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-ink-50 m-0">{t.name}</p>
+                    <div className="flex gap-0.5 shrink-0">
+                      {Array.from({ length: t.rating }).map((_, i) => (
+                        <Star key={i} size={10} className="text-gold-400" fill="currentColor" />
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-sm font-medium text-ink-50 m-0">{t.name}</p>
                   {t.role && <p className="text-[10px] text-ink-400 mt-0.5 uppercase tracking-[0.15em] m-0">{t.role}</p>}
                 </div>
               </div>
