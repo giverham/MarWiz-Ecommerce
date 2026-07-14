@@ -174,13 +174,14 @@ function HeroSection() {
         {settings?.hero_title && (
           <div className="flex justify-center w-full mx-auto" style={{ marginTop: "18vh" }}>
             <p 
-              className="font-playfair italic font-medium text-ink-900 text-center m-0 rounded-full animate-pulse-luxury"
+              className="font-playfair italic font-bold text-ink-900 text-center m-0 rounded-full animate-pulse-luxury"
               style={{
                 backgroundColor: "rgba(201, 169, 110, 0.35)",
                 padding: "8px 24px",
                 maxWidth: "100%",
                 letterSpacing: "0.05em",
                 fontSize: "clamp(16px, 1.5vw, 22px)",
+                WebkitTextStroke: "1px black"
               }}
             >
               • {settings.hero_title} •
@@ -194,12 +195,13 @@ function HeroSection() {
 
           {/* Description / Supporting Text */}
           <p 
-            className="font-light text-ink-300 text-center mx-auto m-0 uppercase"
+            className="font-bold text-ink-300 text-center mx-auto m-0 uppercase"
             style={{
               maxWidth: "100%",
               letterSpacing: "0.15em",
               fontSize: "clamp(14px, 2vw, 22px)",
-              marginBottom: "4vh"
+              marginBottom: "4vh",
+              WebkitTextStroke: "1px black"
             }}
           >
             {settings?.hero_subtitle || "Premium Clothing • Luxury Watches • Signature Style"}
