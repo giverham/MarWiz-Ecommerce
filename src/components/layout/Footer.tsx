@@ -19,9 +19,9 @@ export function Footer() {
   return (
     <footer className="border-t border-ink-800 bg-ink-950">
       <div className="container-luxury py-16">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           {/* Brand */}
-          <div className="lg:col-span-1">
+          <div className="col-span-2 md:col-span-1">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Logo" className="h-10 object-contain mb-4" />
             ) : (
@@ -82,7 +82,7 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-gold-400">
               Contact
             </h4>
