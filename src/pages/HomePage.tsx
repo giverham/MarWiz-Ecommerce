@@ -107,7 +107,7 @@ function HeroSection() {
       <div className="absolute inset-0 z-0 w-full h-full bg-transparent">
         {heroMedia && (
           isVideo ? (
-            <div className="relative z-10 w-full h-full min-h-[100dvh] min-h-[600px] overflow-hidden" style={{ background: "none", backgroundColor: "transparent" }}>
+            <div className="relative z-10 w-full h-full min-h-[100dvh] min-h-[600px] overflow-hidden" style={{ background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "transparent" }}>
               <video
                 poster="/video-fallback.jpg"
                 autoPlay
@@ -116,7 +116,7 @@ function HeroSection() {
                 playsInline
                 preload="auto"
                 className="w-full h-full min-h-full object-cover"
-                style={{ filter: "none", mixBlendMode: "normal", background: "none", backgroundColor: "transparent", objectFit: "cover" }}
+                style={{ filter: "none", mixBlendMode: "normal", background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "transparent", objectFit: "cover" }}
               >
                 <source src={heroMedia} type="video/mp4" />
                 Your browser does not support the video tag.
