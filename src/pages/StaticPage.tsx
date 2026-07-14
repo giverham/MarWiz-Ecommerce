@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Mail, Phone, MapPin, Clock } from "lucide-react";
+import { ChevronDown, Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { useStore } from "../store/StoreContext";
 import type { Page } from "../types";
@@ -124,19 +124,30 @@ function ContactContent({
         <div className="mt-8 space-y-5">
           <div className="flex items-start gap-3">
             <MapPin size={18} className="mt-0.5 shrink-0 text-gold-400" />
-            <span className="text-sm text-ink-300">{content.address as string || settings?.contact_address}</span>
+            <span className="text-sm text-ink-300">{settings?.contact_address}</span>
           </div>
           <div className="flex items-center gap-3">
             <Mail size={18} className="shrink-0 text-gold-400" />
-            <span className="text-sm text-ink-300">{content.email as string || settings?.contact_email}</span>
+            <span className="text-sm text-ink-300">{settings?.contact_email}</span>
           </div>
           <div className="flex items-center gap-3">
             <Phone size={18} className="shrink-0 text-gold-400" />
-            <span className="text-sm text-ink-300">{content.phone as string || settings?.contact_phone}</span>
+            <span className="text-sm text-ink-300">{settings?.contact_phone}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <MessageCircle size={18} className="shrink-0 text-gold-400" />
+            <a 
+              href={`https://wa.me/${settings?.whatsapp_number?.replace(/\+/g, "")}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-sm text-ink-300 hover:text-gold-400 transition-colors"
+            >
+              WhatsApp: {settings?.whatsapp_number}
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <Clock size={18} className="shrink-0 text-gold-400" />
-            <span className="text-sm text-ink-300">{content.hours as string}</span>
+            <span className="text-sm text-ink-300">{settings?.contact_hours}</span>
           </div>
         </div>
       </div>
@@ -303,7 +314,7 @@ function AboutContent({ content }: { content: Record<string, any> }) {
 
       {/* 3. Mission & Vision Section */}
       {(mission.enabled || vision.enabled) && (
-        <section className="grid gap-8 md:grid-cols-2">
+        <section className="grid gap-8 md:grid-cols-2 pb-8">
           {mission.enabled && (
             <div className="border border-ink-800 bg-ink-900/60 p-8 sm:p-10 space-y-4 hover:border-gold-400/30 transition-colors duration-300">
               <h4 className="font-display text-xl text-gold-400 uppercase tracking-wider">
@@ -324,54 +335,6 @@ function AboutContent({ content }: { content: Record<string, any> }) {
               </p>
             </div>
           )}
-        </section>
-      )}
-
-      {/* 4. Core Pillars Section */}
-      {pillars.filter((p: any) => p.enabled).length > 0 && (
-        <section className="space-y-12">
-          <div className="text-center space-y-3">
-            <p className="text-xs uppercase tracking-[0.2em] text-gold-400">Our Pillars</p>
-            <h3 className="font-display text-2xl sm:text-3xl text-ink-50">Foundation of MarWiz</h3>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {pillars.filter((p: any) => p.enabled).map((val: any, idx: number) => (
-              <div key={idx} className="border border-ink-800 bg-ink-900 p-6 sm:p-8 space-y-4 relative overflow-hidden group hover:border-ink-700 transition-colors duration-300">
-                <span className="absolute -bottom-8 -right-4 font-display text-7xl text-ink-800/10 select-none group-hover:text-gold-400/5 transition-colors duration-300">
-                  {String(idx + 1).padStart(2, "0")}
-                </span>
-                <h4 className="font-display text-lg text-gold-400">{val.title}</h4>
-                <p className="text-xs font-light leading-relaxed text-ink-400 relative z-10">{val.description || val.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 5. Behind The Craft */}
-      {btc.enabled && (
-        <section className="grid gap-12 lg:grid-cols-12 items-center">
-          <div className="lg:col-span-7 aspect-[16/10] overflow-hidden border border-ink-800 lg:order-last">
-            <img
-              src={btc.image}
-              alt={btc.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="lg:col-span-5 space-y-6">
-            {btc.subtitle && <p className="text-xs uppercase tracking-[0.2em] text-ink-400 font-medium">{btc.subtitle}</p>}
-            <h3 className="font-display text-2xl sm:text-3xl text-ink-50">{btc.title}</h3>
-            <p className="text-sm font-light leading-relaxed text-ink-300 whitespace-pre-line">
-              {btc.description}
-            </p>
-            {btc.button && (
-              <div className="pt-2">
-                <a href="/shop" className="btn-outline inline-block">
-                  {btc.button}
-                </a>
-              </div>
-            )}
-          </div>
         </section>
       )}
     </div>

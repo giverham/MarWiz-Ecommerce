@@ -4,8 +4,9 @@ import { supabase } from "../lib/supabase";
 
 interface ImageUploadProps {
   bucket: string;
-  value: string;
-  onChange: (url: string) => void;
+  value?: string;
+  onChange?: (url: string) => void;
+  onUpload?: (url: string) => void;
   onRemove?: () => void;
   accept?: string;
   label?: string;
@@ -13,8 +14,9 @@ interface ImageUploadProps {
 
 export function ImageUpload({
   bucket,
-  value,
+  value = "",
   onChange,
+  onUpload,
   onRemove,
   accept = "image/*",
   label = "Upload Image",
@@ -36,7 +38,8 @@ export function ImageUpload({
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
-      onChange(data.publicUrl);
+      if (typeof onChange === "function") onChange(data.publicUrl);
+      if (typeof onUpload === "function") onUpload(data.publicUrl);
     } catch (err: any) {
       alert("Error uploading image: " + err.message);
     } finally {
@@ -97,8 +100,9 @@ export function ImageUpload({
             <button
               type="button"
               onClick={() => {
-                onChange("");
-                if (onRemove) onRemove();
+                if (typeof onChange === "function") onChange("");
+                if (typeof onUpload === "function") onUpload("");
+                if (typeof onRemove === "function") onRemove();
               }}
               className="btn-outline text-xs border-red-500/50 hover:bg-red-500/10 text-red-400 py-1.5 px-3"
             >

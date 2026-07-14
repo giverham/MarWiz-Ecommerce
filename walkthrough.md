@@ -154,6 +154,48 @@ We have added a gorgeous, premium Light and Dark theme toggler, and an elegant c
 
 ---
 
+## 9. Recent Bug Fixes & Refinements
+
+### A. Protected ImageUpload Callbacks
+- **The Issue**: Image upload error was triggered under certain conditions because `onChange` or `onUpload` callbacks were called as functions without verifying their type.
+- **The Fix**: Added robust `typeof === "function"` checks inside `src/admin/ImageUpload.tsx` for both `onChange` and `onUpload` callbacks, preventing JavaScript crashes completely.
+
+### B. Hierarchical Categories Manager
+- **The Issue**: The categories page on the admin dashboard used an outdated flat categories layout defined inline within `AdminDashboard.tsx`, while a modular and fully functional nested hierarchical categories manager was built in `CategoriesManager.tsx` but never imported.
+- **The Fix**: Successfully refactored `AdminDashboard.tsx` to import and utilize the modular `CategoriesManager` component from `src/admin/CategoriesManager.tsx`. This replaced the flat categories viewer with a professional, fully functional accordion style parent-subcategory editor!
+
+---
+
+## 10. Supabase SQL Migration Reference
+Below is the clean database structure migration script for categories, products, and auth-fix references:
+
+```sql
+-- Create Categories with self-referencing relationship for subcategories
+CREATE TABLE public.categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    parent_id UUID REFERENCES public.categories(id) ON DELETE CASCADE,
+    sort_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Fix GoTrue NULL token issues for existing admin account
+UPDATE auth.users 
+SET 
+  confirmation_token = COALESCE(confirmation_token, ''),
+  recovery_token = COALESCE(recovery_token, ''),
+  email_change_token_new = COALESCE(email_change_token_new, ''),
+  email_change = COALESCE(email_change, ''),
+  phone = COALESCE(phone, '')
+WHERE email = 'admin@marwiz.com';
+```
+
+---
+
 > [!TIP]
 > The admin dashboard allows managing products, categories, collections, testimonials, hero banners, site settings, socials, and checking off customer enquiries on-the-fly. Every change updates the public storefront immediately!
 

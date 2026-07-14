@@ -16,6 +16,7 @@ import { ProductsManager } from "./ProductsManager";
 import { CollectionsManager } from "./CollectionsManager";
 import { AboutPageManager } from "./AboutPageManager";
 import { MarWizStandardsManager } from "./MarWizStandardsManager";
+import { CategoriesManager } from "./CategoriesManager";
 
 type AdminSection =
   | "dashboard"
@@ -234,164 +235,7 @@ function StatCard({ label, value, icon: Icon }: { label: string; value: string; 
 }
 
 
-// ============ CATEGORIES MANAGER ============
-function CategoriesManager({ showToast }: { showToast: (msg: string) => void }) {
-  const [items, setItems] = useState<Category[]>([]);
-  const [editing, setEditing] = useState<Category | null>(null);
-  const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", sort_order: "0" });
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-  const load = useCallback(async () => {
-    const { data } = await supabase.from("categories").select("*").order("sort_order");
-    if (data) setItems(data as Category[]);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const startEdit = (cat: Category) => {
-    setEditing(cat);
-    setForm({ name: cat.name, slug: cat.slug, description: cat.description || "", image_url: cat.image_url || "", sort_order: cat.sort_order.toString() });
-  };
-
-  const handleSave = async () => {
-    const data = {
-      name: form.name,
-      slug: form.slug || slugify(form.name),
-      description: form.description,
-      image_url: form.image_url,
-      sort_order: parseInt(form.sort_order) || 0,
-      is_active: true,
-    };
-    try {
-      if (editing) {
-        const { error } = await supabase.from("categories").update(data).eq("id", editing.id);
-        if (error) throw error;
-        showToast("✓ Saved Successfully");
-      } else {
-        const { error } = await supabase.from("categories").insert(data);
-        if (error) throw error;
-        showToast("✓ Category Created Successfully");
-      }
-      setEditing(null);
-      setForm({ name: "", slug: "", description: "", image_url: "", sort_order: "0" });
-      load();
-    } catch (err: any) {
-      alert("Error saving category: " + err.message);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this category?")) return;
-    try {
-      const { error } = await supabase.from("categories").delete().eq("id", id);
-      if (error) throw error;
-      showToast("Category deleted successfully.");
-      load();
-    } catch (err: any) {
-      alert("Error deleting category: " + err.message);
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedIds.length === 0) return;
-    if (!confirm(`Are you sure you want to delete the ${selectedIds.length} selected categories?`)) return;
-    try {
-      const { error } = await supabase.from("categories").delete().in("id", selectedIds);
-      if (error) throw error;
-      showToast(`${selectedIds.length} categories deleted successfully.`);
-      setSelectedIds([]);
-      load();
-    } catch (err: any) {
-      alert("Error deleting categories: " + err.message);
-    }
-  };
-
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.length === items.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(items.map((x) => x.id));
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="border border-ink-800 bg-ink-900 p-6 space-y-4">
-        <h3 className="text-sm uppercase tracking-wider text-gold-400">{editing ? "Edit Category" : "Add Category"}</h3>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Name"><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input-luxury" /></FormField>
-          <FormField label="Slug"><input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="input-luxury" /></FormField>
-        </div>
-        <FormField label="Description"><input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input-luxury" /></FormField>
-        
-        <ImageUpload
-          bucket="categories"
-          value={form.image_url}
-          onChange={(url) => setForm({ ...form, image_url: url })}
-          label="Category Image"
-        />
-
-        <FormField label="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} className="input-luxury" /></FormField>
-        <div className="flex gap-3">
-          <button onClick={handleSave} className="btn-primary"><Save size={16} /> Save</button>
-          {editing && <button onClick={() => { setEditing(null); setForm({ name: "", slug: "", description: "", image_url: "", sort_order: "0" }); }} className="btn-outline">Cancel</button>}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={items.length > 0 && selectedIds.length === items.length}
-              onChange={toggleSelectAll}
-              className="accent-gold-400"
-            />
-            <span className="text-xs uppercase tracking-wider text-ink-400">Select All ({items.length})</span>
-          </div>
-          {selectedIds.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="btn-outline border-red-500/50 hover:bg-red-500/10 text-red-400 py-1.5 px-3 text-xs flex items-center gap-1.5"
-            >
-              <Trash2 size={14} /> Bulk Delete ({selectedIds.length})
-            </button>
-          )}
-        </div>
-
-        <div className="grid gap-3">
-          {items.map((cat) => (
-            <div key={cat.id} className="flex items-center justify-between border border-ink-800 bg-ink-900 p-4">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(cat.id)}
-                  onChange={() => toggleSelect(cat.id)}
-                  className="accent-gold-400"
-                />
-                {cat.image_url && <div className="h-10 w-10 overflow-hidden"><img src={cat.image_url} alt="" className="h-full w-full object-cover" /></div>}
-                <div>
-                  <p className="text-sm text-ink-100">{cat.name}</p>
-                  <p className="text-xs text-ink-500">/{cat.slug}</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => startEdit(cat)} className="text-ink-400 hover:text-gold-400"><Edit size={16} /></button>
-                <button onClick={() => handleDelete(cat.id)} className="text-ink-400 hover:text-red-400"><Trash2 size={16} /></button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+// Modular CategoriesManager imported from CategoriesManager.tsx is used instead.
 
 
 
@@ -2338,6 +2182,7 @@ function SettingsManager({ showToast }: { showToast: (msg: string) => void }) {
         </div>
         <FormField label="Contact Email"><input value={settings.contact_email || ""} onChange={(e) => update("contact_email", e.target.value)} className="input-luxury" /></FormField>
         <FormField label="Contact Address"><textarea value={settings.contact_address || ""} onChange={(e) => update("contact_address", e.target.value)} className="input-luxury resize-none" rows={2} /></FormField>
+        <FormField label="Contact Hours (Opening Times)"><input value={settings.contact_hours || ""} onChange={(e) => update("contact_hours", e.target.value)} className="input-luxury" placeholder="Mon - Sat: 9:00 AM - 6:00 PM" /></FormField>
       </SettingsGroup>
 
       {/* Social Media */}

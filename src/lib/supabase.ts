@@ -9,3 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
   },
 });
+
+if (typeof window !== "undefined") {
+  (window as any).supabase = supabase;
+}

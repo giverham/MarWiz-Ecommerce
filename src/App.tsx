@@ -16,6 +16,7 @@ import { WishlistPage } from "./pages/WishlistPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { StaticPage } from "./pages/StaticPage";
 import { BackToTop } from "./components/layout/BackToTop";
+import { WhatsAppFloat } from "./components/layout/WhatsAppFloat";
 
 function AppContent() {
   const { path } = useRouter();
@@ -45,7 +46,7 @@ function AppContent() {
         <div className="text-center max-w-md px-6">
           <h1 className="font-display text-4xl text-gold-400 mb-4">We'll Be Back Soon</h1>
           <p className="text-sm font-light text-ink-400">
-            MarWiz Wears & Watches is undergoing scheduled maintenance. Please check back shortly.
+            {settings?.brand_name || "MarWiz Wears & Watches"} is undergoing scheduled maintenance. Please check back shortly.
           </p>
           <p className="mt-6 text-xs uppercase tracking-[0.3em] text-ink-600">Dare To Wear Different</p>
         </div>
@@ -112,6 +113,7 @@ function AppContent() {
       <CartDrawer />
       <SearchBar />
       <BackToTop />
+      <WhatsAppFloat />
     </div>
   );
 }

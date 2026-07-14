@@ -117,10 +117,10 @@ function HeroSection() {
               fontWeight: 500,
               lineHeight: 0.95,
               letterSpacing: "-1px",
-              fontSize: "clamp(48px, 8vw, 88px)",
+              fontSize: "clamp(40px, 8vw, 88px)",
             }}
           >
-            MarWiz
+            {settings?.brand_name?.split(" ")[0] || "MarWiz"}
           </h1>
 
           {/* Brand Subtitle */}
@@ -131,11 +131,11 @@ function HeroSection() {
               fontWeight: 400,
               lineHeight: 1,
               letterSpacing: "0.4em",
-              fontSize: "clamp(16px, 2.5vw, 30px)",
+              fontSize: "clamp(14px, 2.5vw, 30px)",
               marginTop: "4px"
             }}
           >
-            Wears & Watches
+            {settings?.brand_name?.split(" ").slice(1).join(" ") || "Wears & Watches"}
           </h2>
         </div>
 
@@ -143,14 +143,13 @@ function HeroSection() {
         {settings?.hero_title && (
           <div className="flex justify-center w-full mx-auto" style={{ marginTop: "12vh" }}>
             <p 
-              className="font-playfair italic font-medium text-ink-900 text-center m-0 rounded-full"
+              className="font-playfair italic font-medium text-ink-900 text-center m-0 rounded-full animate-pulse-luxury"
               style={{
                 backgroundColor: "rgba(201, 169, 110, 0.35)",
                 padding: "8px 24px",
                 maxWidth: "100%",
                 letterSpacing: "0.05em",
                 fontSize: "clamp(16px, 1.5vw, 22px)",
-                animation: "pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
               }}
             >
               • {settings.hero_title} •
@@ -172,7 +171,7 @@ function HeroSection() {
               marginBottom: "4vh"
             }}
           >
-            Premium Clothing • Luxury Watches • Signature Style
+            {settings?.hero_subtitle || "Premium Clothing • Luxury Watches • Signature Style"}
           </p>
 
           {/* Buttons */}
@@ -233,7 +232,9 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
         {products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-4 border border-ink-800 bg-ink-900/20 rounded-sm">
             <p className="text-gold-400 font-serif text-xl md:text-2xl mb-2">Products Coming Soon</p>
-            <p className="text-ink-400 text-sm font-light">We are carefully curating this collection. Check back shortly.</p>
+            <p className="text-sm font-light text-ink-400">
+              {settings?.brand_name || "MarWiz Wears & Watches"} is undergoing scheduled maintenance. Please check back shortly.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 items-stretch auto-rows-fr">
@@ -303,8 +304,8 @@ function WhyChooseSection() {
     <section className="w-full bg-ink-900 py-4 lg:py-6">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
-          <p className="section-label mb-3">Why MarWiz</p>
-          <h2 className="section-title m-0">The MarWiz Standard</h2>
+          <p className="section-label mb-3">Why {settings?.brand_name?.split(" ")[0] || "MarWiz"}</p>
+          <h2 className="section-title m-0">The {settings?.brand_name?.split(" ")[0] || "MarWiz"} Standard</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 items-start auto-rows-fr">
           {features.map((feature: any, i: number) => {
@@ -417,9 +418,9 @@ function NewsletterSection() {
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>
-          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the MarWiz Circle</h2>
+          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the {settings?.brand_name?.split(" ")[0] || "MarWiz"} Circle</h2>
           <p className="text-sm md:text-base font-light text-ink-300 mb-10 leading-relaxed w-full m-0">
-            Be the first to discover new collections, limited editions, and exclusive offers.
+            Be the first to discover new collections, limited editions, and exclusive offers from {settings?.brand_name || "MarWiz"}.
           </p>
           {submitted ? (
             <div className="bg-ink-900 border border-gold-400/20 p-6 w-full animate-fade-up flex flex-col">
@@ -477,14 +478,15 @@ function BrandStorySection() {
           </div>
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left w-full">
             <p className="section-label mb-4">Our Story</p>
-            <h2 className="section-title mb-6 md:mb-8 m-0">The MarWiz Philosophy</h2>
+            <h2 className="section-title mb-6 md:mb-8 m-0">The {settings?.brand_name?.split(" ")[0] || "MarWiz"} Philosophy</h2>
             <div className="flex flex-col gap-6 text-sm md:text-base font-light leading-relaxed text-ink-200 w-full max-w-xl">
               <p className="m-0">{settings?.footer_about}</p>
-              <p className="m-0">
-                Every MarWiz piece is crafted with intention. We believe luxury is not about logos
-                or labels — it is about the feeling of wearing something extraordinary, something
-                that tells your story without saying a word.
-              </p>
+              {settings?.tagline && (
+                <p className="m-0">
+                  {settings.tagline}. {settings?.brand_name?.split(" ")[0] || "MarWiz"} offers an extraordinary experience, something
+                  that tells your story without saying a word.
+                </p>
+              )}
             </div>
             <button onClick={() => navigate("/page/about")} className="btn-outline mt-10 w-full sm:w-auto">
               Read Our Story <ArrowRight size={14} />
