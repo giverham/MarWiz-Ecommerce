@@ -4,6 +4,23 @@ We have successfully connected your premium e-commerce frontend to a robust, sec
 
 ---
 
+## 🎬 Hero Background Video & Fallback Optimization
+
+We updated the Hero background video logic in `HomePage.tsx` to maximize performance, cross-browser compatibility, and seamless loading state behavior:
+
+1. **Strict HTML5 Autoplay Compliance**:
+   - Guaranteed autoplay execution on modern desktop and mobile browsers by confirming critical attributes: `<video autoPlay loop muted playsInline preload="auto">`.
+
+2. **Nested `<source>` Syntax Integration**:
+   - Restructured the element to utilize standard `<source src={heroMedia} type="video/mp4" />` rather than a direct `src` attribute. This allows browsers to properly parse, stream, and resolve MIME headers from CDN streams.
+
+3. **Seamless Video-Frame Poster Extraction**:
+   - Programmatically extracted a high-quality widescreen frame directly from the running background video stream using an offscreen canvas rendering technique.
+   - Saved this extracted image as `video-fallback.jpg` in the `public/` directory so that it is statically hosted.
+   - Configured the `<video>` element with `poster="/video-fallback.jpg"`. This instructs the browser to immediately display a perfectly aligned frame of the exact video while buffering, ensuring a seamless, high-performance, and flicker-free visual transition upon page load.
+
+---
+
 ## 1. Supabase Database Schema & Seeding
 We fully configured the SQL database schema and applied custom seed data. 
 

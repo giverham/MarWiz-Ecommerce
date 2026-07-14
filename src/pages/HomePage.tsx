@@ -109,7 +109,7 @@ function HeroSection() {
           isVideo ? (
             <div className="relative z-10 w-full h-full bg-transparent overflow-hidden">
               <video
-                src={heroMedia}
+                poster="/video-fallback.jpg"
                 autoPlay
                 loop
                 muted
@@ -117,7 +117,10 @@ function HeroSection() {
                 preload="auto"
                 className="w-full h-full object-cover"
                 style={{ filter: "none", mixBlendMode: "normal", backgroundColor: "transparent" }}
-              />
+              >
+                <source src={heroMedia} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
               <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#050505] pointer-events-none z-20"></div>
             </div>
           ) : (
