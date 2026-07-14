@@ -102,7 +102,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
           <span className="text-ink-300">{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 items-start">
+        <div className="!grid !grid-cols-1 md:!grid-cols-2 gap-x-10 !items-start">
           {/* Gallery */}
           <div className="w-full max-w-[450px] mx-auto lg:mx-0">
             <div
