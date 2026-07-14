@@ -396,4 +396,43 @@ We updated the Homepage Hero's primary CTA button route so that clicking it swee
 > [!IMPORTANT]
 > The site is now fully autonomous, dynamic, and visually optimized. Any updates to the Brand Name, WhatsApp Number, or Opening Hours made in the Admin Dashboard will instantly reflect across the entire storefront, including the Contact and Home pages.
 
+---
 
+## 19. Code Integrity Protocol & Merge Recovery Action
+
+To protect the production storefront from regressions and maintain a locked-down, high-fidelity stable state, we have successfully enacted the **Code Integrity Protocol** and executed a main branch merge recovery action:
+
+### A. Strict Local Reversion & main Branch Hard Reset
+- **The Issue**: An incorrect merge on the `main` branch introduced unstable changes and compilation issues that disrupted the production environment.
+- **The Resolution**:
+  - Investigated the repository state and identified the last stable commit: **`0571ba8`** (*"chore: adjust chunkSizeWarningLimit to 1000 to resolve build warning"*).
+  - Checked out the `main` branch locally and executed a hard reset to cleanly discard the incorrect merge:
+    ```bash
+    git checkout main
+    git reset --hard 0571ba8
+    ```
+
+### B. Force Push & Main Branch Alignment
+- Force-pushed the stable local `main` state to GitHub to overwrite the broken merge on the server:
+  ```bash
+  git push origin main --force
+  ```
+- Checked out and returned safely to our development branch `verification-fix`.
+
+### C. Clean Vercel Production Build & Verification
+- **Vercel Deployment**: Triggered a fresh, cache-bypassed production deployment directly from our clean code using the Vercel CLI:
+  ```bash
+  npx vercel --prod --force --yes
+  ```
+- **Deployment Success**:
+  - **ID**: `dpl_6QjUJ6iqX6xqYALnf5AE7n98xbDy`
+  - **Status**: **`READY`**
+  - **Live URL**: [marwiz.store](https://marwiz.store/)
+- **Zero Warnings**: The build successfully compiled with Vite's warning limit config in place, generating a pristine, warning-free, and error-free static asset package.
+- **Git Asset Protection**: Confirmed that the `dist/` compilation folder remains strictly excluded from git via `.gitignore` rules and is generated dynamically during the secure Vercel cloud container execution.
+
+### D. Locked Page Visuals
+- **Hero Widescreen Fallback**: The cinematic video loads instantly, blending seamlessly into the `#050505` luxury dark backdrop with a smooth bottom gradient overlay.
+- **Side-by-Side Product Grid**: The columns maintain their exact structural balance, fully guarded by our responsive container important-locking rules (`!grid !grid-cols-1 md:!grid-cols-2 !items-start`).
+
+---
