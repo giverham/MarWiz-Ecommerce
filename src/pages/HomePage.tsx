@@ -418,14 +418,14 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
 
   return (
     <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
-      <div className="container-luxury">
+      <div className="max-w-6xl mx-auto px-4">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Client Voices</p>
           <h2 className="section-title m-0">What They Say</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 items-stretch auto-rows-fr">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch auto-rows-fr">
           {testimonials.map((t) => (
-            <div key={t.id} className="border border-ink-800 bg-ink-950/50 p-8 flex flex-col h-full w-full items-center text-center md:items-start md:text-left">
+            <div key={t.id} className="border border-ink-800 bg-ink-950/50 p-6 flex flex-col h-full w-full items-center text-center md:items-start md:text-left">
               <div className="mb-6 flex gap-1 justify-center md:justify-start w-full shrink-0">
                 {Array.from({ length: t.rating }).map((_, i) => (
                   <Star key={i} size={14} className="text-gold-400" fill="currentColor" />
