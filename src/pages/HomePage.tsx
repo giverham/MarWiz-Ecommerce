@@ -419,28 +419,28 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   return (
     <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
+        <div className="mb-10 md:mb-12 flex flex-col items-center text-center">
           <p className="section-label mb-3">Client Voices</p>
           <h2 className="section-title m-0">What They Say</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch auto-rows-fr">
           {testimonials.map((t) => (
-            <div key={t.id} className="border border-ink-800 bg-ink-950/50 p-6 flex flex-col h-full w-full items-center text-center md:items-start md:text-left">
-              <div className="mb-6 flex gap-1 justify-center md:justify-start w-full shrink-0">
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} size={14} className="text-gold-400" fill="currentColor" />
-                ))}
-              </div>
-              <p className="text-sm md:text-base font-light leading-relaxed text-ink-200 flex-1 mb-8 w-full m-0">"{t.content}"</p>
-              <div className="flex items-center gap-4 shrink-0 justify-center md:justify-start w-full">
+            <div key={t.id} className="border border-ink-800 bg-ink-950/50 pt-4 pb-4 px-5 flex flex-col h-full w-full items-start text-left">
+              <p className="text-sm md:text-base font-light leading-relaxed text-ink-200 flex-1 mb-5 w-full m-0">"{t.content}"</p>
+              <div className="flex items-center gap-3 shrink-0 justify-start w-full">
                 {t.image_url && (
-                  <div className="h-12 w-12 overflow-hidden rounded-full shrink-0 border border-ink-800">
+                  <div className="h-10 w-10 overflow-hidden rounded-full shrink-0 border border-ink-800">
                     <img src={t.image_url} alt={t.name} className="h-full w-full object-cover" loading="lazy" />
                   </div>
                 )}
-                <div className="flex flex-col items-center md:items-start">
+                <div className="flex flex-col items-start">
+                  <div className="mb-1 flex gap-0.5 shrink-0">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} size={11} className="text-gold-400" fill="currentColor" />
+                    ))}
+                  </div>
                   <p className="text-sm font-medium text-ink-50 m-0">{t.name}</p>
-                  {t.role && <p className="text-[10px] text-ink-400 mt-1 uppercase tracking-[0.15em] m-0">{t.role}</p>}
+                  {t.role && <p className="text-[10px] text-ink-400 mt-0.5 uppercase tracking-[0.15em] m-0">{t.role}</p>}
                 </div>
               </div>
             </div>
