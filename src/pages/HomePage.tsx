@@ -163,7 +163,8 @@ function HeroSection() {
               lineHeight: 1,
               letterSpacing: "0.4em",
               fontSize: "clamp(14px, 2.5vw, 30px)",
-              marginTop: "4px"
+              marginTop: "4px",
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)"
             }}
           >
             {settings?.brand_name?.split(" ")?.slice(1).join(" ") || "Wears & Watches"}
@@ -201,7 +202,7 @@ function HeroSection() {
               letterSpacing: "0.15em",
               fontSize: "clamp(14px, 2vw, 22px)",
               marginBottom: "4vh",
-              WebkitTextStroke: "1px black"
+              WebkitTextStroke: "2px #000000"
             }}
           >
             {settings?.hero_subtitle || "Premium Clothing • Luxury Watches • Signature Style"}
