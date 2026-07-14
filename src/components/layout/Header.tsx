@@ -121,25 +121,25 @@ export function Header() {
             className="absolute inset-0 bg-ink-950/80 backdrop-blur-md transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-72 max-w-[280px] bg-black/60 backdrop-blur-md border-r border-white/10 p-8 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
+          <div className="absolute left-0 top-0 h-full w-60 bg-black/60 backdrop-blur-md border-r border-white/10 p-6 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
             <div className="flex items-center justify-between mb-12 shrink-0">
               {settings?.logo_url ? (
                 <img 
                   src={settings.logo_url} 
                   alt={brandName} 
-                  className="h-12 w-12 rounded-full object-cover shrink-0 border border-gold-400/20"
+                  className="h-10 w-10 rounded-full object-cover shrink-0 border border-gold-400/20"
                 />
               ) : (
-                <span className="font-display text-2xl text-ink-50">
+                <span className="font-display text-xl text-ink-50">
                   {brandParts[0]}
                 </span>
               )}
               <button 
                 onClick={() => setMobileOpen(false)} 
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 border border-ink-800 text-ink-300 hover:text-gold-400 hover:border-gold-400/50 transition-colors shrink-0"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-900 border border-ink-800 text-ink-300 hover:text-gold-400 hover:border-gold-400/50 transition-colors shrink-0"
                 aria-label="Close menu"
               >
-                <X size={20} />
+                <X size={16} />
               </button>
             </div>
             
