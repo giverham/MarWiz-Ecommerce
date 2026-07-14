@@ -14,27 +14,25 @@ export function ProductCard({ product, onQuickView, imageAspect: _imageAspect = 
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { navigate } = useRouter();
   const wished = isWishlisted(product.id);
-  
-  const aspectClass = "aspect-[3/4]";
 
   return (
     <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(212,175,55,0.08)] bg-neutral-900/40 backdrop-blur-sm border border-white/5 p-3 pb-4 rounded-md overflow-hidden h-full flex flex-col">
       {/* Image */}
       <div
-        className={`zoom-container relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full rounded-sm`}
+        className="zoom-container relative w-full h-[300px] md:h-auto md:aspect-[3/4] cursor-pointer overflow-hidden bg-ink-800 shrink-0 rounded-sm"
         onClick={() => navigate(`/product/${product.slug}`)}
       >
         <img
           src={product.images[0]}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
         {product.images[1] && (
           <img
             src={product.images[1]}
             alt={product.name}
-            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-105"
             loading="lazy"
           />
         )}

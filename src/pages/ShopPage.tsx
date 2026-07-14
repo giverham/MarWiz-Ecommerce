@@ -187,9 +187,9 @@ export function ShopPage({ categorySlug, collectionSlug, title }: ShopPageProps)
           {/* Products */}
           <div className="flex-1">
             {loading ? (
-              <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="aspect-[3/4] shimmer-bg animate-shimmer" />
+                  <div key={i} className="w-full h-[300px] md:h-auto md:aspect-[3/4] shimmer-bg animate-shimmer rounded-md" />
                 ))}
               </div>
             ) : filtered.length === 0 ? (
@@ -197,7 +197,7 @@ export function ShopPage({ categorySlug, collectionSlug, title }: ShopPageProps)
                 <p className="text-sm text-ink-400">No products match your filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filtered.map((product) => (
                   <ProductCard key={product.id} product={product} onQuickView={setQuickViewProduct} />
                 ))}
