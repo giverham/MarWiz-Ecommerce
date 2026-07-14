@@ -26,10 +26,10 @@ export function Footer() {
               <img src={settings.logo_url} alt="Logo" className="h-10 object-contain mb-4" />
             ) : (
               <h3 className="font-display text-2xl text-ink-50">
-                {settings?.brand_name?.split(" ")[0] || "MarWiz"}
+                {settings?.brand_name?.split(" ")?.[0] || "MarWiz"}
                 <span className="text-gold-400">
                   {" "}
-                  {settings?.brand_name?.split(" ").slice(1).join(" ")}
+                  {settings?.brand_name?.split(" ")?.slice(1).join(" ") || ""}
                 </span>
               </h3>
             )}

@@ -120,7 +120,7 @@ function HeroSection() {
               fontSize: "clamp(40px, 8vw, 88px)",
             }}
           >
-            {settings?.brand_name?.split(" ")[0] || "MarWiz"}
+            {settings?.brand_name?.split(" ")?.[0] || "MarWiz"}
           </h1>
 
           {/* Brand Subtitle */}
@@ -135,7 +135,7 @@ function HeroSection() {
               marginTop: "4px"
             }}
           >
-            {settings?.brand_name?.split(" ").slice(1).join(" ") || "Wears & Watches"}
+            {settings?.brand_name?.split(" ")?.slice(1).join(" ") || "Wears & Watches"}
           </h2>
         </div>
 
@@ -304,8 +304,8 @@ function WhyChooseSection() {
     <section className="w-full bg-ink-900 py-4 lg:py-6">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
-          <p className="section-label mb-3">Why {settings?.brand_name?.split(" ")[0] || "MarWiz"}</p>
-          <h2 className="section-title m-0">The {settings?.brand_name?.split(" ")[0] || "MarWiz"} Standard</h2>
+          <p className="section-label mb-3">Why {settings?.brand_name?.split(" ")?.[0] || "MarWiz"}</p>
+          <h2 className="section-title m-0">The {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} Standard</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 items-start auto-rows-fr">
           {features.map((feature: any, i: number) => {
@@ -418,7 +418,7 @@ function NewsletterSection() {
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>
-          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the {settings?.brand_name?.split(" ")[0] || "MarWiz"} Circle</h2>
+          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} Circle</h2>
           <p className="text-sm md:text-base font-light text-ink-300 mb-10 leading-relaxed w-full m-0">
             Be the first to discover new collections, limited editions, and exclusive offers from {settings?.brand_name || "MarWiz"}.
           </p>
@@ -478,12 +478,12 @@ function BrandStorySection() {
           </div>
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left w-full">
             <p className="section-label mb-4">Our Story</p>
-            <h2 className="section-title mb-6 md:mb-8 m-0">The {settings?.brand_name?.split(" ")[0] || "MarWiz"} Philosophy</h2>
+            <h2 className="section-title mb-6 md:mb-8 m-0">The {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} Philosophy</h2>
             <div className="flex flex-col gap-6 text-sm md:text-base font-light leading-relaxed text-ink-200 w-full max-w-xl">
               <p className="m-0">{settings?.footer_about}</p>
               {settings?.tagline && (
                 <p className="m-0">
-                  {settings.tagline}. {settings?.brand_name?.split(" ")[0] || "MarWiz"} offers an extraordinary experience, something
+                  {settings.tagline}. {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} offers an extraordinary experience, something
                   that tells your story without saying a word.
                 </p>
               )}
