@@ -121,8 +121,8 @@ export function Header() {
             className="absolute inset-0 bg-ink-950/80 backdrop-blur-md transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 h-full w-60 bg-black/60 backdrop-blur-md border-r border-white/10 p-6 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
-            <div className="flex items-center justify-between mb-12 shrink-0">
+          <div className="absolute left-0 top-0 h-full w-48 bg-black/60 backdrop-blur-md border-r border-white/10 py-6 flex flex-col animate-slide-in-left shadow-2xl overflow-y-auto">
+            <div className="relative mb-12 shrink-0 pl-6 pt-6">
               {settings?.logo_url ? (
                 <img 
                   src={settings.logo_url} 
@@ -136,14 +136,14 @@ export function Header() {
               )}
               <button 
                 onClick={() => setMobileOpen(false)} 
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-900 border border-ink-800 text-ink-300 hover:text-gold-400 hover:border-gold-400/50 transition-colors shrink-0"
+                className="absolute top-6 right-4 text-white/80 hover:text-gold-400 transition-colors shrink-0"
                 aria-label="Close menu"
               >
-                <X size={16} />
+                <X size={16} strokeWidth={1.5} />
               </button>
             </div>
             
-            <nav className="flex flex-col gap-2 flex-1">
+            <nav className="flex flex-col gap-2 flex-1 pl-6">
               {HARDCODED_NAV.map((item) => {
                 const isActive = path === item.href;
                 return (
@@ -153,18 +153,18 @@ export function Header() {
                       navigate(item.href);
                       setMobileOpen(false);
                     }}
-                    className={`py-4 text-left text-xs md:text-sm font-light uppercase tracking-[0.2em] transition-all flex items-center gap-4 group ${
-                      isActive ? "text-gold-400 pl-4" : "text-white/80 hover:text-gold-400 hover:pl-4"
+                    className={`py-4 text-left text-xs md:text-sm font-light uppercase tracking-[0.2em] transition-all flex items-center gap-3 group ${
+                      isActive ? "text-gold-400 pl-1.5" : "text-white/80 hover:text-gold-400 hover:pl-1.5"
                     }`}
                   >
-                    <span className={`h-px bg-gold-400 transition-all ${isActive ? "w-6" : "w-0 group-hover:w-6"}`} />
+                    <span className={`h-px bg-gold-400 transition-all ${isActive ? "w-3" : "w-0 group-hover:w-3"}`} />
                     {item.label}
                   </button>
                 );
               })}
             </nav>
             
-            <div className="mt-auto pt-8 border-t border-ink-800 shrink-0">
+            <div className="mt-auto pt-8 border-t border-ink-800 shrink-0 px-6">
               <p className="text-[10px] uppercase tracking-[0.2em] text-ink-500 text-center">
                 © {new Date().getFullYear()} {brandParts.join(" ")}
               </p>

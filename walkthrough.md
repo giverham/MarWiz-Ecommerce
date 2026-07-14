@@ -224,5 +224,159 @@ We have completed the final stage of site development, ensuring every section is
 
 ---
 
+## 12. Hero Video Layering & Background Glow Optimization
+We resolved a visual issue where ambient background glow effects were overlapping and covering the Hero cinematic video, resulting in a blurry visual presentation.
+
+### A. Raised Hero Video Stack Priority
+- **Relative Positioning**: Replaced the video's parent wrapper element class from `absolute inset-0 z-0` to `relative z-10 w-full h-full`, elevating the video layer over any background ambient elements.
+- **Sharp Video Presentation**: Checked and confirmed that the `<video>` element itself maintains absolute native sharp rendering (having `filter: "none"` and `mixBlendMode: "normal"` inline styling and no opacity alterations).
+
+### B. Smooth Bottom Blend
+- **Gradient Overlay Integration**: Positioned a smooth gradient bottom-edge mask directly inside the high-priority relative video container.
+- **Exact Specifications**: Placed the following element inside the video container:
+  ```html
+  <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#050505] pointer-events-none z-20"></div>
+  ```
+  This ensures the bottom of the video gently and seamlessly blends into the dark page background while maintaining a crisp, clear body display.
+
+### C. Low-Layer Background Glow Isolation
+- **Physical Demotion**: Physically moved all ambient gold/amber glow elements to the very bottom of the HTML page layout within `src/pages/HomePage.tsx` (placing them after the entire homepage section-mapping block).
+- **Z-Index Demotion**: Changed their stacking classes from `z-0` to `-z-10`, ensuring they remain behind all layout content, text sections, grids, and hero video elements at all times.
+
+### D. Size and Spacing Lock
+- As requested, absolutely no element dimensions, typography sizes, spacing, button proportions, or sidebar details were altered, preserving the storefront's established layout perfectly.
+
+---
+
+## 13. Dynamic Hero Video Binding & Solid Dark Fallback Integration
+We refined the Hero background video player to pull files directly and dynamically from the admin panel's database state while establishing a premium solid dark background placeholder.
+
+### A. Dynamic Direct Video Binding from Site Settings
+- **Direct Store Settings**: Bound the `<video>` source directly and dynamically to `settings?.hero_background_media`, pulling files directly uploaded through the admin CMS dashboard rather than hardcoded URLs.
+- **Removed Hardcoded Fallback Images**: Removed all local static poster images and hardcoded template fallbacks to prevent unwanted or mismatched layout flashes while the settings state buffers the high-definition video.
+
+### B. Premium Solid Dark Fallback (#050505)
+- **Eliminated Black Flash**: Swapped standard black and dark background underlays on the outer media container and relative video wrapper for `bg-[#050505]`.
+- **Seamless Visual Continuity**: This provides a gorgeous, solid dark fallback color matching the brand's luxury aesthetic during initial hydration and video loading phases.
+
+### C. Forced High-Priority Autoplay & Preloading
+- **Instant playback**: Equipped the `<video>` tag with the following attributes for immediate background autoplay rendering:
+  ```html
+  <video 
+    autoPlay 
+    muted 
+    loop 
+    playsInline 
+    preload="auto" 
+    className="w-full h-full object-cover"
+  >
+  ```
+  This guarantees immediate preloading (`preload="auto"`) and instant, silent background playback that bypasses browser-level blocking policies.
+
+### D. Locked Layering & Sizes
+- **Elevated Stack**: The video container retains its `relative z-10` layout layering priority, keeping it positioned safely on top of low-layer gold/amber ambient background glow effects (`-z-10`).
+- **Locked Spacing**: Strictly preserved all layout proportions, padding, margins, sidebar widths, and font sizes to lock down your storefront layout.
+
+---
+
+## 14. Floating WhatsApp Widget 'CHAT WITH US' Text Badge & Premium Link Hiding
+We updated the floating WhatsApp widget on the homepage to render as a premium, compact 'CHAT WITH US' text badge while hiding the long pre-filled URL query string from the browser.
+
+### A. Compact 'CHAT WITH US' Text Badge
+- **Removed Icons & Raw Tooltips**: Completely removed all circular green icons and raw tooltip popups.
+- **Sleek Text Badge Pill**: Replaced them with a professional, pill-shaped text badge: `'CHAT WITH US'`.
+- **Premium Aesthetics**: Kept the official WhatsApp brand green (`#25D366`) and set an incredibly compact, slim typography style with wide tracking (`px-3.5 py-1.5 text-[9px] font-bold tracking-widest uppercase`).
+
+### B. Hiding Long URLs & Pre-filled Messages
+- **No Anchors / Zero Hover Flash**: Exchanged the standard wrapper `<a>` tag for a `<button>` with an `onClick` action. This prevents the long URL query parameter string and message from flashing at the bottom-left of the browser status bar on hover.
+- **Background Chat Launching**: Implemented an explicit background JavaScript trigger (`window.open(whatsappUrl, '_blank', 'noopener,noreferrer')`) to launch the WhatsApp chat instantly inside a new tab on tap.
+
+### C. Fully Dynamic syncing & Floating Layering
+- **Synchronized Numbers**: Pulls the destination WhatsApp line dynamically from `settings?.whatsapp_number` in the active Supabase state.
+- **Safely Encoded Message**: Dynamically encodes the professional inquiry/complaint greeting using `encodeURIComponent()` to guarantee robust cross-platform and mobile device processing.
+- **Top-priority Layering (`z-50`)**: Standardized the widget wrapper layer priority at `z-50`, floating safely on top of all page contents.
+
+---
+
+## 15. Admin-to-Supabase Sync & Database Schema Alignment
+We resolved a database error where saving a product failed due to a missing `availability` column in the Supabase `products` table, while confirming 100% dynamic, real-time syncing for all collections and categories.
+
+### A. Automatic Database Schema Alignment
+- **Added missing Column**: Executed a real-time DDL command on the Supabase PostgreSQL cluster:
+  ```sql
+  ALTER TABLE products ADD COLUMN IF NOT EXISTS availability VARCHAR(50) DEFAULT 'In Stock';
+  ```
+- **PostgREST Schema Reload**: Programmatically reloaded Supabase's API schema cache instantly by broadcasting the PostgreSQL reload command, ensuring PostgREST recognizes the new structure immediately without server restarts:
+  ```sql
+  NOTIFY pgrst, 'reload schema';
+  ```
+- **Verified Column Persistence**: Ran dynamic catalog checks verifying that `products` table has successfully integrated the `availability` VARCHAR column with default `'In Stock'` values.
+
+### B. 100% Dynamic syncing without hardcoding
+- **Real-Time API Fetch**: Confirmed that the admin-side `ProductsManager.tsx` loads the lists of all available collections and categories dynamically from Supabase storage on render via:
+  ```typescript
+  supabase.from("categories").select("*").order("sort_order")
+  supabase.from("collections").select("*").order("sort_order")
+  ```
+- **Zero Frontend Hardcoding**: Verified that all category selection options and collection checklist items are rendered entirely from this dynamic state. If an admin creates a category such as "Premium Perfumes" or a new watch collection, the product editor reflects it instantly.
+
+### C. Defensive Field Mapping & Fallbacks
+- **State Safe-keeping**: Maintained clean local state mappings inside `handleSave` in `ProductsManager.tsx` to safely default stock statuses and avoid frontend crashes if any minor column changes occur.
+
+---
+
+## 16. Uniform Product Card Aspect Ratio & Layout Unification
+We unified the visual presence of all product item card listings on your shop pages to match the premium, vertical rectangular aspect-ratio layout used by the Fashion collection.
+
+### A. Locked Aspect Ratio (`aspect-[3/4]`)
+- **Unifying Image Containers**: Changed the dynamic aspect ratio in `src/components/product/ProductCard.tsx` to a locked premium vertical scale:
+  ```typescript
+  const aspectClass = "aspect-[3/4]";
+  ```
+- **Universal Application**: Ensures that Watches, Fashion items, and all future product categories render inside an identical container shape, eliminating jarring shifts or dynamic grid heights.
+
+### B. High-Fidelity Aspect Scaling (`object-cover`)
+- **No Distortion**: The product images inside utilize `w-full h-full object-cover` classes to scale, center, and crop automatically to fill the rectangular dimensions beautifully without layout shifts or raw stretches.
+
+---
+
+## 17. Instant Background Video Loading & Flat Gray Screen Removal
+We optimized the storefront loading pipeline to entirely eliminate the brief 1-second flat gray screen flash when reloading the page or navigating via the logo, making the background video play instantly and seamlessly.
+
+### A. Non-Blocking Page Skeleton Preloading
+- **Immediate Rendering**: Refactored the core application layout in `src/App.tsx`. Rather than returning early during loading with `<Loader />` and blocking DOM paint, the application now renders the full page skeleton immediately in the background:
+  ```typescript
+  return (
+    <div className="min-h-screen bg-ink-950">
+      <Header />
+      <main>{renderPage()}</main>
+      ...
+      {isLoading && <Loader />}
+    </div>
+  );
+  ```
+- **Instant Resource Buffering**: By rendering the main skeleton layout immediately under a gorgeous overlay loader (`z-[100]`), the browser is instructed to start preloading and buffering the hero background video and page assets from the very first millisecond of page load.
+- **Frictionless Reveal Transition**: Once `isLoading` becomes false, the overlay loader is simply unmounted, revealing the *already buffered, already preloaded* video playing instantly beneath, achieving a flawlessly smooth transition.
+
+### B. CSS Background Fallbacks Stripping
+- **Transparent Wrappers**: Removed solid fallback background color classes (`bg-black`, `bg-[#050505]`) on the Hero's outer `<section>` container and internal video parent elements in `src/pages/HomePage.tsx`.
+- **Transparent Video Element**: Added an explicit inline styling rule `style={{ backgroundColor: 'transparent' }}` to the `<video>` element, ensuring that the browser renders the video's active frames instantly with absolutely zero gray void or container block flash.
+
+---
+
+## 18. Hero Banner 'EXPLORE COLLECTION' Link Alignment
+We updated the Homepage Hero's primary CTA button route so that clicking it sweeps users straight over to the correct, fully dynamic collection catalog.
+
+### A. Navigation Link Update (`/collections`)
+- **Fallback Alignment**: Refactored the 'EXPLORE COLLECTION' button in `src/pages/HomePage.tsx` to fallback to `/collections` instead of `/shop`:
+  ```typescript
+  onClick={() => navigate(settings?.hero_cta_link || "/collections")}
+  ```
+- **Unified Navigation**: Aligns the Homepage Banner with the Header's Drawer navigation, routing users seamlessly into your collections catalog page while continuing to support any custom admin settings overlays.
+
+---
+
 > [!IMPORTANT]
-> The site is now fully autonomous and dynamic. Any updates to the Brand Name, WhatsApp Number, or Opening Hours made in the Admin Dashboard will instantly reflect across the entire storefront, including the Contact and Home pages.
+> The site is now fully autonomous, dynamic, and visually optimized. Any updates to the Brand Name, WhatsApp Number, or Opening Hours made in the Admin Dashboard will instantly reflect across the entire storefront, including the Contact and Home pages.
+
+

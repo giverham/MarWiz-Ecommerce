@@ -37,10 +37,10 @@ function AppContent() {
     );
   }
 
-  if (showLoader || loading) return <Loader />;
+  const isLoading = showLoader || loading;
 
   // Maintenance mode
-  if (settings?.maintenance_mode) {
+  if (!isLoading && settings?.maintenance_mode) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-ink-950">
         <div className="text-center max-w-md px-6">
@@ -114,6 +114,7 @@ function AppContent() {
       <SearchBar />
       <BackToTop />
       <WhatsAppFloat />
+      {isLoading && <Loader />}
     </div>
   );
 }

@@ -80,8 +80,32 @@ export function ShopPage({ categorySlug, collectionSlug, title }: ShopPageProps)
   const subcategories = currentCategory?.subcategories || [];
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
-      <div className="container-luxury">
+    <div className="min-h-screen pt-32 pb-20 bg-[#0b0a0a] relative overflow-hidden">
+      {/* Tactile Fine-Grain Noise Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-[1] opacity-[0.035]" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Soft Luxury Geometric Grid Line Pattern (Highly Visible & Premium) */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 opacity-[0.12]" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='rgba(212,175,55,0.15)' stroke-width='0.75'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+      {/* Clear, visible ambient luxury glow */}
+      <div className="absolute top-[20%] left-[5%] w-[450px] h-[450px] rounded-full bg-amber-500/15 blur-[150px] pointer-events-none z-0 animate-ambient-glow-1" />
+      <div className="absolute top-[60%] right-[5%] w-[500px] h-[500px] rounded-full bg-amber-600/10 blur-[180px] pointer-events-none z-0 animate-ambient-glow-2" />
+      <div className="absolute top-[80%] left-[8%] w-[480px] h-[480px] rounded-full bg-amber-700/12 blur-[150px] pointer-events-none z-0 animate-ambient-glow-1" />
+
+      {/* Content wrapper */}
+      <div className="relative z-10">
+        <div className="container-luxury">
         {/* Header */}
         <div className="mb-10 text-center">
           <p className="section-label mb-3">MarWiz Collection</p>
@@ -206,6 +230,8 @@ export function ShopPage({ categorySlug, collectionSlug, title }: ShopPageProps)
           </div>
         </div>
       )}
+
+      </div>
 
       <QuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
     </div>

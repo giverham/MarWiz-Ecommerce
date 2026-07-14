@@ -10,18 +10,18 @@ interface ProductCardProps {
   imageAspect?: "square" | "portrait";
 }
 
-export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: ProductCardProps) {
+export function ProductCard({ product, onQuickView, imageAspect: _imageAspect = "portrait" }: ProductCardProps) {
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { navigate } = useRouter();
   const wished = isWishlisted(product.id);
   
-  const aspectClass = imageAspect === "square" ? "aspect-square" : "aspect-[4/5]";
+  const aspectClass = "aspect-[3/4]";
 
   return (
-    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl rounded-none overflow-hidden h-full flex flex-col bg-transparent">
+    <div className="group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(212,175,55,0.08)] bg-neutral-900/40 backdrop-blur-sm border border-white/5 p-3 pb-4 rounded-md overflow-hidden h-full flex flex-col">
       {/* Image */}
       <div
-        className={`zoom-container relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full`}
+        className={`zoom-container relative ${aspectClass} cursor-pointer overflow-hidden bg-ink-800 shrink-0 w-full rounded-sm`}
         onClick={() => navigate(`/product/${product.slug}`)}
       >
         <img
@@ -92,7 +92,7 @@ export function ProductCard({ product, onQuickView, imageAspect = "portrait" }: 
       </div>
 
       {/* Info */}
-      <div className="pt-4 flex flex-col flex-1 bg-transparent">
+      <div className="pt-3 px-1 flex flex-col flex-1 bg-transparent">
         <button
           onClick={() => navigate(`/product/${product.slug}`)}
           className="block text-left"

@@ -178,3 +178,26 @@
 .animate-pulse-luxury {
   animation: pulse-luxury 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@keyframes ambient-glow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.2;
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.2);
+    opacity: 0.35;
+  }
+  66% {
+    transform: translate(-30px, 40px) scale(0.85);
+    opacity: 0.25;
+  }
+}
+
+.animate-ambient-glow-1 {
+  animation: ambient-glow 20s ease-in-out infinite;
+}
+
+.animate-ambient-glow-2 {
+  animation: ambient-glow 25s ease-in-out infinite alternate;
+}

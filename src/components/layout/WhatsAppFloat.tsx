@@ -1,4 +1,3 @@
-import { MessageCircle } from "lucide-react";
 import { useStore } from "../../store/StoreContext";
 
 export function WhatsAppFloat() {
@@ -6,22 +5,22 @@ export function WhatsAppFloat() {
 
   if (!settings?.whatsapp_number) return null;
 
-  const whatsappLink = `https://wa.me/${settings.whatsapp_number.replace(/\+/g, "").replace(/\s/g, "")}`;
+  const cleanNumber = settings.whatsapp_number.replace(/\+/g, "").replace(/\s/g, "");
+
+  const handleClick = () => {
+    const message = encodeURIComponent("Hello! I am visiting from Marwiz Wears & Watches. I would like to make an inquiry or lodge a complaint.");
+    const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
-    <a
-      href={whatsappLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:-translate-y-1 active:scale-95 group"
-      aria-label="Chat on WhatsApp"
+    <button
+      onClick={handleClick}
+      type="button"
+      className="fixed bottom-6 left-6 z-50 flex items-center justify-center rounded-full bg-[#25D366] text-white px-3.5 py-1.5 shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 active:scale-95 text-[9px] font-bold tracking-widest uppercase cursor-pointer border-none"
+      aria-label="Chat with us on WhatsApp"
     >
-      <MessageCircle size={24} fill="currentColor" className="text-white" />
-      
-      {/* Tooltip */}
-      <span className="absolute left-14 scale-0 rounded bg-ink-900 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gold-400 opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 whitespace-nowrap border border-ink-800 shadow-xl">
-        Chat with us
-      </span>
-    </a>
+      CHAT WITH US
+    </button>
   );
 }

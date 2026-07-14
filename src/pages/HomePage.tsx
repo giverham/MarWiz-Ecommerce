@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowRight, Star, Shield, Truck, Award, MessageCircle, Check, Heart, Gem } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, Star, Shield, Truck, Award, MessageCircle, Check, Heart, Gem, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "../store/StoreContext";
 import { useRouter } from "../lib/router";
 import { useProducts, useTestimonials, useCollections } from "../hooks/useData";
@@ -17,7 +17,25 @@ export function HomePage() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   return (
-    <div className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw]">
+    <div className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw] relative bg-[#0b0a0a]">
+      {/* Tactile Fine-Grain Noise Overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-[1] opacity-[0.035]" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Soft Luxury Geometric Grid Line Pattern (Highly Visible & Premium) */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 opacity-[0.12]" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='rgba(212,175,55,0.15)' stroke-width='0.75'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+
       
       {settings?.homepage_sections?.map((sectionId: string) => {
         switch (sectionId) {
@@ -26,7 +44,7 @@ export function HomePage() {
           case 'trending':
             const trendingProducts = products
               .filter(p => p.collections?.some((c: any) => c.slug === 'trending-products'))
-              .slice(0, 4);
+              .slice(0, 8);
             return (
               <ProductSection
                 key="trending"
@@ -41,7 +59,7 @@ export function HomePage() {
             return collections.filter(c => c.show_in_homepage).map(col => {
               const collectionProducts = products
                 .filter(p => p.collections?.some((c: any) => c.id === col.id))
-                .slice(0, col.limit_products || 4);
+                .slice(0, col.limit_products || 8);
                 
               return (
                 <ProductSection
@@ -66,7 +84,11 @@ export function HomePage() {
       })}
 
 
-      
+      {/* Clear, visible ambient luxury glow */}
+      <div className="absolute top-[20%] left-[5%] w-[450px] h-[450px] rounded-full bg-amber-500/15 blur-[150px] pointer-events-none -z-10 animate-ambient-glow-1" />
+      <div className="absolute top-[60%] right-[5%] w-[500px] h-[500px] rounded-full bg-amber-600/10 blur-[180px] pointer-events-none -z-10 animate-ambient-glow-2" />
+      <div className="absolute top-[80%] left-[8%] w-[480px] h-[480px] rounded-full bg-amber-700/12 blur-[150px] pointer-events-none -z-10 animate-ambient-glow-1" />
+
       <QuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
     </div>
   );
@@ -80,30 +102,36 @@ function HeroSection() {
   const isVideo = heroMedia ? (heroMedia.endsWith('.mp4') || heroMedia.endsWith('.webm') || heroMedia.endsWith('.mov')) : false;
 
   return (
-    <section className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-ink-950 flex flex-col items-center justify-center pt-8 pb-10 lg:pb-12 text-center">
+    <section className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-transparent flex flex-col items-center justify-center pt-8 pb-10 lg:pb-12 text-center">
       {/* Background Media */}
-      <div className="absolute inset-0 z-0 w-full h-full">
+      <div className="absolute inset-0 z-0 w-full h-full bg-transparent">
         {heroMedia && (
           isVideo ? (
-            <video
-              src={heroMedia}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover bg-ink-950"
-            />
+            <div className="relative z-10 w-full h-full bg-transparent overflow-hidden">
+              <video
+                src={heroMedia}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                className="w-full h-full object-cover"
+                style={{ filter: "none", mixBlendMode: "normal", backgroundColor: "transparent" }}
+              />
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#050505] pointer-events-none z-20"></div>
+            </div>
           ) : (
-            <img 
-              src={heroMedia} 
-              alt={settings?.hero_title || "Hero Background"} 
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <>
+              <img 
+                src={heroMedia} 
+                alt={settings?.hero_title || "Hero Background"} 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Elegant Bottom Overlay Gradient Mask to blend image seamlessly with background */}
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-[#0b0a0a] pointer-events-none z-10" />
+            </>
           )
         )}
-        {/* Luxury Overlays */}
-        <div className="absolute inset-0 bg-ink-950/40 z-10 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/50 to-transparent opacity-90 z-10 pointer-events-none" />
       </div>
 
       {/* Content */}
@@ -181,7 +209,7 @@ function HeroSection() {
           >
             {settings?.hero_cta_text && (
               <button
-                onClick={() => navigate(settings?.hero_cta_link || "/shop")}
+                onClick={() => navigate("/collections")}
                 className="bg-gold-400 px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-ink-900 transition-all hover:bg-gold-300 shrink-0"
               >
                 Explore Collection
@@ -213,36 +241,84 @@ interface ProductSectionProps {
 function ProductSection({ label, title, products, onQuickView, viewAllLink }: ProductSectionProps) {
   const { navigate } = useRouter();
   const { settings } = useStore();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -scrollRef.current.offsetWidth * 0.75, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: scrollRef.current.offsetWidth * 0.75, behavior: "smooth" });
+    }
+  };
 
   return (
-    <section className="w-full overflow-hidden py-4 lg:py-6">
+    <section 
+      className="w-full overflow-hidden relative z-10"
+      style={{
+        paddingTop: "12px",
+        paddingBottom: "16px",
+        marginTop: "8px",
+        marginBottom: "8px"
+      }}
+    >
       <div className="container-luxury">
-        <div className="mb-8 md:mb-12 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
+        <div className="mb-4 md:mb-6 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4">
           <div className="flex flex-col items-center sm:items-start text-center sm:text-left w-full sm:w-auto">
             <p className="section-label mb-3">{label}</p>
             <h2 className="section-title m-0">{title}</h2>
           </div>
-          <button
-            onClick={() => navigate(viewAllLink)}
-            className="hidden sm:inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-ink-300 transition-colors hover:text-gold-400 shrink-0"
-          >
-            View All <ArrowRight size={14} />
-          </button>
+          
+          <div className="flex items-center gap-6 shrink-0">
+            {products.length > 4 && (
+              <div className="hidden md:flex items-center gap-2">
+                <button
+                  onClick={scrollLeft}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-neutral-900/40 backdrop-blur-sm text-ink-300 hover:text-gold-400 hover:border-gold-400/30 transition-all"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={scrollRight}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/5 bg-neutral-900/40 backdrop-blur-sm text-ink-300 hover:text-gold-400 hover:border-gold-400/30 transition-all"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => navigate(viewAllLink)}
+              className="hidden sm:inline-flex items-center gap-2 text-xs uppercase tracking-[0.15em] text-ink-300 transition-colors hover:text-gold-400 shrink-0"
+            >
+              View All <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
 
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-4 border border-ink-800 bg-ink-900/20 rounded-sm">
+          <div className="flex flex-col items-center justify-center py-20 px-4 border border-white/5 bg-neutral-900/10 backdrop-blur-md rounded-md">
             <p className="text-gold-400 font-serif text-xl md:text-2xl mb-2">Products Coming Soon</p>
             <p className="text-sm font-light text-ink-400">
               {settings?.brand_name || "MarWiz Wears & Watches"} is undergoing scheduled maintenance. Please check back shortly.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 items-stretch auto-rows-fr">
+          <div 
+            ref={scrollRef}
+            className="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 pb-6 scrollbar-hide snap-x snap-mandatory scroll-smooth w-full items-stretch"
+          >
             {products.map((product) => {
               const aspect = product.category?.slug?.includes("watch") ? "square" : "portrait";
               return (
-                <div key={product.id} className="h-full w-full flex flex-col">
+                <div 
+                  key={product.id} 
+                  className="w-[75%] sm:w-[45%] md:w-[31%] lg:w-[calc(25%-18px)] shrink-0 snap-start flex flex-col h-full"
+                >
                   <ProductCard 
                     product={product} 
                     onQuickView={onQuickView} 
@@ -303,7 +379,7 @@ function WhyChooseSection() {
   if (features.length === 0) return null;
 
   return (
-    <section className="w-full bg-ink-900 py-4 lg:py-6">
+    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Why {settings?.brand_name?.split(" ")?.[0] || "MarWiz"}</p>
@@ -338,7 +414,7 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="w-full bg-ink-900/30 py-4 lg:py-6 border-y border-ink-800/50">
+    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
           <p className="section-label mb-3">Client Voices</p>
@@ -380,7 +456,7 @@ export function WhatsAppCTASection() {
   const waLink = `https://wa.me/${waNumber}`;
 
   return (
-    <section className="w-full py-4 lg:py-6">
+    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="relative overflow-hidden border border-gold-400/20 bg-ink-900 w-full flex flex-col">
           <div className="absolute inset-0 opacity-10">
@@ -417,7 +493,7 @@ function NewsletterSection() {
   const { settings } = useStore();
 
   return (
-    <section className="w-full border-t border-ink-800 bg-ink-950 py-4 lg:py-6">
+    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>
@@ -463,7 +539,7 @@ export function BrandStorySection() {
   const { navigate } = useRouter();
 
   return (
-    <section className="w-full bg-ink-900/40 py-4 lg:py-6 border-y border-ink-800/50">
+    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="relative aspect-[4/5] overflow-hidden w-full bg-ink-800">

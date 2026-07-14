@@ -61,7 +61,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
   if (loading) {
     return (
       <div className="min-h-screen pt-32 pb-20">
-        <div className="container-luxury">
+        <div className="max-w-5xl mx-auto px-4 w-full">
           <div className="grid gap-12 lg:grid-cols-2">
             <div className="aspect-square shimmer-bg animate-shimmer" />
             <div className="space-y-4">
@@ -92,7 +92,7 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
   return (
     <div className="min-h-screen pt-24 pb-20">
-      <div className="container-luxury">
+      <div className="max-w-5xl mx-auto px-4 w-full">
         {/* Breadcrumb */}
         <div className="mb-8 flex items-center gap-2 text-xs text-ink-500">
           <button onClick={() => navigate("/")} className="hover:text-gold-400">Home</button>
@@ -102,9 +102,9 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
           <span className="text-ink-300">{product.name}</span>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 items-start">
           {/* Gallery */}
-          <div>
+          <div className="w-full max-w-[450px] mx-auto lg:mx-0">
             <div
               className="relative aspect-square cursor-crosshair overflow-hidden bg-ink-800"
               onMouseEnter={() => setZoom(true)}
@@ -162,65 +162,62 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
           </div>
 
           {/* Details */}
-          <div className="lg:pt-4">
-            <div className="flex items-center gap-2 mb-3">
-            </div>
+          <div className="flex flex-col gap-y-3.5 lg:pt-0">
+            <h1 className="font-display text-2xl md:text-3xl text-ink-50 leading-tight">{product.name}</h1>
 
-            <h1 className="font-display text-4xl text-ink-50">{product.name}</h1>
-
-            <div className="mt-4 flex items-center gap-3">
-              <span className="text-2xl text-gold-400">{formatNaira(product.price)}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xl md:text-2xl text-gold-400 font-semibold">{formatNaira(product.price)}</span>
               {product.compare_at_price && product.compare_at_price > product.price && (
-                <span className="text-base text-ink-500 line-through">
+                <span className="text-sm text-ink-500 line-through">
                   {formatNaira(product.compare_at_price)}
                 </span>
               )}
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
-              <div className="flex gap-1">
+            <div className="flex items-center gap-2">
+              <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={14} className="text-gold-400" fill="currentColor" />
+                  <Star key={i} size={12} className="text-gold-400" fill="currentColor" />
                 ))}
               </div>
-              <span className="text-xs text-ink-500">Premium Quality Guaranteed</span>
+              <span className="text-[11px] uppercase tracking-wider text-ink-500">Premium Quality</span>
             </div>
 
-            <p className="mt-6 text-base font-light leading-relaxed text-ink-300">
+            <p className="text-sm font-light leading-relaxed text-ink-300">
               {product.description}
             </p>
 
             {/* Availability */}
-            <div className="mt-5 flex items-center gap-2">
+            <div className="flex items-center gap-2">
               {product.availability === 'in_stock' && (
                 <>
-                  <Check size={16} className="text-green-500" />
-                  <span className="text-sm text-green-500">In Stock</span>
+                  <Check size={14} className="text-green-500" />
+                  <span className="text-xs text-green-500 font-medium">In Stock</span>
                   {product.stock <= 5 && product.stock > 0 && (
-                    <span className="text-sm text-red-400">— Only {product.stock} left</span>
+                    <span className="text-xs text-red-400">— Only {product.stock} left</span>
                   )}
                 </>
               )}
               {product.availability === 'sold_out' && (
-                <span className="text-sm text-ink-500">Sold Out</span>
+                <span className="text-xs text-ink-500 font-medium">Sold Out</span>
               )}
               {product.availability === 'coming_soon' && (
-                <span className="text-sm text-gold-400">Coming Soon</span>
+                <span className="text-xs text-gold-400 font-medium">Coming Soon</span>
               )}
             </div>
 
             {/* Variants */}
             {product.variants?.colors && product.variants.colors.length > 0 && (
-              <div className="mt-6">
-                <p className="label-luxury">Color: <span className="text-ink-200">{selectedColor}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-ink-400 font-medium">Color: <span className="text-ink-200">{selectedColor}</span></p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {product.variants.colors.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`border px-4 py-2.5 text-xs uppercase tracking-wider transition-all ${
+                      className={`border text-[11px] uppercase tracking-wider transition-all h-8 px-3 flex items-center justify-center ${
                         selectedColor === color
-                          ? "border-gold-400 bg-gold-400 text-ink-900"
+                          ? "border-gold-400 bg-gold-400 text-ink-900 font-medium"
                           : "border-ink-600 text-ink-300 hover:border-gold-400"
                       }`}
                     >
@@ -231,17 +228,18 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
               </div>
             )}
 
+            {/* Sizes */}
             {product.variants?.sizes && product.variants.sizes.length > 0 && (
-              <div className="mt-5">
-                <p className="label-luxury">Size: <span className="text-ink-200">{selectedSize}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-ink-400 font-medium">Size: <span className="text-ink-200">{selectedSize}</span></p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {product.variants.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`border px-4 py-2.5 text-xs uppercase tracking-wider transition-all ${
+                      className={`border text-[11px] uppercase tracking-wider transition-all h-8 min-w-[32px] px-2 flex items-center justify-center ${
                         selectedSize === size
-                          ? "border-gold-400 bg-gold-400 text-ink-900"
+                          ? "border-gold-400 bg-gold-400 text-ink-900 font-medium"
                           : "border-ink-600 text-ink-300 hover:border-gold-400"
                       }`}
                     >
@@ -253,44 +251,44 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
             )}
 
             {/* Quantity */}
-            <div className="mt-6">
-              <p className="label-luxury">Quantity</p>
-              <div className="mt-2 flex items-center border border-ink-600 w-fit">
+            <div>
+              <p className="text-[11px] uppercase tracking-wider text-ink-400 font-medium">Quantity</p>
+              <div className="mt-1.5 flex items-center border border-ink-600 w-fit h-8">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-11 w-11 items-center justify-center text-ink-300 hover:text-gold-400"
+                  className="flex h-8 w-8 items-center justify-center text-ink-300 hover:text-gold-400"
                 >
-                  <Minus size={16} />
+                  <Minus size={12} />
                 </button>
-                <span className="w-12 text-center text-sm text-ink-100">{quantity}</span>
+                <span className="w-8 text-center text-xs text-ink-100">{quantity}</span>
                 <button
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="flex h-11 w-11 items-center justify-center text-ink-300 hover:text-gold-400"
+                  className="flex h-8 w-8 items-center justify-center text-ink-300 hover:text-gold-400"
                 >
-                  <Plus size={16} />
+                  <Plus size={12} />
                 </button>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="mt-8 flex gap-3">
+            <div className="mt-2 flex gap-2">
               <button
                 onClick={() => addToCart(product, quantity, { color: selectedColor, size: selectedSize })}
                 disabled={product.availability === 'sold_out'}
-                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-primary h-10 text-xs py-0 flex items-center justify-center gap-2 flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ShoppingBag size={16} />
+                <ShoppingBag size={14} />
                 {product.availability === 'sold_out' ? 'Sold Out' : 'Add to Bag'}
               </button>
               <button
                 onClick={() => toggleWishlist(product.id)}
-                className={`flex h-12 w-12 items-center justify-center border transition-all ${
+                className={`flex h-10 w-10 items-center justify-center border transition-all ${
                   wished
                     ? "border-gold-400 bg-gold-400 text-ink-900"
                     : "border-ink-600 text-ink-300 hover:border-gold-400"
                 }`}
               >
-                <Heart size={18} fill={wished ? "currentColor" : "none"} />
+                <Heart size={16} fill={wished ? "currentColor" : "none"} />
               </button>
             </div>
 
@@ -301,29 +299,30 @@ export function ProductDetailPage({ slug }: ProductDetailPageProps) {
                 const msg = `Hello MarWiz, I would like to order:\n\n${product.name}\nPrice: ${formatNaira(product.price)}\n${selectedColor ? `Color: ${selectedColor}\n` : ""}${selectedSize ? `Size: ${selectedSize}\n` : ""}Quantity: ${quantity}\n\nPlease confirm availability and delivery.`;
                 window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, "_blank");
               }}
-              className="mt-3 w-full text-center text-xs uppercase tracking-[0.15em] text-gold-400 hover:text-gold-300"
+              className="w-full text-center text-[11px] uppercase tracking-[0.15em] text-gold-400 hover:text-gold-300"
             >
               Or Order Directly via WhatsApp
             </button>
 
-            {/* Specifications */}
-            {Object.keys(product.specs).length > 0 && (
-              <div className="mt-8 border-t border-ink-800 pt-6">
-                <h3 className="text-xs font-medium uppercase tracking-[0.2em] text-gold-400 mb-4">
-                  Specifications
-                </h3>
-                <dl className="space-y-2">
-                  {Object.entries(product.specs).map(([key, value]) => (
-                    <div key={key} className="flex justify-between border-b border-ink-800 pb-2">
-                      <dt className="text-sm text-ink-400">{key}</dt>
-                      <dd className="text-sm text-ink-200">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Specifications */}
+        {Object.keys(product.specs).length > 0 && (
+          <div className="mt-12 border-t border-ink-800 pt-8 w-full">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-400 mb-6">
+              Specifications
+            </h3>
+            <div className="grid gap-x-16 gap-y-4 md:grid-cols-2">
+              {Object.entries(product.specs).map(([key, value]) => (
+                <div key={key} className="flex justify-between border-b border-ink-800 pb-2.5">
+                  <dt className="text-sm text-ink-400">{key}</dt>
+                  <dd className="text-sm text-ink-200 font-light">{value}</dd>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Related products */}
         {related.length > 0 && (
