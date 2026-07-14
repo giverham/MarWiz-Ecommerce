@@ -196,14 +196,12 @@ function HeroSection() {
 
           {/* Description / Supporting Text */}
           <p 
-            className="font-bold text-ink-300 text-center mx-auto m-0 uppercase"
+            className="font-bold text-white text-center mx-auto m-0 uppercase"
             style={{
               maxWidth: "100%",
               letterSpacing: "0.15em",
               fontSize: "clamp(14px, 2vw, 22px)",
-              marginBottom: "4vh",
-              WebkitTextStroke: "2px #000000",
-              WebkitTextFillColor: "transparent"
+              marginBottom: "4vh"
             }}
           >
             {settings?.hero_subtitle || "Premium Clothing • Luxury Watches • Signature Style"}
