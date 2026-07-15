@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { ArrowRight, Star, Shield, Truck, Award, MessageCircle, Check, Heart, Gem, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "../store/StoreContext";
 import { useRouter } from "../lib/router";
@@ -40,7 +40,7 @@ export function HomePage() {
       {settings?.homepage_sections?.map((sectionId: string) => {
         switch (sectionId) {
           case 'hero':
-            return <HeroSection key="hero" />;
+            return <HeroSection key="hero" settings={settings} />;
           case 'trending':
             const trendingProducts = products
               .filter(p => p.collections?.some((c: any) => c.slug === 'trending-products'))
@@ -53,6 +53,7 @@ export function HomePage() {
                 products={trendingProducts}
                 onQuickView={setQuickViewProduct}
                 viewAllLink="/shop"
+                brandName={settings?.brand_name}
               />
             );
           case 'showcase':
@@ -69,15 +70,16 @@ export function HomePage() {
                   products={collectionProducts}
                   onQuickView={setQuickViewProduct}
                   viewAllLink={`/collections/${col.slug}`}
+                  brandName={settings?.brand_name}
                 />
               );
             });
           case 'why-choose':
-            return <WhyChooseSection key="why-choose" />;
+            return <WhyChooseSection key="why-choose" brandName={settings?.brand_name} />;
           case 'testimonials':
             return <TestimonialsSection key="testimonials" testimonials={testimonials} />;
           case 'newsletter':
-            return <NewsletterSection key="newsletter" />;
+            return <NewsletterSection key="newsletter" brandName={settings?.brand_name} />;
           default:
             return null;
         }
@@ -94,8 +96,7 @@ export function HomePage() {
   );
 }
 
-function HeroSection() {
-  const { settings } = useStore();
+const HeroSection = memo(function HeroSection({ settings }: { settings: any }) {
   const { navigate } = useRouter();
 
   const heroMedia = settings?.hero_background_media;
@@ -231,7 +232,7 @@ function HeroSection() {
       </div>
     </section>
   );
-}
+});
 
 
 
@@ -241,11 +242,11 @@ interface ProductSectionProps {
   products: Product[];
   onQuickView: (p: Product) => void;
   viewAllLink: string;
+  brandName?: string;
 }
 
-function ProductSection({ label, title, products, onQuickView, viewAllLink }: ProductSectionProps) {
+const ProductSection = memo(function ProductSection({ label, title, products, onQuickView, viewAllLink, brandName }: ProductSectionProps) {
   const { navigate } = useRouter();
-  const { settings } = useStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
@@ -309,7 +310,7 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
           <div className="flex flex-col items-center justify-center py-20 px-4 border border-white/5 bg-neutral-900/10 backdrop-blur-md rounded-md">
             <p className="text-gold-400 font-serif text-xl md:text-2xl mb-2">Products Coming Soon</p>
             <p className="text-sm font-light text-ink-400">
-              {settings?.brand_name || "MarWiz Wears & Watches"} is undergoing scheduled maintenance. Please check back shortly.
+              {brandName || "MarWiz Wears & Watches"} is undergoing scheduled maintenance. Please check back shortly.
             </p>
           </div>
         ) : (
@@ -343,13 +344,12 @@ function ProductSection({ label, title, products, onQuickView, viewAllLink }: Pr
       </div>
     </section>
   );
-}
+});
 
 
 
-function WhyChooseSection() {
+const WhyChooseSection = memo(function WhyChooseSection({ brandName }: { brandName?: string }) {
   const [features, setFeatures] = useState<any[]>([]);
-  const { settings } = useStore();
 
   useEffect(() => {
     async function loadStandards() {
@@ -387,8 +387,8 @@ function WhyChooseSection() {
     <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="mb-12 md:mb-16 flex flex-col items-center text-center">
-          <p className="section-label mb-3">Why {settings?.brand_name?.split(" ")?.[0] || "MarWiz"}</p>
-          <h2 className="section-title m-0">The {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} Standard</h2>
+          <p className="section-label mb-3">Why {brandName?.split(" ")?.[0] || "MarWiz"}</p>
+          <h2 className="section-title m-0">The {brandName?.split(" ")?.[0] || "MarWiz"} Standard</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 items-start auto-rows-fr">
           {features.map((feature: any, i: number) => {
@@ -411,11 +411,11 @@ function WhyChooseSection() {
       </div>
     </section>
   );
-}
+});
 
 
 
-function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+const TestimonialsSection = memo(function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   if (testimonials.length === 0) return null;
 
   return (
@@ -453,14 +453,12 @@ function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) 
       </div>
     </section>
   );
-}
+});
 
 
 
-export function WhatsAppCTASection() {
-  const { settings } = useStore();
-  const waNumber = settings?.whatsapp_number || "";
-  const waLink = `https://wa.me/${waNumber}`;
+const WhatsAppCTASection = memo(function WhatsAppCTASection({ whatsappNumber }: { whatsappNumber?: string }) {
+  const waLink = `https://wa.me/${whatsappNumber || ""}`;
 
   return (
     <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
@@ -492,21 +490,22 @@ export function WhatsAppCTASection() {
       </div>
     </section>
   );
-}
+});
 
-function NewsletterSection() {
+
+
+const NewsletterSection = memo(function NewsletterSection({ brandName }: { brandName?: string }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const { settings } = useStore();
 
   return (
     <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
       <div className="container-luxury">
         <div className="mx-auto max-w-2xl flex flex-col items-center text-center w-full">
           <p className="section-label mb-4">Stay Connected</p>
-          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the {settings?.brand_name?.split(" ")?.[0] || "MarWiz"} Circle</h2>
+          <h2 className="section-title mb-6 m-0 text-3xl md:text-4xl">Join the {brandName?.split(" ")?.[0] || "MarWiz"} Circle</h2>
           <p className="text-sm md:text-base font-light text-ink-300 mb-10 leading-relaxed w-full m-0">
-            Be the first to discover new collections, limited editions, and exclusive offers from {settings?.brand_name || "MarWiz"}.
+            Be the first to discover new collections, limited editions, and exclusive offers from {brandName || "MarWiz"}.
           </p>
           {submitted ? (
             <div className="bg-ink-900 border border-gold-400/20 p-6 w-full animate-fade-up flex flex-col">
@@ -539,10 +538,11 @@ function NewsletterSection() {
       </div>
     </section>
   );
-}
+});
 
-export function BrandStorySection() {
-  const { settings } = useStore();
+
+
+export const BrandStorySection = memo(function BrandStorySection({ settings }: { settings: any }) {
   const { navigate } = useRouter();
 
   return (
@@ -582,4 +582,4 @@ export function BrandStorySection() {
       </div>
     </section>
   );
-}
+});
