@@ -432,7 +432,7 @@ const TestimonialsSection = memo(function TestimonialsSection({ testimonials }: 
               <div className="flex items-center gap-3 shrink-0 justify-start w-full">
                 {t.image_url && (
                   <div className="h-10 w-10 overflow-hidden rounded-full shrink-0 border border-ink-800">
-                    <img src={t.image_url} alt={t.name} className="h-full w-full object-cover" loading="lazy" />
+                    <img src={t.image_url} alt={t.name} className="h-full w-full object-cover" loading="eager" />
                   </div>
                 )}
                 <div className="flex flex-col items-start">
@@ -469,7 +469,7 @@ const WhatsAppCTASection = memo(function WhatsAppCTASection({ whatsappNumber }: 
               src="https://images.pexels.com/photos/9968322/pexels-photo-9968322.jpeg?auto=compress&cs=tinysrgb&w=1600"
               alt=""
               className="h-full w-full object-cover object-[center_35%]"
-              loading="lazy"
+              loading="eager"
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-br from-ink-950/90 via-ink-900/90 to-ink-950/90 pointer-events-none z-10" />
@@ -554,7 +554,7 @@ export const BrandStorySection = memo(function BrandStorySection({ settings }: {
               src="https://images.pexels.com/photos/1192609/pexels-photo-1192609.jpeg?auto=compress&cs=tinysrgb&w=1200"
               alt="Brand Story"
               className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
-              loading="lazy"
+              loading="eager"
             />
             <div className="absolute inset-0 bg-ink-950/20 z-10 pointer-events-none" />
             <div className="absolute bottom-0 inset-x-0 p-8 md:p-10 bg-gradient-to-t from-ink-950/90 to-transparent z-20">
