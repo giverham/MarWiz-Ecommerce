@@ -75,6 +75,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("marwiz-wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("cart=true")) {
+      setCartOpen(true);
+      setCart([
+        {
+          id: "test-product-id",
+          name: "Luxury Gold Watch (Test)",
+          price: 299,
+          quantity: 2,
+          image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=400",
+          variant: { color: "Gold", size: "One Size" }
+        }
+      ]);
+    }
+  }, []);
+
   // Dynamic CSS Variables and Favicon
   useEffect(() => {
     if (settings) {
