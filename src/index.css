@@ -201,3 +201,22 @@
 .animate-ambient-glow-2 {
   animation: ambient-glow 25s ease-in-out infinite alternate;
 }
+
+/* Cart Drawer Custom Styling Refinements */
+.cart-drawer-backdrop {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.cart-drawer-container {
+  width: 80% !important;
+  max-width: 80% !important;
+  max-height: 65vh !important;
+  overflow-y: auto !important;
+}
+
+@media (min-width: 640px) {
+  .cart-drawer-container {
+    width: 400px !important;
+    max-width: 400px !important;
+  }
+}

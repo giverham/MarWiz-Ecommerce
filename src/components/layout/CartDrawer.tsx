@@ -13,11 +13,10 @@ export function CartDrawer() {
   return (
     <div className="fixed inset-0 z-[70]">
       <div
-        className="absolute inset-0 animate-fade-in"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+        className="absolute inset-0 animate-fade-in cart-drawer-backdrop"
         onClick={() => setCartOpen(false)}
       />
-      <div className="absolute right-0 top-0 flex h-[65vh] w-[80%] sm:w-[400px] flex-col bg-ink-900 border-l border-b border-ink-800/80 animate-slide-in-right">
+      <div className="absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 animate-slide-in-right cart-drawer-container">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-ink-700 px-3 py-3">
           <div className="flex items-center gap-1">
