@@ -203,8 +203,14 @@
 }
 
 /* Cart Drawer Custom Styling Refinements */
+body.cart-open-scroll-lock {
+  overflow: hidden !important;
+}
+
 .cart-drawer-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
+  cursor: pointer !important;
+  touch-action: none !important;
 }
 
 .cart-drawer-container {
@@ -216,6 +222,10 @@
   flex-direction: column !important;
   overflow: hidden !important;
   overscroll-behavior: contain !important;
+  will-change: transform !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
 }
 
 .cart-drawer-header {

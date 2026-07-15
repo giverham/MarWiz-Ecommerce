@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
@@ -7,6 +8,17 @@ export function CartDrawer() {
   const { cart, cartOpen, setCartOpen, updateQuantity, removeFromCart, cartTotal, cartCount } =
     useStore();
   const { navigate } = useRouter();
+
+  useEffect(() => {
+    if (cartOpen) {
+      document.body.classList.add("cart-open-scroll-lock");
+    } else {
+      document.body.classList.remove("cart-open-scroll-lock");
+    }
+    return () => {
+      document.body.classList.remove("cart-open-scroll-lock");
+    };
+  }, [cartOpen]);
 
   if (!cartOpen) return null;
 
