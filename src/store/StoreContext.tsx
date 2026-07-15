@@ -28,6 +28,53 @@ function variantKey(variant: { color?: string; size?: string }) {
   return `${variant.color || ""}-${variant.size || ""}`;
 }
 
+const DEFAULT_SETTINGS: SiteSettings = {
+  id: 1,
+  announcement_text: "Dare to Wear Different | Enjoy Free Shipping Worldwide",
+  announcement_active: true,
+  hero_title: "MarWiz Wears & Watches",
+  hero_subtitle: "Daringly Premium. Uncompromised Style.",
+  hero_background_media: null,
+  hero_image_url: null,
+  hero_video_url: null,
+  hero_cta_text: "Shop the Collection",
+  hero_cta_link: "/shop",
+  brand_name: "MarWiz",
+  tagline: "Dare To Wear Different",
+  logo_url: null,
+  favicon_url: null,
+  footer_about: "Premium clothing and watches crafted for those who define luxury on their own terms.",
+  footer_copyright: "© 2026 MarWiz. All Rights Reserved.",
+  bank_name: null,
+  account_name: null,
+  account_number: null,
+  whatsapp_number: "+1234567890",
+  contact_email: "contact@marwiz.store",
+  contact_phone: "+1234567890",
+  contact_address: "MarWiz Headquarters",
+  contact_hours: "24/7",
+  instagram_url: null,
+  facebook_url: null,
+  twitter_url: null,
+  tiktok_url: null,
+  why_marwiz: [],
+  meta_title: "MarWiz - Premium Clothing & Luxury Watches",
+  meta_description: "Discover exclusive clothing and custom watches.",
+  meta_keywords: "fashion, luxury, watches",
+  google_analytics_id: null,
+  google_search_console: null,
+  primary_color: "#0b0a0a",
+  secondary_color: "#d4af37",
+  accent_color: "#1c1917",
+  maintenance_mode: false,
+  homepage_sections: ["hero", "trending", "why-choose", "testimonials", "newsletter"],
+  instagram_handle: "marwiz",
+  brand_story_image_url: null,
+  whatsapp_cta_image_url: null,
+  default_placeholder_url: null,
+  default_product_url: null
+};
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -42,19 +89,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const [settingsRes, navRes] = await Promise.all([
-        supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
-        supabase.from("nav_items").select("*").neq("is_active", false).order("sort_order"),
-      ]);
-      
-      if (settingsRes.data) setSettings(settingsRes.data as SiteSettings);
-      
-      const customNav = (navRes.data as NavItem[]) || [];
-      
-      // Make nav_items the sole source of truth
-      setNavItems(customNav.sort((a, b) => a.sort_order - b.sort_order));
-      
-      setLoading(false);
+      try {
+        const [settingsRes, navRes] = await Promise.all([
+          supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
+          supabase.from("nav_items").select("*").neq("is_active", false).order("sort_order"),
+        ]);
+        
+        setSettings((settingsRes.data as SiteSettings) || DEFAULT_SETTINGS);
+        
+        const customNav = (navRes.data as NavItem[]) || [];
+        
+        // Make nav_items the sole source of truth
+        setNavItems(customNav.sort((a, b) => a.sort_order - b.sort_order));
+      } catch (error) {
+        console.error("Failed to load database config, falling back to local storage:", error);
+        setSettings(DEFAULT_SETTINGS);
+      } finally {
+        setLoading(false);
+      }
     })();
 
     try {
@@ -80,11 +132,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setCartOpen(true);
       setCart([
         {
-          id: "test-product-id",
-          name: "Luxury Gold Watch (Test)",
-          price: 299,
+          product: {
+            id: "test-product-id",
+            name: "Luxury Gold Watch (Test)",
+            slug: "luxury-gold-watch-test",
+            price: 299,
+            compare_at_price: 450,
+            images: ["https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=400"],
+            variants: { colors: ["Gold"], sizes: ["One Size"] },
+            specs: {},
+            stock: 10,
+            availability: "in_stock",
+            is_active: true,
+            sort_order: 1,
+            created_at: new Date().toISOString()
+          },
           quantity: 2,
-          image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=400",
           variant: { color: "Gold", size: "One Size" }
         }
       ]);
