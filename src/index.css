@@ -203,14 +203,6 @@
 }
 
 /* Cart Drawer Custom Styling Refinements */
-html.cart-open-scroll-lock,
-body.cart-open-scroll-lock,
-div.cart-open-scroll-lock {
-  overflow: hidden !important;
-  touch-action: none !important;
-  -webkit-overflow-scrolling: auto !important;
-  overscroll-behavior: contain !important;
-}
 
 /* Allow touch-scrolling inside the cart drawer container and its scrollable items */
 .cart-drawer-container,

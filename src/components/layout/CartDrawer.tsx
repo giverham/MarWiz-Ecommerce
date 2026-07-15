@@ -9,98 +9,24 @@ export function CartDrawer() {
     useStore();
   const { navigate } = useRouter();
 
-  const scrollYRef = useRef(0);
-
   useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    
-    // Select root and any main wrappers
-    const wrappers = Array.from(document.querySelectorAll("#root, .min-h-screen"));
-
-    const lockBackground = () => {
-      // 1. Calculate and save the current scroll depth
-      const scrollY = window.scrollY;
-      scrollYRef.current = scrollY;
-
-      // 2. Add classes to lock
-      html.classList.add("cart-open-scroll-lock");
-      body.classList.add("cart-open-scroll-lock");
-      wrappers.forEach((el) => el.classList.add("cart-open-scroll-lock"));
-
-      // 3. Apply position fixed and negative top shift to prevent layout snaps/jumps
-      body.style.position = "fixed";
-      body.style.top = `-${scrollY}px`;
-      body.style.width = "100%";
-    };
-
-    const unlockBackground = () => {
-      const scrollY = scrollYRef.current;
-
-      // Remove classes immediately
-      html.classList.remove("cart-open-scroll-lock");
-      body.classList.remove("cart-open-scroll-lock");
-      wrappers.forEach((el) => el.classList.remove("cart-open-scroll-lock"));
-
-      // Strip all scroll-locking inline CSS completely from html, body, and wrapper divs
-      const elementsToStrip = [html, body, ...wrappers];
-      elementsToStrip.forEach((el) => {
-        if (el && "style" in el) {
-          const htmlEl = el as HTMLElement;
-          htmlEl.style.overflow = "";
-          htmlEl.style.position = "";
-          htmlEl.style.top = "";
-          htmlEl.style.width = "";
-          htmlEl.style.touchAction = "";
-          htmlEl.style.height = "";
-          htmlEl.style.maxHeight = "";
-        }
-      });
-
-      // 4. Instantly restore position the exact moment we remove lock classes
-      window.scrollTo(0, scrollY);
-
-      // Force mobile DOM repaint / layout recalculation
-      // 1. Force immediate layout style computation via offsetHeight
-      const _ = body.offsetHeight;
-
-      // 2. Trigger hardware-accelerated repaint cycle to resolve black screen rendering freeze
-      html.style.transform = "translate3d(0, 0, 0)";
-      body.style.transform = "translate3d(0, 0, 0)";
-      wrappers.forEach((el) => {
-        if (el && "style" in el) {
-          (el as HTMLElement).style.transform = "translate3d(0, 0, 0)";
-        }
-      });
-
-      // Let the browser paint, then clean up the temporary transform
-      requestAnimationFrame(() => {
-        html.style.transform = "";
-        body.style.transform = "";
-        wrappers.forEach((el) => {
-          if (el && "style" in el) {
-            (el as HTMLElement).style.transform = "";
-          }
-        });
-        
-        // Ensure scroll restoration is locked in
-        window.scrollTo(0, scrollY);
-
-        // Force another layout pass to confirm clean state
-        const __ = body.offsetHeight;
-      });
-    };
-
     if (cartOpen) {
-      lockBackground();
-    } else {
-      unlockBackground();
-    }
+      // Prevent background scrolling cleanly by intercepting touch events
+      // This avoids ALL layout jumps, visual flashes, and black screen repaints
+      const handleTouchMove = (e: TouchEvent) => {
+        const target = e.target as HTMLElement;
+        const isInsideCart = target.closest(".cart-drawer-container");
+        if (!isInsideCart) {
+          e.preventDefault();
+        }
+      };
 
-    return () => {
-      // Ensure React cleanup function removes everything every single time the cart closes/unmounts
-      unlockBackground();
-    };
+      document.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+      return () => {
+        document.removeEventListener("touchmove", handleTouchMove);
+      };
+    }
   }, [cartOpen]);
 
   if (!cartOpen) return null;
