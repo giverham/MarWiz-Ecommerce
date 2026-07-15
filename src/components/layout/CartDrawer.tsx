@@ -11,22 +11,14 @@ export function CartDrawer() {
 
   useEffect(() => {
     if (cartOpen) {
-      // Prevent background scrolling cleanly by intercepting touch events
-      // This avoids ALL layout jumps, visual flashes, and black screen repaints
-      const handleTouchMove = (e: TouchEvent) => {
-        const target = e.target as HTMLElement;
-        const isInsideCart = target.closest(".cart-drawer-container");
-        if (!isInsideCart) {
-          e.preventDefault();
-        }
-      };
-
-      document.addEventListener("touchmove", handleTouchMove, { passive: false });
-
-      return () => {
-        document.removeEventListener("touchmove", handleTouchMove);
-      };
+      document.body.classList.add("cart-open");
+    } else {
+      document.body.classList.remove("cart-open");
     }
+    
+    return () => {
+      document.body.classList.remove("cart-open");
+    };
   }, [cartOpen]);
 
   if (!cartOpen) return null;

@@ -211,10 +211,15 @@
   -webkit-overflow-scrolling: touch !important;
 }
 
+body.cart-open {
+  overflow: hidden !important;
+}
+
 .cart-drawer-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
   cursor: pointer !important;
   touch-action: none !important;
+  pointer-events: auto !important;
 }
 
 .cart-drawer-container {
