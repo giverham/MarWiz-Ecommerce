@@ -102,12 +102,12 @@ function HeroSection() {
   const isVideo = heroMedia ? (heroMedia.endsWith('.mp4') || heroMedia.endsWith('.webm') || heroMedia.endsWith('.mov')) : false;
 
   return (
-    <section className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-transparent flex flex-col items-center justify-center pt-8 pb-10 lg:pb-12 text-center">
+    <section className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-[#0b0a0a] flex flex-col items-center justify-center pt-8 pb-10 lg:pb-12 text-center">
       {/* Background Media */}
-      <div className="absolute inset-0 z-0 w-full h-full bg-transparent">
+      <div className="absolute inset-0 z-0 w-full h-full bg-[#0b0a0a]">
         {heroMedia && (
           isVideo ? (
-            <div className="relative z-10 w-full h-full min-h-[100dvh] min-h-[600px] overflow-hidden" style={{ background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "transparent" }}>
+            <div className="relative z-10 w-full h-full min-h-[100dvh] min-h-[600px] overflow-hidden" style={{ background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "#0b0a0a" }}>
               <video
                 poster="/video-fallback.jpg"
                 autoPlay
@@ -116,7 +116,7 @@ function HeroSection() {
                 playsInline
                 preload="auto"
                 className="w-full h-full min-h-full object-cover"
-                style={{ filter: "none", mixBlendMode: "normal", background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "transparent", objectFit: "cover" }}
+                style={{ filter: "none", mixBlendMode: "normal", background: "url('/video-fallback.jpg') center center / cover no-repeat", backgroundColor: "#0b0a0a", objectFit: "cover" }}
               >
                 <source src={heroMedia} type="video/mp4" />
                 Your browser does not support the video tag.

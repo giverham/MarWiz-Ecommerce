@@ -204,20 +204,51 @@
 
 /* Cart Drawer Custom Styling Refinements */
 .cart-drawer-backdrop {
-  background: rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 .cart-drawer-container {
-  width: 48% !important;
-  max-width: 48% !important;
-  height: 32.5vh !important;
-  max-height: 32.5vh !important;
+  width: 40vw !important;
+  max-width: 40vw !important;
+  height: 65vh !important;
+  max-height: 65vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.cart-drawer-header {
+  flex-shrink: 0 !important;
+}
+
+.cart-drawer-items {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  flex-shrink: 1 !important;
   overflow-y: auto !important;
+}
+
+.cart-drawer-footer {
+  flex-shrink: 0 !important;
+  padding: 12px !important;
+}
+
+.cart-drawer-footer button {
+  height: 32px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 @media (min-width: 640px) {
   .cart-drawer-container {
-    width: 240px !important;
-    max-width: 240px !important;
+    width: 200px !important;
+    max-width: 200px !important;
+    height: 65vh !important;
+    max-height: 65vh !important;
   }
 }

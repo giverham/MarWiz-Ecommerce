@@ -19,9 +19,9 @@ export function Footer() {
   return (
     <footer className="border-t border-ink-800 bg-ink-950">
       <div className="container-luxury py-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6 lg:gap-12 text-center md:text-left">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="flex flex-col items-center md:items-start">
             {settings?.logo_url ? (
               <img src={settings.logo_url} alt="Logo" className="h-10 object-contain mb-4" />
             ) : (
@@ -33,17 +33,17 @@ export function Footer() {
                 </span>
               </h3>
             )}
-            <p className="mt-4 text-sm font-light leading-relaxed text-ink-400">
+            <p className="mt-4 text-sm font-light leading-relaxed text-ink-400 max-w-sm">
               {settings?.footer_about}
             </p>
           </div>
 
           {/* Quick links */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-gold-400">
               Explore
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2.5 flex flex-col items-center md:items-start">
               <li>
                 <button onClick={() => navigate("/shop")} className="text-sm text-ink-300 transition-colors hover:text-gold-400">
                   Shop All
@@ -63,11 +63,11 @@ export function Footer() {
           </div>
 
           {/* Info */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-gold-400">
               Information
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-2.5 flex flex-col items-center md:items-start">
               {footerLinks.map((link) => (
                 <li key={link.href}>
                   <button
@@ -82,26 +82,26 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="flex flex-col items-center md:items-start">
             <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-gold-400">
               Contact
             </h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-sm text-ink-300">
+            <ul className="space-y-3 flex flex-col items-center md:items-start">
+              <li className="flex items-start gap-3 text-sm text-ink-300 justify-center md:justify-start">
                 <MapPin size={16} className="mt-0.5 shrink-0 text-gold-400" />
                 <span>{settings?.contact_address}</span>
               </li>
-              <li className="flex items-center gap-3 text-sm text-ink-300">
+              <li className="flex items-center gap-3 text-sm text-ink-300 justify-center md:justify-start">
                 <Phone size={16} className="shrink-0 text-gold-400" />
                 <span>{settings?.contact_phone}</span>
               </li>
-              <li className="flex items-center gap-3 text-sm text-ink-300">
+              <li className="flex items-center gap-3 text-sm text-ink-300 justify-center md:justify-start">
                 <Mail size={16} className="shrink-0 text-gold-400" />
                 <span>{settings?.contact_email}</span>
               </li>
             </ul>
             {/* Social */}
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex gap-3 justify-center md:justify-start">
               {settings?.instagram_url && (
                 <a href={settings.instagram_url} target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center border border-ink-700 text-ink-300 transition-all hover:border-gold-400 hover:text-gold-400">
                   <Instagram size={16} />
