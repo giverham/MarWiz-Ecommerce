@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
@@ -9,6 +9,25 @@ export function CartDrawer() {
     useStore();
   const { navigate } = useRouter();
 
+  const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (cartOpen) {
+      document.body.style.overflow = "hidden";
+      setIsClosing(false);
+    } else {
+      setIsClosing(true);
+      const timer = setTimeout(() => {
+        document.body.style.overflow = "";
+        setIsClosing(false);
+      }, 300);
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = "";
+      };
+    }
+  }, [cartOpen]);
+
   useEffect(() => {
     console.log("[CartDrawer] Component mounted. (Mount complete)");
     return () => {
@@ -17,21 +36,18 @@ export function CartDrawer() {
   }, []);
 
   return (
-    <div 
-      className={`fixed inset-0 z-[70] transition-all duration-300 ${
-        cartOpen ? "pointer-events-auto visible" : "pointer-events-none invisible delay-300"
-      }`}
+    <div
+      className={`fixed inset-0 z-[70] transition-all duration-300 ${cartOpen ? "pointer-events-auto visible" : "pointer-events-none invisible delay-300"
+        }`}
     >
       <div
-        className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${
-          cartOpen ? "opacity-100" : "opacity-0"
-        }`}
+        className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${cartOpen ? "opacity-100" : "opacity-0"
+          }`}
         onClick={() => setCartOpen(false)}
       />
-      <div 
-        className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${
-          cartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+      <div
+        className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         style={{ height: "65vh", maxHeight: "65vh" }}
       >
         {/* Header */}
