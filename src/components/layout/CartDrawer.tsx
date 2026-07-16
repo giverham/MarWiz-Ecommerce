@@ -9,23 +9,34 @@ export function CartDrawer() {
   const { cartOpen, setCartOpen } = useCartUI();
   const { navigate } = useRouter();
 
-  const [isClosing, setIsClosing] = useState(false);
+  const [isMounted, setIsMounted] = useState(cartOpen);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    
     if (cartOpen) {
+      setIsMounted(true);
       document.body.style.overflow = "hidden";
-      setIsClosing(false);
+      // Allow the DOM element to mount before triggering the CSS transition
+      timer = setTimeout(() => {
+        setIsAnimating(true);
+      }, 10);
     } else {
-      setIsClosing(true);
-      const timer = setTimeout(() => {
-        document.body.style.overflow = "";
-        setIsClosing(false);
+      setIsAnimating(false);
+      // Restore scroll immediately to prevent mobile layout bugs
+      document.body.style.overflow = "";
+      
+      // Wait for CSS transition (300ms) before unmounting
+      timer = setTimeout(() => {
+        setIsMounted(false);
       }, 300);
-      return () => {
-        clearTimeout(timer);
-        document.body.style.overflow = "";
-      };
     }
+    
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = "";
+    };
   }, [cartOpen]);
 
   useEffect(() => {
@@ -35,19 +46,20 @@ export function CartDrawer() {
     };
   }, []);
 
+  if (!isMounted) return null;
+
   return (
-    <div
-      className={`fixed inset-0 z-[70] transition-all duration-300 ${cartOpen ? "pointer-events-auto visible" : "pointer-events-none invisible delay-300"
-        }`}
-    >
+    <div className="fixed inset-0 z-[70]">
       <div
-        className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${cartOpen ? "opacity-100" : "opacity-0"
-          }`}
+        className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${
+          isAnimating ? "opacity-100" : "opacity-0"
+        }`}
         onClick={() => setCartOpen(false)}
       />
       <div
-        className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${cartOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${
+          isAnimating ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{ height: "65vh", maxHeight: "65vh" }}
       >
         {/* Header */}
