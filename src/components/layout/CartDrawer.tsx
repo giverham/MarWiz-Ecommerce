@@ -1,34 +1,22 @@
 import { useEffect } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useStore } from "../../store/StoreContext";
+import { useStore, useCartUI } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 import { formatNaira } from "../../lib/utils";
 
 export function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, updateQuantity, removeFromCart, cartTotal, cartCount } =
-    useStore();
+  const { cart, updateQuantity, removeFromCart, cartTotal, cartCount } = useStore();
+  const { cartOpen, setCartOpen } = useCartUI();
   const { navigate } = useRouter();
 
   useEffect(() => {
-    console.log("[CartDrawer] Component mounted. (Mount complete)");
+    if (!cartOpen) return;
+
+    document.body.classList.add("cart-open-scroll-lock");
     return () => {
-      console.log("[CartDrawer] Component cleanup started: removing DOM elements.");
-      console.log("[CartDrawer] Removing body classes or inline styles: (None detected/configured on body)");
-      console.log("[CartDrawer] Removing backdrop/overlay elements: '.cart-drawer-backdrop' has been unmounted from DOM.");
-      console.log("[CartDrawer] Removing drawer container element: '.cart-drawer-container' has been unmounted from DOM.");
-      console.log("[CartDrawer] Component unmounted successfully. (Cleanup phase complete)");
+      document.body.classList.remove("cart-open-scroll-lock");
     };
-  }, []);
-
-  const handleBackdropClick = () => {
-    console.log("[CartDrawer] Backdrop clicked - initiating close execution flow");
-    setCartOpen(false);
-  };
-
-  const handleCloseButtonClick = () => {
-    console.log("[CartDrawer] Close button (X) clicked - initiating close execution flow");
-    setCartOpen(false);
-  };
+  }, [cartOpen]);
 
   if (!cartOpen) return null;
 
@@ -36,7 +24,7 @@ export function CartDrawer() {
     <div className="fixed inset-0 z-[70]">
       <div
         className="absolute inset-0 animate-fade-in cart-drawer-backdrop"
-        onClick={handleBackdropClick}
+        onClick={() => setCartOpen(false)}
       />
       <div 
         className="absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 animate-slide-in-right cart-drawer-container"
@@ -50,7 +38,7 @@ export function CartDrawer() {
               Bag ({cartCount})
             </span>
           </div>
-          <button onClick={handleCloseButtonClick} className="text-ink-400 hover:text-ink-50">
+          <button onClick={() => setCartOpen(false)} className="text-ink-400 hover:text-ink-50">
             <X size={16} />
           </button>
         </div>

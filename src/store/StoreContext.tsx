@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from "react";
 import { supabase } from "../lib/supabase";
 import type { CartItem, Product, SiteSettings, NavItem } from "../types";
 
@@ -16,15 +16,19 @@ interface StoreContextValue {
   cartTotal: number;
   toggleWishlist: (productId: string) => void;
   isWishlisted: (productId: string) => boolean;
-  cartOpen: boolean;
-  setCartOpen: (open: boolean) => void;
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
   cartNotification: string | null;
   setCartNotification: (msg: string | null) => void;
 }
 
+interface CartUIContextValue {
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
+}
+
 const StoreContext = createContext<StoreContextValue | null>(null);
+const CartUIContext = createContext<CartUIContextValue | null>(null);
 
 function variantKey(variant: { color?: string; size?: string }) {
   return `${variant.color || ""}-${variant.size || ""}`;
@@ -83,17 +87,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, rawSetCartOpen] = useState(false);
-  
-  const setCartOpen = (open: boolean) => {
-    if (!open) {
-      console.log("[CartContext] onClose start triggered (before any style/class changes)");
-    } else {
-      console.log("[CartContext] onOpen triggered");
-    }
-    rawSetCartOpen(open);
-  };
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [cartOpen, setCartOpenState] = useState(false);
+  const setCartOpen = useCallback((open: boolean) => {
+    setCartOpenState(open);
+  }, []);
+  const [searchOpen, setSearchOpenState] = useState(false);
+  const setSearchOpen = useCallback((open: boolean) => {
+    setSearchOpenState(open);
+  }, []);
   const [cartNotification, setCartNotification] = useState<string | null>(null);
 
   useEffect(() => {
@@ -210,8 +211,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return [...prev, { product, quantity, variant }];
       });
       setCartNotification(`Added "${product.name}" to Bag`);
+      setCartOpen(true);
     },
-    []
+    [setCartOpen]
   );
 
   const removeFromCart = useCallback((productId: string, vKey: string) => {
@@ -257,31 +259,54 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
+  const storeValue = useMemo(
+    () => ({
+      cart,
+      wishlist,
+      settings,
+      navItems,
+      loading,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      cartCount,
+      cartTotal,
+      toggleWishlist,
+      isWishlisted,
+      searchOpen,
+      setSearchOpen,
+      cartNotification,
+      setCartNotification,
+    }),
+    [
+      cart,
+      wishlist,
+      settings,
+      navItems,
+      loading,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      cartCount,
+      cartTotal,
+      toggleWishlist,
+      isWishlisted,
+      searchOpen,
+      setSearchOpen,
+      cartNotification,
+    ]
+  );
+
+  const cartUIValue = useMemo(
+    () => ({ cartOpen, setCartOpen }),
+    [cartOpen, setCartOpen]
+  );
+
   return (
-    <StoreContext.Provider
-      value={{
-        cart,
-        wishlist,
-        settings,
-        navItems,
-        loading,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        cartCount,
-        cartTotal,
-        toggleWishlist,
-        isWishlisted,
-        cartOpen,
-        setCartOpen,
-        searchOpen,
-        setSearchOpen,
-        cartNotification,
-        setCartNotification,
-      }}
-    >
-      {children}
+    <StoreContext.Provider value={storeValue}>
+      <CartUIContext.Provider value={cartUIValue}>{children}</CartUIContext.Provider>
     </StoreContext.Provider>
   );
 }
@@ -289,5 +314,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 export function useStore() {
   const ctx = useContext(StoreContext);
   if (!ctx) throw new Error("useStore must be used within StoreProvider");
+  return ctx;
+}
+
+export function useCartUI() {
+  const ctx = useContext(CartUIContext);
+  if (!ctx) throw new Error("useCartUI must be used within StoreProvider");
   return ctx;
 }

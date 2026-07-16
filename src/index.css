@@ -204,6 +204,11 @@
 
 /* Cart Drawer Custom Styling Refinements */
 
+body.cart-open-scroll-lock {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
 /* Allow touch-scrolling inside the cart drawer container and its scrollable items */
 .cart-drawer-container,
 .cart-drawer-items {
@@ -227,6 +232,9 @@
   flex-direction: column !important;
   overflow: hidden !important;
   overscroll-behavior: contain !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
 }
 
 .cart-drawer-header {
