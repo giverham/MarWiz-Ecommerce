@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ShoppingBag, Heart, Search } from "lucide-react";
-import { useStore, useCartUI } from "../../store/StoreContext";
+import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 import { AnnouncementBar } from "./AnnouncementBar";
 
-export function Header() {
+export function Header({ onOpenCart }: { onOpenCart: () => void }) {
   const { cartCount, setSearchOpen, settings, wishlist } = useStore();
-  const { setCartOpen } = useCartUI();
   const { navigate, path } = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -99,7 +98,7 @@ export function Header() {
                 )}
               </button>
               <button
-                onClick={() => setCartOpen(true)}
+                onClick={onOpenCart}
                 className="relative text-ink-200 transition-colors hover:text-gold-400"
                 aria-label="Shopping bag"
               >

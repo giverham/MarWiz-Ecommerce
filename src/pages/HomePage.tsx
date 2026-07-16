@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, memo, useMemo } from "react";
-import { ArrowRight, Star, Shield, Truck, Award, MessageCircle, Check, Heart, Gem, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Star, Shield, Truck, Award, Check, Heart, Gem, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "../store/StoreContext";
 import { useRouter } from "../lib/router";
 import { useProducts, useTestimonials, useCollections } from "../hooks/useData";
@@ -75,7 +75,7 @@ export function HomePage() {
                 products={trendingProducts}
                 onQuickView={setQuickViewProduct}
                 viewAllLink="/shop"
-                brandName={settings?.brand_name}
+                brandName={settings?.brand_name || undefined}
               />
             );
           case 'showcase':
@@ -87,15 +87,15 @@ export function HomePage() {
                 products={colProducts}
                 onQuickView={setQuickViewProduct}
                 viewAllLink={`/collections/${col.slug}`}
-                brandName={settings?.brand_name}
+                brandName={settings?.brand_name || undefined}
               />
             ));
           case 'why-choose':
-            return <WhyChooseSection key="why-choose" brandName={settings?.brand_name} />;
+            return <WhyChooseSection key="why-choose" brandName={settings?.brand_name || undefined} />;
           case 'testimonials':
             return <TestimonialsSection key="testimonials" testimonials={testimonials} />;
           case 'newsletter':
-            return <NewsletterSection key="newsletter" brandName={settings?.brand_name} />;
+            return <NewsletterSection key="newsletter" brandName={settings?.brand_name || undefined} />;
           default:
             return null;
         }
@@ -473,40 +473,6 @@ const TestimonialsSection = memo(function TestimonialsSection({ testimonials }: 
 
 
 
-const WhatsAppCTASection = memo(function WhatsAppCTASection({ whatsappNumber }: { whatsappNumber?: string }) {
-  const waLink = `https://wa.me/${whatsappNumber || ""}`;
-
-  return (
-    <section className="w-full py-4 md:py-6 my-2 bg-transparent relative z-10 border-t border-white/5">
-      <div className="container-luxury">
-        <div className="relative overflow-hidden border border-gold-400/20 bg-ink-900 w-full flex flex-col">
-          <div className="absolute inset-0 opacity-10">
-            <img
-              src="https://images.pexels.com/photos/9968322/pexels-photo-9968322.jpeg?auto=compress&cs=tinysrgb&w=1600"
-              alt=""
-              className="h-full w-full object-cover object-[center_35%]"
-              loading="eager"
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-ink-950/90 via-ink-900/90 to-ink-950/90 pointer-events-none z-10" />
-
-          <div className="relative z-20 p-10 md:p-16 lg:p-20 flex flex-col items-center text-center max-w-3xl mx-auto w-full">
-            <MessageCircle size={36} className="mb-6 text-gold-400 shrink-0" />
-            <h2 className="section-title mb-6 m-0 text-3xl md:text-5xl">Personal Concierge</h2>
-            <p className="text-sm md:text-base lg:text-lg font-light leading-relaxed text-ink-200 mb-10 w-full m-0">
-              Prefer a more personal shopping experience? Chat with our concierge team on WhatsApp
-              for tailored recommendations, sizing, and order assistance.
-            </p>
-            <a href={waLink} target="_blank" rel="noreferrer" className="btn-primary w-full sm:w-auto text-center shrink-0">
-              <MessageCircle size={16} />
-              Chat With Us
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-});
 
 
 

@@ -22,11 +22,16 @@ function AppContent() {
   const { path } = useRouter();
   const { settings, loading, cartNotification } = useStore();
   const [showLoader, setShowLoader] = useState(true);
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowLoader(false), 1200);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    setCartOpen(false);
+  }, [path]);
 
   // Admin route
   if (path.startsWith("/admin")) {
@@ -107,10 +112,10 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-ink-950 relative">
-      <Header />
+      <Header onOpenCart={() => setCartOpen(true)} />
       <main>{renderPage()}</main>
       <Footer />
-      <CartDrawer />
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       <SearchBar />
       <BackToTop />
       <WhatsAppFloat />

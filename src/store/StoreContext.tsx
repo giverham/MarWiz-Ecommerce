@@ -22,13 +22,7 @@ interface StoreContextValue {
   setCartNotification: (msg: string | null) => void;
 }
 
-interface CartUIContextValue {
-  cartOpen: boolean;
-  setCartOpen: (open: boolean) => void;
-}
-
 const StoreContext = createContext<StoreContextValue | null>(null);
-const CartUIContext = createContext<CartUIContextValue | null>(null);
 
 function variantKey(variant: { color?: string; size?: string }) {
   return `${variant.color || ""}-${variant.size || ""}`;
@@ -87,10 +81,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, setCartOpenState] = useState(false);
-  const setCartOpen = useCallback((open: boolean) => {
-    setCartOpenState(open);
-  }, []);
   const [searchOpen, setSearchOpenState] = useState(false);
   const setSearchOpen = useCallback((open: boolean) => {
     setSearchOpenState(open);
@@ -146,33 +136,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem("marwiz-wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.location.search.includes("cart=true")) {
-      setCartOpen(true);
-      setCart([
-        {
-          product: {
-            id: "test-product-id",
-            name: "Luxury Gold Watch (Test)",
-            slug: "luxury-gold-watch-test",
-            price: 299,
-            compare_at_price: 450,
-            images: ["https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=400"],
-            variants: { colors: ["Gold"], sizes: ["One Size"] },
-            specs: {},
-            stock: 10,
-            availability: "in_stock",
-            is_active: true,
-            sort_order: 1,
-            created_at: new Date().toISOString()
-          },
-          quantity: 2,
-          variant: { color: "Gold", size: "One Size" }
-        }
-      ]);
-    }
-  }, []);
 
   // Dynamic CSS Variables and Favicon
   useEffect(() => {
@@ -298,15 +261,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ]
   );
 
-  const cartUIValue = useMemo(
-    () => ({ cartOpen, setCartOpen }),
-    [cartOpen, setCartOpen]
-  );
-
   return (
-    <StoreContext.Provider value={storeValue}>
-      <CartUIContext.Provider value={cartUIValue}>{children}</CartUIContext.Provider>
-    </StoreContext.Provider>
+    <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>
   );
 }
 
@@ -316,8 +272,3 @@ export function useStore() {
   return ctx;
 }
 
-export function useCartUI() {
-  const ctx = useContext(CartUIContext);
-  if (!ctx) throw new Error("useCartUI must be used within StoreProvider");
-  return ctx;
-}
