@@ -210,10 +210,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         return [...prev, { product, quantity, variant }];
       });
-      setCartNotification(`Added "${product.name}" to Bag`);
-      setCartOpen(true);
+      setCartNotification(`✓ Added to Cart`);
     },
-    [setCartOpen]
+    []
   );
 
   const removeFromCart = useCallback((productId: string, vKey: string) => {
