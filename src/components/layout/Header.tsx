@@ -4,8 +4,8 @@ import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 import { AnnouncementBar } from "./AnnouncementBar";
 
-export function Header({ onOpenCart }: { onOpenCart: () => void }) {
-  const { cartCount, setSearchOpen, settings, wishlist } = useStore();
+export function Header() {
+  const { cartCount, setCartOpen, setSearchOpen, settings, wishlist } = useStore();
   const { navigate, path } = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -98,7 +98,7 @@ export function Header({ onOpenCart }: { onOpenCart: () => void }) {
                 )}
               </button>
               <button
-                onClick={onOpenCart}
+                onClick={() => setCartOpen(true)}
                 className="relative text-ink-200 transition-colors hover:text-gold-400"
                 aria-label="Shopping bag"
               >

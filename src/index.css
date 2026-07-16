@@ -203,28 +203,16 @@
 }
 
 /* Cart Drawer Custom Styling Refinements */
-
-/* Allow touch-scrolling inside the cart drawer container and its scrollable items */
-.cart-drawer-container,
-.cart-drawer-items {
-  touch-action: pan-y !important;
-}
-
 .cart-drawer-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
-  cursor: pointer !important;
-  touch-action: none !important;
 }
 
 .cart-drawer-container {
-  width: 40vw !important;
-  max-width: 40vw !important;
   height: 65vh !important;
   max-height: 65vh !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
-  overscroll-behavior: contain !important;
 }
 
 .cart-drawer-header {
@@ -238,7 +226,6 @@
   min-height: 0 !important;
   flex-shrink: 1 !important;
   overflow-y: auto !important;
-  overscroll-behavior: contain !important;
 }
 
 .cart-drawer-footer {
@@ -257,8 +244,6 @@
 
 @media (min-width: 640px) {
   .cart-drawer-container {
-    width: 200px !important;
-    max-width: 200px !important;
     height: 65vh !important;
     max-height: 65vh !important;
   }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { supabase } from "../lib/supabase";
 import type { CartItem, Product, SiteSettings, NavItem } from "../types";
 
@@ -16,10 +16,10 @@ interface StoreContextValue {
   cartTotal: number;
   toggleWishlist: (productId: string) => void;
   isWishlisted: (productId: string) => boolean;
+  cartOpen: boolean;
+  setCartOpen: (open: boolean) => void;
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
-  cartNotification: string | null;
-  setCartNotification: (msg: string | null) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -81,18 +81,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchOpen, setSearchOpenState] = useState(false);
-  const setSearchOpen = useCallback((open: boolean) => {
-    setSearchOpenState(open);
-  }, []);
-  const [cartNotification, setCartNotification] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (cartNotification) {
-      const timer = setTimeout(() => setCartNotification(null), 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [cartNotification]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
@@ -137,6 +127,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("marwiz-wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("cart=true")) {
+      setCartOpen(true);
+      setCart([
+        {
+          product: {
+            id: "test-product-id",
+            name: "Luxury Gold Watch (Test)",
+            slug: "luxury-gold-watch-test",
+            price: 299,
+            compare_at_price: 450,
+            images: ["https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=400"],
+            variants: { colors: ["Gold"], sizes: ["One Size"] },
+            specs: {},
+            stock: 10,
+            availability: "in_stock",
+            is_active: true,
+            sort_order: 1,
+            created_at: new Date().toISOString()
+          },
+          quantity: 2,
+          variant: { color: "Gold", size: "One Size" }
+        }
+      ]);
+    }
+  }, []);
+
   // Dynamic CSS Variables and Favicon
   useEffect(() => {
     if (settings) {
@@ -173,7 +190,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         return [...prev, { product, quantity, variant }];
       });
-      setCartNotification(`✓ Added to Cart`);
+      setCartOpen(true);
     },
     []
   );
@@ -221,48 +238,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const storeValue = useMemo(
-    () => ({
-      cart,
-      wishlist,
-      settings,
-      navItems,
-      loading,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      cartCount,
-      cartTotal,
-      toggleWishlist,
-      isWishlisted,
-      searchOpen,
-      setSearchOpen,
-      cartNotification,
-      setCartNotification,
-    }),
-    [
-      cart,
-      wishlist,
-      settings,
-      navItems,
-      loading,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      cartCount,
-      cartTotal,
-      toggleWishlist,
-      isWishlisted,
-      searchOpen,
-      setSearchOpen,
-      cartNotification,
-    ]
-  );
-
   return (
-    <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>
+    <StoreContext.Provider
+      value={{
+        cart,
+        wishlist,
+        settings,
+        navItems,
+        loading,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartCount,
+        cartTotal,
+        toggleWishlist,
+        isWishlisted,
+        cartOpen,
+        setCartOpen,
+        searchOpen,
+        setSearchOpen,
+      }}
+    >
+      {children}
+    </StoreContext.Provider>
   );
 }
 
@@ -271,4 +270,3 @@ export function useStore() {
   if (!ctx) throw new Error("useStore must be used within StoreProvider");
   return ctx;
 }
-
