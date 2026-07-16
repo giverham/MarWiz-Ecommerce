@@ -20,7 +20,7 @@ import { WhatsAppFloat } from "./components/layout/WhatsAppFloat";
 
 function AppContent() {
   const { path } = useRouter();
-  const { settings, loading } = useStore();
+  const { settings, loading, cartNotification } = useStore();
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
@@ -106,7 +106,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-950">
+    <div className="min-h-screen bg-ink-950 relative">
       <Header />
       <main>{renderPage()}</main>
       <Footer />
@@ -115,6 +115,21 @@ function AppContent() {
       <BackToTop />
       <WhatsAppFloat />
       {isLoading && <Loader />}
+
+      {/* Sleek, Luxury Micro-Animated Toast Notification */}
+      {cartNotification && (
+        <div 
+          className="fixed bottom-6 right-6 z-[100] flex items-center gap-3 rounded border border-gold-400/25 bg-ink-950/95 px-4 py-3 shadow-2xl backdrop-blur-md animate-scale-in"
+          style={{ boxShadow: "0 10px 40px rgba(0, 0, 0, 0.7)" }}
+        >
+          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gold-400/10 text-gold-400 text-[10px] font-bold">
+            ✓
+          </div>
+          <p className="text-[10px] font-semibold tracking-wider text-ink-50 uppercase">
+            {cartNotification}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

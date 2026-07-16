@@ -20,6 +20,8 @@ interface StoreContextValue {
   setCartOpen: (open: boolean) => void;
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+  cartNotification: string | null;
+  setCartNotification: (msg: string | null) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -92,6 +94,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     rawSetCartOpen(open);
   };
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartNotification, setCartNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (cartNotification) {
+      const timer = setTimeout(() => setCartNotification(null), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [cartNotification]);
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
@@ -199,7 +209,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         return [...prev, { product, quantity, variant }];
       });
-      setCartOpen(true);
+      setCartNotification(`Added "${product.name}" to Bag`);
     },
     []
   );
@@ -267,6 +277,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCartOpen,
         searchOpen,
         setSearchOpen,
+        cartNotification,
+        setCartNotification,
       }}
     >
       {children}
