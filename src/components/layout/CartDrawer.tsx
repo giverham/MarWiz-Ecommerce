@@ -70,17 +70,6 @@ export function CartDrawer() {
           isAnimatingIn && cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ height: "65vh", maxHeight: "65vh", overscrollBehavior: "contain" }}
-=======
-          isClosing ? "opacity-0" : "animate-fade-in opacity-100"
-        }`}
-        onClick={handleBackdropClick}
-      />
-      <div 
-        className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${
-          isClosing ? "translate-x-full" : "animate-slide-in-right translate-x-0"
-        }`}
-        style={{ height: "65vh", maxHeight: "65vh" }}
->>>>>>> c2fc3a5 (Fix cart drawer close rendering crash on iOS WebKit)
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-ink-700 px-3 py-3 cart-drawer-header">
@@ -112,7 +101,7 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <div 
+            <div
               className="flex-1 overflow-y-auto px-3 py-2.5 cart-drawer-items"
               style={{ overscrollBehavior: "contain" }}
             >
