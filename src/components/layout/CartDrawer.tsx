@@ -17,17 +17,11 @@ export function CartDrawer() {
     
     if (cartOpen) {
       setIsMounted(true);
-      document.body.style.overflow = "hidden";
-      // Allow the DOM element to mount before triggering the CSS transition
       timer = setTimeout(() => {
         setIsAnimating(true);
       }, 10);
     } else {
       setIsAnimating(false);
-      // Restore scroll immediately to prevent mobile layout bugs
-      document.body.style.overflow = "";
-      
-      // Wait for CSS transition (300ms) before unmounting
       timer = setTimeout(() => {
         setIsMounted(false);
       }, 300);
@@ -35,7 +29,6 @@ export function CartDrawer() {
     
     return () => {
       clearTimeout(timer);
-      document.body.style.overflow = "";
     };
   }, [cartOpen]);
 
@@ -54,6 +47,7 @@ export function CartDrawer() {
         className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${
           isAnimating ? "opacity-100" : "opacity-0"
         }`}
+        style={{ touchAction: 'none' }}
         onClick={() => setCartOpen(false)}
       />
       <div
