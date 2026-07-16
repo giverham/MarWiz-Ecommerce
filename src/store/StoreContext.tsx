@@ -81,7 +81,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [cartOpen, rawSetCartOpen] = useState(false);
+  
+  const setCartOpen = (open: boolean) => {
+    if (!open) {
+      console.log("[CartContext] onClose start triggered (before any style/class changes)");
+    } else {
+      console.log("[CartContext] onOpen triggered");
+    }
+    rawSetCartOpen(open);
+  };
   const [searchOpen, setSearchOpen] = useState(false);
   useEffect(() => {
     document.documentElement.classList.add("dark");
