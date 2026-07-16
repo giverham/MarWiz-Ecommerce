@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
@@ -8,18 +7,6 @@ export function CartDrawer() {
   const { cart, cartOpen, setCartOpen, updateQuantity, removeFromCart, cartTotal, cartCount } =
     useStore();
   const { navigate } = useRouter();
-
-  useEffect(() => {
-    if (cartOpen) {
-      document.body.classList.add("cart-open");
-    } else {
-      document.body.classList.remove("cart-open");
-    }
-    
-    return () => {
-      document.body.classList.remove("cart-open");
-    };
-  }, [cartOpen]);
 
   if (!cartOpen) return null;
 

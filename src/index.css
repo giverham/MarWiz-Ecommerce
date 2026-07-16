@@ -211,10 +211,6 @@
   -webkit-overflow-scrolling: touch !important;
 }
 
-body.cart-open {
-  overflow: hidden !important;
-}
-
 .cart-drawer-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
   cursor: pointer !important;
@@ -231,10 +227,6 @@ body.cart-open {
   flex-direction: column !important;
   overflow: hidden !important;
   overscroll-behavior: contain !important;
-  will-change: transform !important;
-  -webkit-backface-visibility: hidden !important;
-  backface-visibility: hidden !important;
-  transform: translate3d(0, 0, 0) !important;
 }
 
 .cart-drawer-header {

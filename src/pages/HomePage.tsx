@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo, useMemo } from "react";
 import { ArrowRight, Star, Shield, Truck, Award, MessageCircle, Check, Heart, Gem, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "../store/StoreContext";
 import { useRouter } from "../lib/router";
@@ -15,6 +15,23 @@ export function HomePage() {
   const testimonials = useTestimonials();
   const { settings } = useStore();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+
+  const trendingProducts = useMemo(() => {
+    return products
+      .filter(p => p.collections?.some((c: any) => c.slug === 'trending-products'))
+      .slice(0, 8);
+  }, [products]);
+
+  const showcaseCollections = useMemo(() => {
+    return collections
+      .filter(c => c.show_in_homepage)
+      .map(col => {
+        const collectionProducts = products
+          .filter(p => p.collections?.some((c: any) => c.id === col.id))
+          .slice(0, col.limit_products || 8);
+        return { col, products: collectionProducts };
+      });
+  }, [collections, products]);
 
   return (
     <div className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw] relative bg-[#0b0a0a]">
@@ -42,9 +59,6 @@ export function HomePage() {
           case 'hero':
             return <HeroSection key="hero" settings={settings} />;
           case 'trending':
-            const trendingProducts = products
-              .filter(p => p.collections?.some((c: any) => c.slug === 'trending-products'))
-              .slice(0, 8);
             return (
               <ProductSection
                 key="trending"
@@ -57,23 +71,17 @@ export function HomePage() {
               />
             );
           case 'showcase':
-            return collections.filter(c => c.show_in_homepage).map(col => {
-              const collectionProducts = products
-                .filter(p => p.collections?.some((c: any) => c.id === col.id))
-                .slice(0, col.limit_products || 8);
-                
-              return (
-                <ProductSection
-                  key={`collection-${col.id}`}
-                  label={col.subtitle || "Collection"}
-                  title={col.name}
-                  products={collectionProducts}
-                  onQuickView={setQuickViewProduct}
-                  viewAllLink={`/collections/${col.slug}`}
-                  brandName={settings?.brand_name}
-                />
-              );
-            });
+            return showcaseCollections.map(({ col, products: colProducts }) => (
+              <ProductSection
+                key={`collection-${col.id}`}
+                label={col.subtitle || "Collection"}
+                title={col.name}
+                products={colProducts}
+                onQuickView={setQuickViewProduct}
+                viewAllLink={`/collections/${col.slug}`}
+                brandName={settings?.brand_name}
+              />
+            ));
           case 'why-choose':
             return <WhyChooseSection key="why-choose" brandName={settings?.brand_name} />;
           case 'testimonials':
