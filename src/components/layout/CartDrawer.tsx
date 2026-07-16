@@ -1,34 +1,37 @@
 import { useEffect, useState } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useStore, useCartUI } from "../../store/StoreContext";
+import { useStore } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 import { formatNaira } from "../../lib/utils";
 
 export function CartDrawer() {
-  const { cart, updateQuantity, removeFromCart, cartTotal, cartCount } = useStore();
-  const { cartOpen, setCartOpen } = useCartUI();
+  const { cart, cartOpen, setCartOpen, updateQuantity, removeFromCart, cartTotal, cartCount } =
+    useStore();
   const { navigate } = useRouter();
 
-  const [isMounted, setIsMounted] = useState(cartOpen);
-  const [isAnimating, setIsAnimating] = useState(false);
+  // Local state to track mounting and transition state
+  const [shouldRender, setShouldRender] = useState(cartOpen);
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    
+    let animTimer: ReturnType<typeof setTimeout>;
+    let unmountTimer: ReturnType<typeof setTimeout>;
+
     if (cartOpen) {
-      setIsMounted(true);
-      timer = setTimeout(() => {
-        setIsAnimating(true);
+      setShouldRender(true);
+      animTimer = setTimeout(() => {
+        setIsAnimatingIn(true);
       }, 10);
     } else {
-      setIsAnimating(false);
-      timer = setTimeout(() => {
-        setIsMounted(false);
+      setIsAnimatingIn(false);
+      unmountTimer = setTimeout(() => {
+        setShouldRender(false);
       }, 300);
     }
-    
+
     return () => {
-      clearTimeout(timer);
+      clearTimeout(animTimer);
+      clearTimeout(unmountTimer);
     };
   }, [cartOpen]);
 
@@ -39,22 +42,26 @@ export function CartDrawer() {
     };
   }, []);
 
-  if (!isMounted) return null;
+  if (!shouldRender) return null;
 
   return (
-    <div className="fixed inset-0 z-[70]">
+    <div
+      className={`fixed inset-0 z-[70] ${
+        cartOpen ? "pointer-events-auto" : "pointer-events-none"
+      }`}
+      style={{ overscrollBehavior: "contain" }}
+    >
       <div
         className={`absolute inset-0 cart-drawer-backdrop transition-opacity duration-300 ${
-          isAnimating ? "opacity-100" : "opacity-0"
+          isAnimatingIn && cartOpen ? "opacity-100" : "opacity-0"
         }`}
-        style={{ touchAction: 'none' }}
         onClick={() => setCartOpen(false)}
       />
       <div
         className={`absolute right-0 top-0 flex flex-col bg-ink-900 border-l border-b border-ink-800/80 cart-drawer-container transition-transform duration-300 ${
-          isAnimating ? "translate-x-0" : "translate-x-full"
+          isAnimatingIn && cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ height: "65vh", maxHeight: "65vh" }}
+        style={{ height: "65vh", maxHeight: "65vh", overscrollBehavior: "contain" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-ink-700 px-3 py-3 cart-drawer-header">
@@ -86,7 +93,10 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto px-3 py-2.5 cart-drawer-items">
+            <div 
+              className="flex-1 overflow-y-auto px-3 py-2.5 cart-drawer-items"
+              style={{ overscrollBehavior: "contain" }}
+            >
               {cart.map((item) => {
                 const vKey = `${item.variant.color || ""}-${item.variant.size || ""}`;
                 return (
