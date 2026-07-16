@@ -170,9 +170,20 @@
 }
 
 @keyframes pulse-luxury {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.9; }
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
 }
 
 .animate-pulse-luxury {
@@ -180,14 +191,18 @@
 }
 
 @keyframes ambient-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
     opacity: 0.2;
   }
+
   33% {
     transform: translate(40px, -60px) scale(1.2);
     opacity: 0.35;
   }
+
   66% {
     transform: translate(-30px, 40px) scale(0.85);
     opacity: 0.25;
@@ -246,5 +261,18 @@
   .cart-drawer-container {
     height: 65vh !important;
     max-height: 65vh !important;
+  }
+}
+
+@layer utilities {
+
+  /* Forces iOS WebKit to keep the homepage rendered in GPU memory */
+  .webkit-gpu-fix {
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    perspective: 1000 !important;
+    -webkit-perspective: 1000 !important;
   }
 }
