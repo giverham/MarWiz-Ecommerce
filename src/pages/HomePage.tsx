@@ -34,7 +34,15 @@ export function HomePage() {
   }, [collections, products]);
 
   return (
-    <div className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw] relative bg-[#0b0a0a]">
+    <div 
+      className="w-full overflow-x-hidden flex flex-col pb-0 max-w-[100vw] relative bg-[#0b0a0a]"
+      style={{
+        transform: "translateZ(0)",
+        WebkitTransform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden"
+      }}
+    >
       {/* Tactile Fine-Grain Noise Overlay */}
       <div 
         className="absolute inset-0 pointer-events-none z-[1] opacity-[0.035]" 
