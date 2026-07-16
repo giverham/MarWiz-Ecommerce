@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { X, Plus, Minus, ShoppingBag } from "lucide-react";
-import { useStore } from "../../store/StoreContext";
+import { useStore, useCartUI } from "../../store/StoreContext";
 import { useRouter } from "../../lib/router";
 import { formatNaira } from "../../lib/utils";
 
 export function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, updateQuantity, removeFromCart, cartTotal, cartCount } =
-    useStore();
+  const { cart, updateQuantity, removeFromCart, cartTotal, cartCount } = useStore();
+  const { cartOpen, setCartOpen } = useCartUI();
   const { navigate } = useRouter();
 
   // Local state to track mounting and transition state
