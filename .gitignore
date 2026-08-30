@@ -23,3 +23,7 @@ dist-ssr
 .env
 .vercel
 .env*
+scratch/
+*.sql
+walkthrough.md
+temp_query*.txt
